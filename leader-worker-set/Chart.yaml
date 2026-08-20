@@ -3,7 +3,7 @@ name: leader-worker-set
 description: An API for deploying a group of pods as a unit of replication
 type: application
 version: 1.0.0
-# renovate: github=kubernetes-sigs/lws
+# renovate: helm=lws registry=oci://registry.k8s.io/lws/charts
 appVersion: "0.10.0"
 annotations:
   module.otterscale.io/namespace: "lws-system"
