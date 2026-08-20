@@ -1,0 +1,26 @@
+kube-prometheus-stack:
+  enabled: true
+  grafana:
+    enabled: false
+  prometheusOperator:
+    admissionWebhooks:
+      failurePolicy: IgnoreOnInstallOnly
+      patch:
+        enabled: false
+      certManager:
+        enabled: true
+  prometheus:
+    prometheusSpec:
+      ruleSelectorNilUsesHelmValues: false
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      retention: "365d"
+      retentionSize: "40GiB"
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: "50Gi"
