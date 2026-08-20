@@ -1,0 +1,12 @@
+apiVersion: v2
+name: leader-worker-set
+description: An API for deploying a group of pods as a unit of replication
+type: application
+version: 1.0.0
+# renovate: github=kubernetes-sigs/lws
+appVersion: "0.10.0"
+dependencies:
+  - name: lws
+    version: "0.10.0"
+    repository: "oci://registry.k8s.io/lws/charts"
+    condition: lws.enabled
