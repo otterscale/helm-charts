@@ -1,0 +1,18 @@
+apiVersion: v2
+name: node-feature-discovery
+description: |
+  Node Feature Discovery (NFD) is a Kubernetes add-on for detecting hardware
+  features and system configuration. Detected features are advertised as node
+  labels. NFD provides flexible configuration and extension points for a wide
+  range of vendor and application specific node labeling needs.
+type: application
+version: 1.0.0
+# renovate: helm=node-feature-discovery registry=oci://registry.k8s.io/nfd/charts
+appVersion: "0.19.0"
+annotations:
+  module.otterscale.io/namespace: "node-feature-discovery"
+dependencies:
+  - name: node-feature-discovery
+    version: 0.19.0
+    repository: oci://registry.k8s.io/nfd/charts
+    condition: node-feature-discovery.enabled

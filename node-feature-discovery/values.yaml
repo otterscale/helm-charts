@@ -1,0 +1,10 @@
+node-feature-discovery:
+  enabled: true
+  master:
+    extraLabelNs:
+      - otterscale.io
+    config: {}
+  worker:
+    config:
+      core:
+        sleepInterval: 60s
