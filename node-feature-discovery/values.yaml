@@ -8,3 +8,22 @@ node-feature-discovery:
     config:
       core:
         sleepInterval: 60s
+
+featureWriter:
+  enabled: true
+  image:
+    repository: alpine
+    tag: "3.24"
+  imagePullPolicy: IfNotPresent
+  intervalSeconds: 600
+  volumeGroupFeatureFileName: otterscale-volume-group-features
+  gpuFeatureFileName: otterscale-gpu-features
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
+  securityContext:
+    runAsUser: 0
+    privileged: true

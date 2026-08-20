@@ -1,0 +1,102 @@
+{{- if .Values.featureWriter.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "otterscale-nfd.fullname" . }}-feature-writer
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale-nfd.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "otterscale-nfd.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "otterscale-nfd.selectorLabels" . | nindent 8 }}
+        {{- range $k, $v := .Values.featureWriter.podLabels }}
+        {{ $k }}: {{ quote $v }}
+        {{- end }}
+      annotations:
+        checksum/configuration: {{ pick (include (print $.Template.BasePath "/configmap.yaml") . | fromYaml) "data" | toYaml | sha256sum }}
+        {{- with .Values.featureWriter.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      hostPID: true
+      serviceAccountName: {{ include "otterscale-nfd.fullname" . }}-feature-writer
+      {{- with .Values.featureWriter.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- with .Values.featureWriter.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.featureWriter.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.featureWriter.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: feature-writer
+          image: "{{ .Values.featureWriter.image.repository }}:{{ .Values.featureWriter.image.tag }}"
+          imagePullPolicy: {{ .Values.featureWriter.imagePullPolicy }}
+          securityContext:
+            {{- toYaml .Values.featureWriter.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.featureWriter.resources | nindent 12 }}
+          env:
+            - name: SYS_ROOT
+              value: /host/sys
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              set -eu
+              OUT_DIR="/etc/kubernetes/node-feature-discovery/features.d"
+              VG_TMP="${OUT_DIR}/.{{ .Values.featureWriter.volumeGroupFeatureFileName }}.tmp"
+              VG_FINAL="${OUT_DIR}/{{ .Values.featureWriter.volumeGroupFeatureFileName }}"
+              GPU_TMP="${OUT_DIR}/.{{ .Values.featureWriter.gpuFeatureFileName }}.tmp"
+              GPU_FINAL="${OUT_DIR}/{{ .Values.featureWriter.gpuFeatureFileName }}"
+              INTERVAL={{ .Values.featureWriter.intervalSeconds | int }}
+              mkdir -p "${OUT_DIR}"
+              while true; do
+                if /bin/sh /scripts/volume-group-features.sh > "${VG_TMP}"; then
+                  mv -f "${VG_TMP}" "${VG_FINAL}"
+                else
+                  rm -f "${VG_TMP}"
+                fi
+                if /bin/sh /scripts/gpu-features.sh > "${GPU_TMP}"; then
+                  mv -f "${GPU_TMP}" "${GPU_FINAL}"
+                else
+                  rm -f "${GPU_TMP}"
+                fi
+                sleep "${INTERVAL}"
+              done
+          volumeMounts:
+            - name: host-features-d
+              mountPath: /etc/kubernetes/node-feature-discovery/features.d
+            - name: host-sys
+              mountPath: /host/sys
+              readOnly: true
+            - name: feature-scripts
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: host-features-d
+          hostPath:
+            path: /etc/kubernetes/node-feature-discovery/features.d
+            type: DirectoryOrCreate
+        - name: host-sys
+          hostPath:
+            path: /sys
+            type: Directory
+        - name: feature-scripts
+          configMap:
+            name: {{ include "otterscale-nfd.fullname" . }}-feature-scripts
+            defaultMode: 0444
+{{- end }}

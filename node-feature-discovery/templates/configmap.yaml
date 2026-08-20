@@ -1,0 +1,14 @@
+{{- if .Values.featureWriter.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "otterscale-nfd.fullname" . }}-feature-scripts
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale-nfd.labels" . | nindent 4 }}
+data:
+  volume-group-features.sh: |
+{{ .Files.Get "files/volume-group-features.sh" | nindent 4 }}
+  gpu-features.sh: |
+{{ .Files.Get "files/gpu-features.sh" | nindent 4 }}
+{{- end }}
