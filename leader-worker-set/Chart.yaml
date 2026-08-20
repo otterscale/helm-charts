@@ -5,6 +5,8 @@ type: application
 version: 1.0.0
 # renovate: github=kubernetes-sigs/lws
 appVersion: "0.10.0"
+annotations:
+  module.otterscale.io/namespace: "lws-system"
 dependencies:
   - name: lws
     version: "0.10.0"
