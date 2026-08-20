@@ -1,0 +1,15 @@
+apiVersion: v2
+name: gpu-operator
+description: NVIDIA GPU Operator creates/configures/manages GPUs atop Kubernetes
+type: application
+version: 1.0.0
+# renovate: helm=gpu-operator registry=https://nvidia.github.io/gpu-operator
+appVersion: "v26.3.3"
+annotations:
+  module.otterscale.io/depends-on: "prometheus-stack"
+  module.otterscale.io/namespace: "gpu-operator"
+dependencies:
+  - name: gpu-operator
+    version: v26.3.3
+    repository: https://nvidia.github.io/gpu-operator
+    condition: gpu-operator.enabled

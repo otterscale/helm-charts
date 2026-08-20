@@ -1,0 +1,16 @@
+gpu-operator:
+  enabled: true
+  nfd:
+    enabled: false
+  cdi:
+    enabled: false
+  sandboxWorkloads:
+    enabled: true
+  devicePlugin:
+    enabled: false
+  migManager:
+    enabled: false
+  nodeStatusExporter:
+    enabled: true
+  vgpuDeviceManager:
+    enabled: false
