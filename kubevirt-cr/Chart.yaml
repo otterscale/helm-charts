@@ -6,4 +6,5 @@ version: 1.0.0
 # renovate: github=kubevirt/kubevirt
 appVersion: "v1.8.4"
 annotations:
+  otterscale.io/type: module
   module.otterscale.io/depends-on: "kubevirt,prometheus-stack"

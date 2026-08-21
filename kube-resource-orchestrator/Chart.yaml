@@ -6,6 +6,7 @@ version: 1.0.0
 # renovate: helm=kro registry=oci://registry.k8s.io/kro/charts
 appVersion: "0.9.3"
 annotations:
+  otterscale.io/type: module
   module.otterscale.io/namespace: "kro-system"
 dependencies:
   - name: kro

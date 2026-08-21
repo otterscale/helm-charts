@@ -6,6 +6,7 @@ version: 1.0.0
 # renovate: helm=lws registry=oci://registry.k8s.io/lws/charts
 appVersion: "0.10.0"
 annotations:
+  otterscale.io/type: module
   module.otterscale.io/namespace: "lws-system"
 dependencies:
   - name: lws
