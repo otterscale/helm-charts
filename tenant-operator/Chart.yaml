@@ -1,0 +1,10 @@
+apiVersion: v2
+name: tenant-operator
+description: A Helm chart for tenant-operator
+type: application
+version: 1.0.0
+# renovate: github=otterscale/tenant-operator
+appVersion: "v1.4.1"
+annotations:
+  module.otterscale.io/depends-on: "cert-manager"
+  module.otterscale.io/namespace: "otterscale-system"
