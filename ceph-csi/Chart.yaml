@@ -1,0 +1,12 @@
+apiVersion: v2
+name: ceph-csi
+description: A Helm chart for ceph-csi
+type: application
+version: 1.0.0
+# renovate: helm=ceph-csi-drivers registry=https://ceph.github.io/ceph-csi-operator
+appVersion: "v1.0.4"
+dependencies:
+  - name: ceph-csi-drivers
+    version: "v1.0.4"
+    repository: "https://ceph.github.io/ceph-csi-operator"
+    condition: ceph-csi-drivers.enabled
