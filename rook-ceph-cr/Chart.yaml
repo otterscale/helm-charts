@@ -1,0 +1,12 @@
+apiVersion: v2
+name: rook-ceph-cr
+description: A Helm chart for rook-ceph-cr
+type: application
+version: 1.0.0
+# renovate: helm=rook-ceph-cluster registry=https://charts.rook.io/release
+appVersion: "v1.20.6"
+dependencies:
+  - name: rook-ceph-cluster
+    version: "v1.20.6"
+    repository: "https://charts.rook.io/release"
+    condition: rook-ceph-cluster.enabled
