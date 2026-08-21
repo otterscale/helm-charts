@@ -1,0 +1,9 @@
+apiVersion: v2
+name: kubevirt-cr
+description: A Helm chart for kubevirt-cr
+type: application
+version: 1.0.0
+# renovate: github=kubevirt/kubevirt
+appVersion: "v1.8.4"
+annotations:
+  module.otterscale.io/depends-on: "kubevirt,prometheus-stack"

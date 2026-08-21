@@ -1,0 +1,7 @@
+apiVersion: v2
+name: kubevirt
+description: A Helm chart for kubevirt
+type: application
+version: 1.0.0
+# renovate: github=kubevirt/kubevirt
+appVersion: "v1.8.4"
