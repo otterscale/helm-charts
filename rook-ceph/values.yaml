@@ -1,0 +1,4 @@
+rook-ceph:
+  enabled: true
+  monitoring:
+    enabled: true
