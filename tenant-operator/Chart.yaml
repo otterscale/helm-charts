@@ -7,4 +7,3 @@ version: 1.0.0
 appVersion: "v1.4.1"
 annotations:
   module.otterscale.io/depends-on: "cert-manager"
-  module.otterscale.io/namespace: "otterscale-system"
