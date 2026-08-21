@@ -6,6 +6,7 @@ version: 1.0.0
 # renovate: helm=kube-prometheus-stack registry=https://prometheus-community.github.io/helm-charts
 appVersion: "88.5.2"
 annotations:
+  module.otterscale.io/depends-on: "cert-manager"
   module.otterscale.io/namespace: "monitoring"
 dependencies:
   - name: kube-prometheus-stack
