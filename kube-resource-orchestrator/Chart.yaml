@@ -1,6 +1,6 @@
 apiVersion: v2
 name: kube-resource-orchestrator
-description: A Helm chart for kro
+description: A Helm chart for kube-resource-orchestrator
 type: application
 version: 1.0.0
 # renovate: helm=kro registry=oci://registry.k8s.io/kro/charts

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: leader-worker-set
-description: An API for deploying a group of pods as a unit of replication
+description: A Helm chart for leader-worker-set
 type: application
 version: 1.0.0
 # renovate: helm=lws registry=oci://registry.k8s.io/lws/charts
