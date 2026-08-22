@@ -1,5 +1,0 @@
-kro:
-  enabled: true
-  config:
-    featureGates:
-      CELOmitFunction: true
