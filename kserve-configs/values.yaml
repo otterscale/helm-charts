@@ -1,0 +1,61 @@
+kserve-runtime-configs:
+  enabled: true
+
+  kserve:
+    llmisvcConfigs:
+      enabled: true
+
+pvcEvictor:
+  enabled: true
+  name: pvc-evictor
+  labels: {}
+  annotations: {}
+
+  model:
+    uri: ""
+
+  container:
+    name: evictor
+    image:
+      repository: quay.io/pvc-evictor/pvc-evictor
+      tag: llm-d-v0.8
+      pullPolicy: IfNotPresent
+
+    env:
+      pvcMountPath: /mnt/kv-cache-0
+      cacheDirectory: ""
+      numCrawlerProcesses: "2"
+      cleanupThreshold: "85.0"
+      targetThreshold: "70.0"
+      fileAccessTimeThresholdMinutes: "60"
+      enableDirCleanup: "true"
+      dryRun: "false"
+      logLevel: INFO
+
+    # Additional env entries appended as-is, e.g.
+    # - name: FOO
+    #   value: bar
+    extraEnv: []
+
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsGroup: 0
+      runAsNonRoot: true
+      runAsUser: 2000
+      seccompProfile:
+        type: RuntimeDefault
+
+    volumeMounts:
+      - mountPath: /mnt/kv-cache-0
+        name: kv-cache-secondary-0

@@ -1,0 +1,59 @@
+{{- if .Values.pvcEvictor.enabled }}
+{{- $evictor := .Values.pvcEvictor }}
+{{- $container := $evictor.container }}
+apiVersion: serving.kserve.io/v1alpha2
+kind: LLMInferenceServiceConfig
+metadata:
+  name: {{ $evictor.name }}
+  namespace: kserve
+  {{- with $evictor.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $evictor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  model:
+    uri: {{ $evictor.model.uri | quote }}
+  template:
+    containers:
+      - name: {{ $container.name }}
+        image: "{{ $container.image.repository }}:{{ $container.image.tag }}"
+        imagePullPolicy: {{ $container.image.pullPolicy }}
+        env:
+          - name: PVC_MOUNT_PATH
+            value: {{ $container.env.pvcMountPath | quote }}
+          - name: CACHE_DIRECTORY
+            value: {{ $container.env.cacheDirectory | quote }}
+          - name: NUM_CRAWLER_PROCESSES
+            value: {{ $container.env.numCrawlerProcesses | quote }}
+          - name: CLEANUP_THRESHOLD
+            value: {{ $container.env.cleanupThreshold | quote }}
+          - name: TARGET_THRESHOLD
+            value: {{ $container.env.targetThreshold | quote }}
+          - name: FILE_ACCESS_TIME_THRESHOLD_MINUTES
+            value: {{ $container.env.fileAccessTimeThresholdMinutes | quote }}
+          - name: ENABLE_DIR_CLEANUP
+            value: {{ $container.env.enableDirCleanup | quote }}
+          - name: DRY_RUN
+            value: {{ $container.env.dryRun | quote }}
+          - name: LOG_LEVEL
+            value: {{ $container.env.logLevel | quote }}
+          {{- with $container.extraEnv }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+        {{- with $container.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $container.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $container.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}
