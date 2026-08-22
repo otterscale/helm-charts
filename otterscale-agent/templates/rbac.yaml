@@ -1,0 +1,6 @@
+{{- if .Values.rbac.nodeReader.enabled }}
+{{ .Files.Get "files/rbac/node-reader.yaml" }}
+{{- end }}
+{{- if .Values.rbac.storageClassReader.enabled }}
+{{ .Files.Get "files/rbac/storage-class-reader.yaml" }}
+{{- end }}

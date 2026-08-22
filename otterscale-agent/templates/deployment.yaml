@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otterscale-agent
+  namespace: otterscale-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otterscale-agent
+  template:
+    metadata:
+      labels:
+        app: otterscale-agent
+    spec:
+      serviceAccountName: otterscale-agent
+      containers:
+        - name: otterscale
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - agent
+          env:
+            - name: OTTERSCALE_AGENT_SERVER_URL
+              value: {{ .Values.agent.serverURL | quote }}
+            - name: OTTERSCALE_AGENT_TUNNEL_SERVER_URL
+              value: {{ .Values.agent.tunnelServerURL | quote }}
+            - name: OTTERSCALE_AGENT_CLUSTER
+              value: {{ .Values.agent.cluster | quote }}
+            - name: OTTERSCALE_AGENT_HARBOR_URL
+              value: {{ .Values.harbor.url | quote }}

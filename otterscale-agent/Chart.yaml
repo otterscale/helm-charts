@@ -1,0 +1,16 @@
+apiVersion: v2
+name: otterscale-agent
+description: A Helm chart for otterscale-agent
+type: application
+version: 1.0.0
+# renovate: image=ghcr.io/otterscale/otterscale
+appVersion: "v1.4.1"
+annotations:
+  otterscale.io/type: module
+  module.otterscale.io/namespace: "otterscale-system"
+dependencies:
+  - name: cert-manager
+    # renovate: helm=cert-manager registry=oci://quay.io/jetstack/charts
+    version: "v1.21.1"
+    repository: "oci://quay.io/jetstack/charts"
+    condition: certManager.enabled

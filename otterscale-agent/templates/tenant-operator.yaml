@@ -1,0 +1,13 @@
+{{- if .Values.tenantOperator.enabled }}
+{{ .Files.Get "files/tenant-operator/install.yaml" }}
+{{- if .Values.tenantOperator.rancherProjectID }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tenant-operator-config
+  namespace: otterscale-system
+data:
+  RancherProjectID: {{ .Values.tenantOperator.rancherProjectID | quote }}
+{{- end }}
+{{- end }}
