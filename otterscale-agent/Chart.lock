@@ -1,6 +1,9 @@
 dependencies:
 - name: cert-manager
   repository: oci://quay.io/jetstack/charts
-  version: v1.21.1
-digest: sha256:5b262e867e96ca1f75ef4b0462c13a34afc9001191aae5562882c22c61f7de6b
-generated: "2026-08-22T20:06:52.405273+08:00"
+  version: 1.21.1
+- name: flux-operator
+  repository: oci://ghcr.io/controlplaneio-fluxcd/charts
+  version: 0.58.1
+digest: sha256:9a05533f35592b752c1aa014b6d4365df063e9097c8fd29b03947babf95d2f8d
+generated: "2026-08-22T21:04:00.027068+08:00"

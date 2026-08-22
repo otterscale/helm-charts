@@ -5,7 +5,7 @@ image:
 
 agent:
   serverURL: "https://otterscale.example.com/api/"
-  tunnelServerURL: " https://10.0.0.1:30300"
+  tunnelServerURL: "https://10.0.0.1:30300"
   cluster: "devel"
 
 harbor:
@@ -30,3 +30,23 @@ tenantOperator:
 
 certManager:
   enabled: true
+
+fluxOperator:
+  enabled: true
+
+flux:
+  enabled: true
+  instance:
+    distribution:
+      version: "2.9.x"
+      registry: "ghcr.io/fluxcd"
+    components:
+      - source-controller
+      - helm-controller
+    cluster:
+      type: kubernetes
+      size: medium
+      multitenant: true
+      tenantDefaultServiceAccount: "view"
+      networkPolicy: true
+      domain: "cluster.local"

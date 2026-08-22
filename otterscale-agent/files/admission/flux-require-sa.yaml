@@ -1,0 +1,27 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: otterscale-flux-require-sa
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["helm.toolkit.fluxcd.io"]
+        apiVersions: ["*"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["helmreleases"]
+  validations:
+    - expression: "has(object.spec.serviceAccountName) && object.spec.serviceAccountName != ''"
+      message: "spec.serviceAccountName is required"
+    - expression: "!has(object.spec.kubeConfig)"
+      message: "spec.kubeConfig is not allowed"
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: otterscale-flux-require-sa
+spec:
+  policyName: otterscale-flux-require-sa
+  validationActions: ["Deny"]
+  matchResources: {}
