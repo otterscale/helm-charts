@@ -1,0 +1,18 @@
+kserve-llmisvc-resources:
+  enabled: true
+
+  kserve:
+    controller:
+      deploymentMode: standard
+      gateway:
+        disableIstioVirtualHost: true
+        disableIngressCreation: false
+        localGateway:
+          gateway: ""
+          gatewayService: ""
+        ingressGateway:
+          enableGatewayApi: true
+          kserveGateway: kserve/kserve-gateway
+          createGateway: false
+          gateway: ""
+          className: external
