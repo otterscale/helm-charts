@@ -1,0 +1,15 @@
+apiVersion: v2
+name: kserve
+description: A Helm chart for kserve
+type: application
+version: 1.0.0
+# renovate: helm=kserve-llmisvc-crd registry=oci://ghcr.io/kserve/charts
+appVersion: "v0.20.0"
+annotations:
+  otterscale.io/type: module
+  module.otterscale.io/namespace: "kserve"
+dependencies:
+  - name: kserve-llmisvc-crd
+    version: "v0.20.0"
+    repository: "oci://ghcr.io/kserve/charts"
+    condition: kserve-llmisvc-crd.enabled

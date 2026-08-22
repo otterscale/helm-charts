@@ -1,0 +1,2 @@
+kserve-llmisvc-crd:
+  enabled: true
