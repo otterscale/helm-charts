@@ -1,0 +1,16 @@
+apiVersion: v2
+name: hami
+description: A Helm chart for hami
+type: application
+version: 1.0.0
+# renovate: helm=hami registry=https://project-hami.github.io/HAMi
+appVersion: "v2.10.0"
+annotations:
+  otterscale.io/type: module
+  module.otterscale.io/namespace: "kube-system"
+  module.otterscale.io/depends-on: "cert-manager,gpu-operator,prometheus-stack"
+dependencies:
+  - name: hami
+    version: "v2.10.0"
+    repository: "https://project-hami.github.io/HAMi"
+    condition: hami.enabled

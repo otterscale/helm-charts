@@ -1,0 +1,40 @@
+hami:
+  enabled: true
+
+  scheduler:
+    certManager:
+      enabled: true
+    patch:
+      enabled: false
+    service:
+      type: ClusterIP
+
+  devicePlugin:
+    enabled: true
+    gpuOperatorToolkitReady:
+      enabled: true
+      hostPath: "/run/nvidia/validations"
+    runtimeClassName: "nvidia"
+    service:
+      type: ClusterIP
+    nvidiaNodeSelector:
+      otterscale.io/gpu: "true"
+
+  devices:
+    kunlun:
+      enabled: false
+    enflame:
+      enabled: false
+    mthreads:
+      enabled: false
+    vastai:
+      enabled: false
+    biren:
+      enabled: false
+    ascend:
+      enabled: false
+    iluvatar:
+      enabled: false
+
+  prometheus:
+    enabled: true
