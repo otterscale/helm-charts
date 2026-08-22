@@ -1,0 +1,15 @@
+apiVersion: v2
+name: envoy-gateway
+description: A Helm chart for envoy-gateway
+type: application
+version: 1.0.0
+# renovate: helm=gateway-helm registry=oci://docker.io/envoyproxy
+appVersion: "v1.8.3"
+annotations:
+  otterscale.io/type: module
+  module.otterscale.io/namespace: "envoy-gateway-system"
+dependencies:
+  - name: gateway-helm
+    version: v1.8.3
+    repository: oci://docker.io/envoyproxy
+    condition: gateway-helm.enabled
