@@ -1,0 +1,23 @@
+apiVersion: v2
+name: otterscale
+description: A Helm chart for otterscale
+type: application
+version: 1.0.0
+# renovate: image=ghcr.io/otterscale/otterscale
+appVersion: "v1.4.1"
+annotations:
+  otterscale.io/type: core
+  module.otterscale.io/namespace: "otterscale-system"
+dependencies:
+  - name: keycloakx
+    version: 7.2.x
+    repository: "https://codecentric.github.io/helm-charts"
+    condition: keycloak.enabled
+  - name: valkey
+    version: 0.11.x
+    repository: "https://valkey.io/valkey-helm/"
+    condition: valkey.enabled
+  - name: harbor
+    version: 1.19.x
+    repository: "https://helm.goharbor.io"
+    condition: harbor.enabled
