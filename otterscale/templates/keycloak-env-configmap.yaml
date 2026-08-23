@@ -1,0 +1,20 @@
+{{- if .Values.keycloak.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "otterscale.keycloak.fullname" . }}-env
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/part-of: keycloak
+    {{- include "otterscale.labels" . | nindent 4 }}
+data:
+  KC_BOOTSTRAP_ADMIN_USERNAME: {{ .Values.keycloakRealm.auth.adminUser | quote }}
+  KC_HOSTNAME: {{ printf "%s%s" (include "otterscale.externalURL" .) (.Values.keycloak.http.relativePath | trimSuffix "/") | quote }}
+  KC_HOSTNAME_STRICT: "true"
+  JAVA_OPTS_APPEND: >-
+    -XX:+UseContainerSupport
+    -XX:MaxRAMPercentage=70.0
+    -Djava.awt.headless=true
+    -Djgroups.dns.query={{ include "otterscale.keycloak.fullname" . }}-headless
+{{- end }}

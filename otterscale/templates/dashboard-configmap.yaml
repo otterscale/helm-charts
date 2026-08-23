@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "otterscale.dashboard.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+data:
+  ORIGIN: {{ include "otterscale.externalURL" . | quote }}
+  API_URL: "http://{{ include "otterscale.server.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.server.service.port }}"
+  PUBLIC_WEB_URL: {{ include "otterscale.externalURL" . | quote }}
+  {{- if .Values.keycloak.enabled }}
+  KEYCLOAK_REALM_URL: {{ include "otterscale.keycloak.realmURL" . | quote }}
+  KEYCLOAK_CLIENT_ID: {{ .Values.keycloakRealm.clients.dashboard.id | quote }}
+  {{- end }}
+  {{- if .Values.harbor.enabled }}
+  PUBLIC_HARBOR_URL: {{ .Values.harbor.externalURL | quote }}
+  {{- end }}

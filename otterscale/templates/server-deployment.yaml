@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "otterscale.server.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.server.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.server.replicas }}
+  selector:
+    matchLabels:
+      {{- include "otterscale.server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "otterscale.server.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/server-configmap.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "otterscale.server.fullname" . }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: {{ .Values.server.terminationGracePeriodSeconds }}
+      containers:
+        - name: otterscale-server
+          image: {{ .Values.server.image | quote }}
+          imagePullPolicy: {{ .Values.server.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args: ["server"]
+          ports:
+            - name: http
+              containerPort: 8299
+              protocol: TCP
+            - name: tunnel
+              containerPort: 8300
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "otterscale.server.fullname" . }}-config
+          {{- with .Values.server.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            {{- if .Values.server.resources }}
+            {{- toYaml .Values.server.resources | nindent 12 }}
+            {{- else }}
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              memory: 1024Mi
+            {{- end }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      {{- with .Values.server.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.server.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.server.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

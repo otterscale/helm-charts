@@ -1,0 +1,162 @@
+{{- if .Values.keycloak.enabled }}
+{{- $secretName := .Values.keycloak.database.existingSecret -}}
+{{- $passwordKey := "postgres-password" -}}
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+type: Opaque
+data:
+  postgres-db: {{ .Values.keycloak.database.database | default "keycloak" | b64enc | quote }}
+  postgres-user: {{ .Values.keycloak.database.username | default "keycloak" | b64enc | quote }}
+  {{ $passwordKey }}: {{ include "otterscale.keycloak.postgresPassword" . | b64enc | quote }}
+{{- if .Values.keycloakPostgres.persistence.enabled }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.keycloak.database.hostname }}-data
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  accessModes:
+    - {{ .Values.keycloakPostgres.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.keycloakPostgres.persistence.size }}
+  {{- with .Values.keycloakPostgres.persistence.storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.keycloak.database.hostname }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    {{- include "otterscale.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+  ports:
+    - name: postgres
+      port: {{ .Values.keycloak.database.port | default 5432 }}
+      targetPort: postgres
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.keycloak.database.hostname }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  serviceName: {{ .Values.keycloak.database.hostname }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "otterscale.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "otterscale.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+      annotations:
+        checksum/secret: {{ include "otterscale.keycloak.postgresPassword" . | sha256sum }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: postgres
+          image: "{{ .Values.keycloakPostgres.image }}"
+          imagePullPolicy: {{ .Values.keycloakPostgres.imagePullPolicy | default "IfNotPresent" }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.database.existingSecret }}
+                  key: postgres-db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.database.existingSecret }}
+                  key: postgres-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.database.existingSecret }}
+                  key: postgres-password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - name: postgres
+              containerPort: {{ .Values.keycloak.database.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- if .Values.keycloakPostgres.resources }}
+            {{- toYaml .Values.keycloakPostgres.resources | nindent 12 }}
+            {{- else }}
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            {{- end }}
+      volumes:
+        - name: postgres-data
+        {{- if .Values.keycloakPostgres.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.keycloak.database.hostname }}-data
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+{{- end }}

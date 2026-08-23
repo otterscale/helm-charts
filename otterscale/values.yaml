@@ -1,0 +1,317 @@
+# OtterScale chart values.
+#
+# PART 1 is this chart's own settings; PART 2 is passed through to the
+# keycloak / valkey / harbor subcharts.
+#
+# SHARED         = a subchart reads it and so do this chart's templates.
+# INTERNAL WIRING = ties the two halves together. Do not edit.
+#
+# resources: {} means "use the defaults in the component's template".
+
+# ═══════════════════════════════════════════════════════════════════════
+# PART 1 — OtterScale's own settings
+# ═══════════════════════════════════════════════════════════════════════
+
+# ── Server ──
+server:
+  # URL agents dial for the tunnel.
+  # Empty = derive from tunnelService.nodePort, else fall back to
+  # dashboard.externalURL — which reaches the Gateway, and the Gateway carries
+  # no tunnel route. Set this or the nodePort if agents use the tunnel.
+  externalTunnelURL: ""
+
+  replicas: 1
+  image: ghcr.io/otterscale/otterscale:v1.4.1
+  imagePullPolicy: IfNotPresent
+
+  # Service ports only. The container always listens on 8299 and 8300.
+  service: # type: ClusterIP | NodePort | LoadBalancer
+    type: ClusterIP
+    port: 8299
+  tunnelService:
+    type: ClusterIP
+    port: 8300
+    nodePort: "" # NodePort only
+
+  resources: {}
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  terminationGracePeriodSeconds: 30
+
+  env: []
+
+# ── Dashboard ──
+dashboard:
+  # Browser-facing base URL. Required — everything user-visible derives from
+  # it: the Keycloak realm URL, CORS origins, OIDC redirects, and whether the
+  # HTTPRoutes attach to the Gateway's HTTP or HTTPS listener.
+  externalURL: ""
+
+  replicas: 1
+  image: ghcr.io/otterscale/dashboard:v1.4.4
+  imagePullPolicy: IfNotPresent
+
+  # Service port only. The dashboard image always listens on 3000.
+  service: # type: ClusterIP | NodePort | LoadBalancer
+    type: ClusterIP
+    port: 3000
+
+  resources: {}
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  terminationGracePeriodSeconds: 30
+
+  env: []
+
+# ── Ingress routes (Gateway API) ──
+# Only HTTPRoutes. The Gateway, GatewayClass and their controller are created
+# out-of-band by the cluster operator so the ingress path survives chart
+# upgrades — any Gateway API implementation works.
+httpRoute:
+  # The Gateway below is a prerequisite of a normal install. Set false when
+  # reaching the dashboard another way (port-forward, NodePort, other ingress).
+  enabled: true
+  # Must already exist, and must allow routes from the release namespace.
+  gateway:
+    name: "otterscale-gateway"
+    namespace: "envoy-gateway-system"
+    # Use the Gateway's HTTPS listener when dashboard.externalURL is https.
+    sectionName: "http"
+  hostnames: [] # empty = the host from dashboard.externalURL
+  # Extra route that 301s HTTP → HTTPS, attached to a plain-HTTP listener.
+  redirectToHTTPS: false
+  redirectSectionName: "http"
+
+# ── Keycloak realm ──
+# Seeded into files/keycloak-realm.json at import time. The keycloak subchart
+# reads none of this — it only runs the server.
+# Every password below: empty = reuse the existing Secret on upgrade, else
+# generate a random one.
+keycloakRealm:
+  name: otterscale
+  auth:
+    # Bootstrap admin of the master realm, not a user inside the realm above.
+    adminUser: admin
+    adminPassword: ""
+  clients:
+    dashboard:
+      # The server validates tokens against this same client id.
+      id: otterscale-dashboard
+      secret: ""
+    harbor:
+      id: otterscale-harbor
+      secret: ""
+
+# ── Keycloak's PostgreSQL ──
+# A StatefulSet this chart owns, not the subchart's. Connection details are
+# SHARED and live under keycloak.database in PART 2.
+# Neither this PVC nor its Secret is retained on uninstall, so a reinstall
+# starts from an empty database with a matching password.
+keycloakPostgres:
+  image: postgres:15.18-trixie
+  imagePullPolicy: IfNotPresent
+  password: ""
+  resources: {}
+  persistence:
+    enabled: true
+    storageClassName: "" # "" = cluster default StorageClass
+    accessMode: ReadWriteOnce
+    size: 5Gi
+
+# ── Harbor OIDC ──
+# Harbor keeps auth settings in its own database and its chart exposes no OIDC
+# values, so this is rendered into a Secret that harbor-core reads through
+# CONFIG_OVERWRITE_JSON (see harbor.core.extraEnvVars).
+harborOIDC:
+  enabled: true
+  scope: "openid,profile,email"
+  autoOnboard: true
+  groupsClaim: "groups"
+  # Members of this Keycloak group become Harbor admins.
+  adminGroup: "harbor_admin"
+  # INTERNAL WIRING: must match the Secret named in harbor.core.extraEnvVars.
+  configSecretName: "otterscale-harbor-oidc-config"
+
+# ── Harbor init hook ──
+# Post-install Job that creates the projects below. Idempotent.
+harborInit:
+  enabled: true
+  projects:
+    - name: "modules"
+      public: "true"
+    - name: "models"
+      public: "true"
+    - name: "operators"
+      public: "true"
+  # Needs a POSIX shell and busybox-style nc/base64.
+  image: docker.io/library/alpine:3.24
+  imagePullPolicy: IfNotPresent
+  waitTimeoutSeconds: 600
+  resources: {}
+
+# ═══════════════════════════════════════════════════════════════════════
+# PART 2 — Subchart passthrough
+# ═══════════════════════════════════════════════════════════════════════
+
+# ── Valkey (dashboard session cache) ──
+valkey:
+  enabled: true
+  podLabels: {}
+  service:
+    port: 6379 # SHARED: also builds the dashboard's REDIS_URL
+  auth:
+    # Off in the subchart by default, which would leave the session cache open
+    # to anything that can reach its Service.
+    enabled: true
+    # INTERNAL WIRING: Secret from templates/valkey-secret.yaml. Its key is the
+    # ACL username — that is how valkey looks the password up. The subchart
+    # tpl's this in its own context, so only .Release.Name is safe here.
+    usersExistingSecret: '{{ .Release.Name }}-valkey-auth'
+    aclUsers:
+      # "default" must be listed or the user is dropped and anyone can connect.
+      default:
+        permissions: "~* &* +@all"
+
+# ── Keycloak (codecentric keycloakx subchart, aliased to "keycloak") ──
+keycloak:
+  enabled: true
+  podLabels: {}
+  http:
+    relativePath: /auth/ # SHARED: also the realm URL and the /auth route
+  service:
+    httpPort: 80 # SHARED: also the HTTPRoute backendRef port
+
+  # Holds Keycloak back until postgres accepts connections. Without it Keycloak
+  # crash-loops through its schema migration.
+  dbchecker:
+    enabled: true
+
+  # SHARED: the subchart builds its JDBC URL from these, and this chart names
+  # the postgres Service, StatefulSet, PVC and Secret after them.
+  database:
+    vendor: postgres
+    database: keycloak
+    username: keycloak
+    existingSecret: otterscale-keycloak-postgres
+    existingSecretKey: "postgres-password"
+    hostname: otterscale-keycloak-postgres
+    port: 5432
+
+  # ── INTERNAL WIRING to the end of this block ──
+  # These strings are tpl'd in the SUBCHART's context: .Values inside them is
+  # keycloak's, not this file's top level.
+
+  # --import-realm seeds the realm only when it does not exist yet.
+  # --proxy-headers=xforwarded makes Keycloak trust the X-Forwarded-Proto the
+  # HTTPRoute sets, so it builds redirects with the browser's scheme.
+  command:
+    - /bin/sh
+    - -c
+    - |
+      /opt/keycloak/bin/kc.sh start \
+      --import-realm \
+      --http-port=8080 \
+      --http-enabled=true \
+      --proxy-headers=xforwarded \
+      --spi-events-listener-jboss-logging-success-level=info \
+      --spi-events-listener-jboss-logging-error-level=warn
+
+  extraEnvFrom: |
+    - configMapRef:
+        name: {{ include "keycloak.fullname" . }}-env
+    - secretRef:
+        name: {{ include "keycloak.fullname" . }}-admin
+
+  # cp's destination filename must match the theme subPath below.
+  extraInitContainers: |
+    - name: theme-provider
+      image: ghcr.io/otterscale/keycloakify:1.2.7
+      imagePullPolicy: IfNotPresent
+      command: ["cp", "/otterscale-theme.jar", "/otterscale-theme/otterscale-theme.jar"]
+      volumeMounts:
+        - name: theme-import-volume
+          mountPath: /otterscale-theme
+
+  extraVolumeMounts: |
+    - name: realm-import-volume
+      mountPath: "/opt/keycloak/data/import/otterscale-realm.json"
+      subPath: "otterscale-realm.json"
+      readOnly: true
+    - name: theme-import-volume
+      mountPath: "/opt/keycloak/providers/otterscale-theme.jar"
+      subPath: "otterscale-theme.jar"
+      readOnly: true
+
+  extraVolumes: |
+    - name: realm-import-volume
+      secret:
+        secretName: {{ include "keycloak.fullname" . }}-realm
+    - name: theme-import-volume
+      emptyDir: {}
+
+# ── Harbor (container registry) ──
+harbor:
+  enabled: true
+  # SHARED: must match the browser URL (scheme://host:nodePort). Also drives
+  # the Harbor OIDC client's redirect URIs and the harbor HTTPRoute hostname.
+  externalURL: "http://127.0.0.1:32180"
+  # Required. Harbor stores it verbatim in its own <release>-harbor-core Secret
+  # and only applies it when first creating the admin user. Harbor's PVCs are
+  # retained on uninstall, so this must stay stable across a reinstall.
+  harborAdminPassword: ""
+
+  # Image tags are deliberately not pinned here: the subchart's defaults track
+  # its appVersion, so a pin would silently freeze images when the dependency
+  # is bumped in Chart.yaml.
+
+  core:
+    # INTERNAL WIRING: name must match harborOIDC.configSecretName.
+    # optional, because that Secret only exists when Keycloak and OIDC are both
+    # on — without the flag harbor-core fails to start whenever they are not.
+    extraEnvVars:
+      - name: CONFIG_OVERWRITE_JSON
+        valueFrom:
+          secretKeyRef:
+            name: "otterscale-harbor-oidc-config"
+            key: CONFIG_OVERWRITE_JSON
+            optional: true
+
+  expose:
+    type: nodePort
+    tls:
+      enabled: false
+    nodePort:
+      name: harbor
+      ports:
+        http:
+          port: 80
+          nodePort: 32180
+
+  ipFamily:
+    ipv6:
+      enabled: false
+
+  # storageClass "" = cluster default. "-" = no dynamic provisioning.
+  persistence:
+    enabled: true
+    persistentVolumeClaim:
+      registry:
+        storageClass: ""
+        size: 50Gi
+      database:
+        storageClass: ""
+        size: 5Gi
+      jobservice:
+        jobLog:
+          storageClass: ""
+          size: 1Gi
+      redis:
+        storageClass: ""
+        size: 1Gi
+      trivy:
+        storageClass: ""
+        size: 5Gi

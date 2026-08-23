@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "otterscale.server.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.server.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.server.service.type }}
+  selector:
+    {{- include "otterscale.server.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: connectrpc
+      port: {{ .Values.server.service.port }}
+      targetPort: http
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "otterscale.server.fullname" . }}-tunnel
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.server.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.server.tunnelService.type }}
+  selector:
+    {{- include "otterscale.server.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: tunnel
+      port: {{ .Values.server.tunnelService.port }}
+      targetPort: tunnel
+      {{- if and (eq .Values.server.tunnelService.type "NodePort") .Values.server.tunnelService.nodePort }}
+      nodePort: {{ .Values.server.tunnelService.nodePort }}
+      {{- end }}
+      protocol: TCP

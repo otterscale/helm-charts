@@ -10,6 +10,7 @@ annotations:
   module.otterscale.io/namespace: "otterscale-system"
 dependencies:
   - name: keycloakx
+    alias: keycloak
     version: 7.2.x
     repository: "https://codecentric.github.io/helm-charts"
     condition: keycloak.enabled
