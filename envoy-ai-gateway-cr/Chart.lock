@@ -1,6 +1,0 @@
-dependencies:
-- name: ai-gateway-helm
-  repository: oci://docker.io/envoyproxy
-  version: v1.1.0
-digest: sha256:954ae625c3ef475433ab187bc973c7e33d3d15abceb22e2d3d9e237ca1ab4bb2
-generated: "2026-08-22T14:25:24.162257+08:00"
