@@ -97,6 +97,14 @@ rules:
   - create
   - patch
 - apiGroups:
+  - gateway.networking.k8s.io
+  resources:
+  - gateways
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
   - networking.k8s.io
   resources:
   - networkpolicies
@@ -408,7 +416,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.serviceAccountName
-        image: ghcr.io/otterscale/tenant-operator:v1.4.1
+        image: ghcr.io/otterscale/tenant-operator:v1.5.0-rc.1
         livenessProbe:
           httpGet:
             path: /healthz

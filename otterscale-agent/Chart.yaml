@@ -4,7 +4,7 @@ description: A Helm chart for otterscale-agent
 type: application
 version: 1.0.0
 # renovate: image=ghcr.io/otterscale/otterscale
-appVersion: "v1.4.1"
+appVersion: "v1.5.0-rc.1"
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: "otterscale-system"

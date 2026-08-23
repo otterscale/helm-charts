@@ -21,7 +21,7 @@ server:
   externalTunnelURL: ""
 
   replicas: 1
-  image: ghcr.io/otterscale/otterscale:v1.4.1
+  image: ghcr.io/otterscale/otterscale:v1.5.0-rc.1
   imagePullPolicy: IfNotPresent
 
   # Service ports only. The container always listens on 8299 and 8300.
@@ -177,7 +177,7 @@ valkey:
     # INTERNAL WIRING: Secret from templates/valkey-secret.yaml. Its key is the
     # ACL username — that is how valkey looks the password up. The subchart
     # tpl's this in its own context, so only .Release.Name is safe here.
-    usersExistingSecret: '{{ .Release.Name }}-valkey-auth'
+    usersExistingSecret: "{{ .Release.Name }}-valkey-auth"
     aclUsers:
       # "default" must be listed or the user is dropped and anyone can connect.
       default:
