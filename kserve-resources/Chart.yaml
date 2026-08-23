@@ -8,6 +8,7 @@ appVersion: "v0.20.0"
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: "kserve"
+  module.otterscale.io/depends-on: "kserve"
 dependencies:
   - name: kserve-llmisvc-resources
     version: "v0.20.0"
