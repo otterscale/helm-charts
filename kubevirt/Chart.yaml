@@ -7,3 +7,4 @@ version: 1.0.0
 appVersion: "v1.8.4"
 annotations:
   otterscale.io/type: module
+  module.otterscale.io/namespace: "-"

@@ -7,4 +7,5 @@ version: 1.0.0
 appVersion: "v1.8.4"
 annotations:
   otterscale.io/type: module
+  module.otterscale.io/namespace: "-"
   module.otterscale.io/depends-on: "kubevirt,prometheus-stack"
