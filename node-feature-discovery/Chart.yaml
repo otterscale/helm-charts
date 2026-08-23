@@ -4,7 +4,7 @@ description: A Helm chart for node-feature-discovery
 type: application
 version: 1.0.0
 # renovate: helm=node-feature-discovery registry=oci://registry.k8s.io/nfd/charts
-appVersion: "0.19.0"
+appVersion: "v0.19.0"
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: "node-feature-discovery"

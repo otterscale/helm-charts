@@ -11,6 +11,6 @@ annotations:
   module.otterscale.io/depends-on: "rook-ceph"
 dependencies:
   - name: ceph-csi-drivers
-    version: "v1.0.4"
+    version: "1.0.4"
     repository: "https://ceph.github.io/ceph-csi-operator"
     condition: ceph-csi-drivers.enabled

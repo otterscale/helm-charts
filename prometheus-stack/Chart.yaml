@@ -4,7 +4,7 @@ description: A Helm chart for prometheus-stack
 type: application
 version: 1.0.0
 # renovate: helm=kube-prometheus-stack registry=https://prometheus-community.github.io/helm-charts
-appVersion: "88.5.2"
+appVersion: "v88.5.2"
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: "monitoring"

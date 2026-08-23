@@ -11,6 +11,6 @@ annotations:
   module.otterscale.io/depends-on: "gpu-operator,prometheus-stack"
 dependencies:
   - name: hami
-    version: "v2.10.0"
+    version: "2.10.0"
     repository: "https://project-hami.github.io/HAMi"
     condition: hami.enabled
