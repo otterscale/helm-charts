@@ -5,6 +5,10 @@ type: application
 version: 1.0.0
 # renovate: helm=rook-ceph-cluster registry=https://charts.rook.io/release
 appVersion: "v1.20.6"
+annotations:
+  otterscale.io/type: infra
+  module.otterscale.io/depends-on: "ceph-csi"
+  module.otterscale.io/namespace: "rook-ceph"
 dependencies:
   - name: rook-ceph-cluster
     version: "v1.20.6"

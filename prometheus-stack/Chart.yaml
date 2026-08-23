@@ -7,7 +7,6 @@ version: 1.0.0
 appVersion: "88.5.2"
 annotations:
   otterscale.io/type: module
-  module.otterscale.io/depends-on: "cert-manager"
   module.otterscale.io/namespace: "monitoring"
 dependencies:
   - name: kube-prometheus-stack

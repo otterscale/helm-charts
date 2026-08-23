@@ -8,7 +8,7 @@ appVersion: "v2.10.0"
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: "kube-system"
-  module.otterscale.io/depends-on: "cert-manager,gpu-operator,prometheus-stack"
+  module.otterscale.io/depends-on: "gpu-operator,prometheus-stack"
 dependencies:
   - name: hami
     version: "v2.10.0"
