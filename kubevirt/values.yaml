@@ -1,0 +1,9 @@
+kubevirt:
+  # renovate: github=kubevirt/kubevirt
+  version: "v1.8.4"
+  registry: quay.io/kubevirt
+
+cdi:
+  # renovate: github=kubevirt/containerized-data-importer
+  version: "v1.65.0"
+  registry: quay.io/kubevirt
