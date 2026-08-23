@@ -10,6 +10,7 @@ agent:
 
 harbor:
   url: https://harbor.example.com
+
   robot:
     name: "robot$devel"
     secret: ""
@@ -21,6 +22,7 @@ clusterAdmin:
 rbac:
   nodeReader:
     enabled: true
+
   storageClassReader:
     enabled: true
 
@@ -36,6 +38,7 @@ flux-operator:
 
 flux:
   enabled: true
+
   instance:
     distribution:
       version: "2.9.x"

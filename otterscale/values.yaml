@@ -28,6 +28,7 @@ server:
   service: # type: ClusterIP | NodePort | LoadBalancer
     type: ClusterIP
     port: 8299
+
   tunnelService:
     type: ClusterIP
     port: 8300
@@ -93,10 +94,12 @@ httpRoute:
 # generate a random one.
 keycloakRealm:
   name: otterscale
+
   auth:
     # Bootstrap admin of the master realm, not a user inside the realm above.
     adminUser: admin
     adminPassword: ""
+
   clients:
     dashboard:
       # The server validates tokens against this same client id.
@@ -116,6 +119,7 @@ keycloakPostgres:
   imagePullPolicy: IfNotPresent
   password: ""
   resources: {}
+
   persistence:
     enabled: true
     storageClassName: "" # "" = cluster default StorageClass
@@ -140,6 +144,7 @@ harborOIDC:
 # Post-install Job that creates the projects below. Idempotent.
 harborInit:
   enabled: true
+
   projects:
     - name: "modules"
       public: "true"
@@ -161,8 +166,10 @@ harborInit:
 valkey:
   enabled: true
   podLabels: {}
+
   service:
     port: 6379 # SHARED: also builds the dashboard's REDIS_URL
+
   auth:
     # Off in the subchart by default, which would leave the session cache open
     # to anything that can reach its Service.
@@ -180,8 +187,10 @@ valkey:
 keycloak:
   enabled: true
   podLabels: {}
+
   http:
     relativePath: /auth/ # SHARED: also the realm URL and the /auth route
+
   service:
     httpPort: 80 # SHARED: also the HTTPRoute backendRef port
 

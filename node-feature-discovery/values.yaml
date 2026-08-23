@@ -1,9 +1,11 @@
 node-feature-discovery:
   enabled: true
+
   master:
     extraLabelNs:
       - otterscale.io
     config: {}
+
   worker:
     config:
       core:
@@ -11,6 +13,7 @@ node-feature-discovery:
 
 featureWriter:
   enabled: true
+
   image:
     repository: alpine
     tag: "3.24"
@@ -18,12 +21,14 @@ featureWriter:
   intervalSeconds: 600
   volumeGroupFeatureFileName: otterscale-volume-group-features
   gpuFeatureFileName: otterscale-gpu-features
+
   resources:
     requests:
       cpu: 10m
       memory: 32Mi
     limits:
       memory: 128Mi
+
   securityContext:
     runAsUser: 0
     privileged: true
