@@ -28,5 +28,3 @@ spec:
               value: {{ .Values.agent.tunnelServerURL | quote }}
             - name: OTTERSCALE_AGENT_CLUSTER
               value: {{ .Values.agent.cluster | quote }}
-            - name: OTTERSCALE_AGENT_HARBOR_URL
-              value: {{ .Values.harbor.url | quote }}
