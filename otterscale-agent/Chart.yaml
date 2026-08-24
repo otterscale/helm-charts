@@ -19,3 +19,8 @@ dependencies:
     version: "0.58.1"
     repository: "oci://ghcr.io/controlplaneio-fluxcd/charts"
     condition: flux-operator.enabled
+  - name: topolvm
+    # renovate: helm=topolvm registry=https://topolvm.github.io/topolvm
+    version: "17.1.0"
+    repository: "https://topolvm.github.io/topolvm"
+    condition: topolvm.enabled

@@ -30,11 +30,17 @@ tenantOperator:
   enabled: true
   rancherProjectID: ""
 
+licenseOperator:
+  enabled: false
+
 cert-manager:
   enabled: true
 
 flux-operator:
   enabled: true
+
+topolvm:
+  enabled: false
 
 flux:
   enabled: true

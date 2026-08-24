@@ -1,6 +1,4 @@
 {{- if .Values.tenantOperator.enabled }}
-{{ .Files.Get "files/tenant-operator/crds.yaml" }}
----
 {{ .Files.Get "files/tenant-operator/install.yaml" }}
 {{- if .Values.tenantOperator.rancherProjectID }}
 ---
