@@ -1,5 +1,16 @@
 {{- if .Values.tenantOperator.enabled }}
 {{ .Files.Get "files/tenant-operator/install.yaml" }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tenant-operator-secret
+  namespace: otterscale-system
+type: Opaque
+stringData:
+  HARBOR_URL: {{ .Values.tenantOperator.harbor.url | quote }}
+  HARBOR_ROBOT_NAME: {{ .Values.tenantOperator.harbor.robot.name | quote }}
+  HARBOR_ROBOT_SECRET: {{ .Values.tenantOperator.harbor.robot.secret | quote }}
 {{- if .Values.tenantOperator.rancherProjectID }}
 ---
 apiVersion: v1

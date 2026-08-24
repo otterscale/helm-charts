@@ -8,13 +8,6 @@ agent:
   tunnelServerURL: "https://10.0.0.1:30300"
   cluster: "devel"
 
-harbor:
-  url: https://harbor.example.com
-
-  robot:
-    name: "robot$devel"
-    secret: ""
-
 clusterAdmin:
   enabled: true
   users: []
@@ -29,6 +22,13 @@ rbac:
 tenantOperator:
   enabled: true
   rancherProjectID: ""
+
+  harbor:
+    url: https://harbor.example.com
+
+    robot:
+      name: "robot$devel"
+      secret: ""
 
 licenseOperator:
   enabled: false
