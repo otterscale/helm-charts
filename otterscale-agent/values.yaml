@@ -7,6 +7,7 @@ agent:
   serverURL: "https://otterscale.example.com/api/"
   tunnelServerURL: "https://10.0.0.1:30300"
   cluster: "devel"
+  enrolmentToken: ""
 
 clusterAdmin:
   enabled: true

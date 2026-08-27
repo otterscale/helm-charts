@@ -28,3 +28,8 @@ spec:
               value: {{ .Values.agent.tunnelServerURL | quote }}
             - name: OTTERSCALE_AGENT_CLUSTER
               value: {{ .Values.agent.cluster | quote }}
+            - name: OTTERSCALE_AGENT_ENROLMENT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: otterscale-agent-secret
+                  key: OTTERSCALE_AGENT_ENROLMENT_TOKEN
