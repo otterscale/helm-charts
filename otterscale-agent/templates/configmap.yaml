@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otterscale-agent-config
+  namespace: otterscale-system
+data:
+  OTTERSCALE_AGENT_SERVER_URL: {{ .Values.agent.serverURL | quote }}
+  OTTERSCALE_AGENT_TUNNEL_SERVER_URL: {{ .Values.agent.tunnelServerURL | quote }}
+  OTTERSCALE_AGENT_CLUSTER: {{ .Values.agent.cluster | quote }}

@@ -13,6 +13,9 @@ spec:
     metadata:
       labels:
         app: otterscale-agent
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
     spec:
       serviceAccountName: otterscale-agent
       containers:
@@ -21,15 +24,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - agent
-          env:
-            - name: OTTERSCALE_AGENT_SERVER_URL
-              value: {{ .Values.agent.serverURL | quote }}
-            - name: OTTERSCALE_AGENT_TUNNEL_SERVER_URL
-              value: {{ .Values.agent.tunnelServerURL | quote }}
-            - name: OTTERSCALE_AGENT_CLUSTER
-              value: {{ .Values.agent.cluster | quote }}
-            - name: OTTERSCALE_AGENT_ENROLMENT_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: otterscale-agent-secret
-                  key: OTTERSCALE_AGENT_ENROLMENT_TOKEN
+          envFrom:
+            - configMapRef:
+                name: otterscale-agent-config
+            - secretRef:
+                name: otterscale-agent-secret
