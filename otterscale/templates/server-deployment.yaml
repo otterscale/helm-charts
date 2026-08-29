@@ -28,7 +28,7 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.server.terminationGracePeriodSeconds }}
       containers:
         - name: otterscale-server
-          image: {{ .Values.server.image | quote }}
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.server.imagePullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false

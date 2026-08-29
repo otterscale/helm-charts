@@ -88,7 +88,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: postgres
-          image: "{{ .Values.keycloakPostgres.image }}"
+          image: "{{ .Values.keycloakPostgres.image.repository }}:{{ .Values.keycloakPostgres.image.tag }}"
           imagePullPolicy: {{ .Values.keycloakPostgres.imagePullPolicy | default "IfNotPresent" }}
           securityContext:
             allowPrivilegeEscalation: false

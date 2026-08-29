@@ -21,7 +21,9 @@ server:
   externalTunnelURL: ""
 
   replicas: 1
-  image: ghcr.io/otterscale/otterscale:v1.5.0-rc.1
+  image:
+    repository: ghcr.io/otterscale/otterscale
+    tag: ""
   imagePullPolicy: IfNotPresent
 
   # Service ports only. The container always listens on 8299 and 8300.
@@ -51,7 +53,9 @@ dashboard:
   externalURL: ""
 
   replicas: 1
-  image: ghcr.io/otterscale/dashboard:v1.4.4
+  image:
+    repository: ghcr.io/otterscale/dashboard
+    tag: v1.4.4
   imagePullPolicy: IfNotPresent
 
   # Service port only. The dashboard image always listens on 3000.
@@ -115,7 +119,9 @@ keycloakRealm:
 # Neither this PVC nor its Secret is retained on uninstall, so a reinstall
 # starts from an empty database with a matching password.
 keycloakPostgres:
-  image: postgres:15.18-trixie
+  image:
+    repository: postgres
+    tag: 15.18-trixie
   imagePullPolicy: IfNotPresent
   password: ""
   resources: {}
@@ -153,7 +159,9 @@ harborInit:
     - name: "operators"
       public: "true"
   # Needs a POSIX shell and busybox-style nc/base64.
-  image: docker.io/library/alpine:3.24
+  image:
+    repository: docker.io/library/alpine
+    tag: "3.24"
   imagePullPolicy: IfNotPresent
   waitTimeoutSeconds: 600
   resources: {}

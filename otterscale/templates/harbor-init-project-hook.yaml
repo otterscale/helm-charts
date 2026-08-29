@@ -25,7 +25,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: harbor-init
-          image: {{ .Values.harborInit.image | quote }}
+          image: "{{ .Values.harborInit.image.repository }}:{{ .Values.harborInit.image.tag }}"
           imagePullPolicy: {{ .Values.harborInit.imagePullPolicy }}
           env:
             - name: HARBOR_HOST

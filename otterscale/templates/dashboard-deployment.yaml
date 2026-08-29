@@ -29,7 +29,7 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.dashboard.terminationGracePeriodSeconds }}
       containers:
         - name: otterscale-dashboard
-          image: {{ .Values.dashboard.image | quote }}
+          image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
           imagePullPolicy: {{ .Values.dashboard.imagePullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
