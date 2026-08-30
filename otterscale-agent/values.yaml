@@ -98,7 +98,7 @@ flux2:
     - apiVersion: admissionregistration.k8s.io/v1
       kind: ValidatingAdmissionPolicy
       metadata:
-        name: otterscale-flux-require-sa
+        name: otterscale-helmrelease-identity
       spec:
         failurePolicy: Fail
         matchConstraints:
@@ -125,9 +125,9 @@ flux2:
     - apiVersion: admissionregistration.k8s.io/v1
       kind: ValidatingAdmissionPolicyBinding
       metadata:
-        name: otterscale-flux-require-sa
+        name: otterscale-helmrelease-identity
       spec:
-        policyName: otterscale-flux-require-sa
+        policyName: otterscale-helmrelease-identity
         validationActions: ["Deny"]
         matchResources: {}
 
