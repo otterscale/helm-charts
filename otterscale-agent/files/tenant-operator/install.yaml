@@ -898,7 +898,7 @@ spec:
         - --webhook-cert-path=/tmp/k8s-webhook-server/serving-certs
         command:
         - /manager
-        image: ghcr.io/otterscale/tenant-operator:v1.5.0-rc.3
+        image: ghcr.io/otterscale/tenant-operator:v1.5.0-rc.4
         livenessProbe:
           httpGet:
             path: /healthz
