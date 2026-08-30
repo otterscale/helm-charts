@@ -14,11 +14,11 @@ dependencies:
     version: "1.21.1"
     repository: "oci://quay.io/jetstack/charts"
     condition: cert-manager.enabled
-  - name: flux-operator
-    # renovate: helm=flux-operator registry=oci://ghcr.io/controlplaneio-fluxcd/charts
-    version: "0.58.1"
-    repository: "oci://ghcr.io/controlplaneio-fluxcd/charts"
-    condition: flux-operator.enabled
+  - name: flux2
+    # renovate: helm=flux2 registry=oci://ghcr.io/fluxcd-community/charts
+    version: "2.19.0"
+    repository: "oci://ghcr.io/fluxcd-community/charts"
+    condition: flux2.enabled
   - name: topolvm
     # renovate: helm=topolvm registry=https://topolvm.github.io/topolvm
     version: "17.1.0"

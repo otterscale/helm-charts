@@ -26,7 +26,6 @@ tenantOperator:
 
   harbor:
     url: https://harbor.example.com
-
     robot:
       name: "robot$devel"
       secret: ""
@@ -37,26 +36,90 @@ licenseOperator:
 cert-manager:
   enabled: true
 
-flux-operator:
+flux2:
   enabled: true
+  installCRDs: true
+
+  multitenancy:
+    enabled: true
+    defaultServiceAccount: "default"
+    privileged: false
+
+  helmController:
+    create: true
+
+  imageAutomationController:
+    create: false
+
+  imageReflectionController:
+    create: false
+
+  kustomizeController:
+    create: false
+
+  notificationController:
+    create: false
+
+  sourceController:
+    create: true
+
+  sourceWatcher:
+    create: false
+
+  policies:
+    create: true
+
+  rbac:
+    create: true
+    createAggregation: true
+    roleRef:
+      name: cluster-admin
+
+  watchAllNamespaces: true
+
+  extraObjects:
+    - apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: flux-admin
+        namespace: otterscale-system
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: otterscale-flux-admin
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+        - kind: ServiceAccount
+          name: flux-admin
+          namespace: otterscale-system
+    - apiVersion: admissionregistration.k8s.io/v1
+      kind: ValidatingAdmissionPolicy
+      metadata:
+        name: otterscale-flux-require-sa
+      spec:
+        failurePolicy: Fail
+        matchConstraints:
+          resourceRules:
+            - apiGroups: ["helm.toolkit.fluxcd.io"]
+              apiVersions: ["*"]
+              operations: ["CREATE", "UPDATE"]
+              resources: ["helmreleases"]
+        validations:
+          - expression: "has(object.spec.serviceAccountName) && object.spec.serviceAccountName != ''"
+            message: "spec.serviceAccountName is required"
+          - expression: "!has(object.spec.kubeConfig)"
+            message: "spec.kubeConfig is not allowed"
+    - apiVersion: admissionregistration.k8s.io/v1
+      kind: ValidatingAdmissionPolicyBinding
+      metadata:
+        name: otterscale-flux-require-sa
+      spec:
+        policyName: otterscale-flux-require-sa
+        validationActions: ["Deny"]
+        matchResources: {}
 
 topolvm:
   enabled: false
-
-flux:
-  enabled: true
-
-  instance:
-    distribution:
-      version: "2.9.x"
-      registry: "ghcr.io/fluxcd"
-    components:
-      - source-controller
-      - helm-controller
-    cluster:
-      type: kubernetes
-      size: medium
-      multitenant: true
-      tenantDefaultServiceAccount: "view"
-      networkPolicy: true
-      domain: "cluster.local"
