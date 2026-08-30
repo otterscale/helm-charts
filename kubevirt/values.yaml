@@ -1,0 +1,16 @@
+kubevirt:
+  version: v1.8.4
+  images:
+    operator: quay.io/kubevirt/virt-operator
+
+cdi:
+  version: v1.65.0
+  images:
+    operator: quay.io/kubevirt/cdi-operator
+    controller: quay.io/kubevirt/cdi-controller
+    importer: quay.io/kubevirt/cdi-importer
+    cloner: quay.io/kubevirt/cdi-cloner
+    ovirtPopulator: quay.io/kubevirt/cdi-importer
+    apiServer: quay.io/kubevirt/cdi-apiserver
+    uploadServer: quay.io/kubevirt/cdi-uploadserver
+    uploadProxy: quay.io/kubevirt/cdi-uploadproxy
