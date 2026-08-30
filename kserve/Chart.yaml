@@ -8,6 +8,7 @@ appVersion: "v0.20.0"
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: "kserve"
+  module.otterscale.io/depends-on: "envoy-ai-gateway,leader-worker-set"
 dependencies:
   - name: kserve-llmisvc-crd
     version: "v0.20.0"
