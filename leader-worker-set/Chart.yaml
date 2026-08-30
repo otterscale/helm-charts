@@ -4,12 +4,12 @@ description: A Helm chart for leader-worker-set
 type: application
 version: 1.0.0
 # renovate: helm=lws registry=oci://registry.k8s.io/lws/charts
-appVersion: "v0.10.0"
+appVersion: "v0.8.0"
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: "lws-system"
 dependencies:
   - name: lws
-    version: "0.10.0"
+    version: "0.8.0"
     repository: "oci://registry.k8s.io/lws/charts"
     condition: lws.enabled

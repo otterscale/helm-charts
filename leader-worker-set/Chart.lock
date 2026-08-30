@@ -1,6 +1,6 @@
 dependencies:
 - name: lws
   repository: oci://registry.k8s.io/lws/charts
-  version: 0.10.0
-digest: sha256:bb9c08d95b138c47b802fa4f0c54a0e0d2b58ff522b7734010e8a621f8f0098a
-generated: "2026-08-20T18:30:02.89395131+08:00"
+  version: 0.8.0
+digest: sha256:7b2d4572a5109b935d31678cf8660c21deffb54265a33eb96ccae5f97df153f3
+generated: "2026-08-30T19:55:11.630288+08:00"
