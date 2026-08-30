@@ -13,3 +13,9 @@ spec:
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
   workloadUpdateStrategy: {}
+  {{- with .Values.kubevirt.imageRegistry }}
+  imageRegistry: {{ . }}
+  {{- end }}
+  {{- with .Values.kubevirt.imageTag }}
+  imageTag: {{ . }}
+  {{- end }}
