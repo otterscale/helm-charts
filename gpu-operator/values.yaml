@@ -11,7 +11,8 @@ gpu-operator:
     enabled: false
 
   cdi:
-    enabled: false
+    enabled: true
+    nriPluginEnabled: false
 
   sandboxWorkloads:
     enabled: false

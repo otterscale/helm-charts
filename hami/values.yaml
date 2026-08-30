@@ -11,10 +11,10 @@ hami:
 
   devicePlugin:
     enabled: true
-    gpuOperatorToolkitReady:
-      enabled: true
-      hostPath: "/run/nvidia/validations"
-    runtimeClassName: "nvidia"
+    runtimeClassName: nvidia
+    deviceListStrategy: cdi-annotations
+    nvidiaHookPath: /usr/bin/nvidia-ctk
+    nvidiaDriverRoot: /
     service:
       type: ClusterIP
     nvidiaNodeSelector:
