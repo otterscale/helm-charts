@@ -29,7 +29,7 @@ spec:
       containers:
         - name: otterscale-server
           image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.server.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

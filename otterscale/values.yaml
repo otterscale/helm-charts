@@ -24,7 +24,7 @@ server:
   image:
     repository: ghcr.io/otterscale/otterscale
     tag: ""
-  imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
 
   # Service ports only. The container always listens on 8299 and 8300.
   service: # type: ClusterIP | NodePort | LoadBalancer
@@ -56,7 +56,7 @@ dashboard:
   image:
     repository: ghcr.io/otterscale/dashboard
     tag: v1.4.4
-  imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
 
   # Service port only. The dashboard image always listens on 3000.
   service: # type: ClusterIP | NodePort | LoadBalancer
@@ -122,7 +122,7 @@ keycloakPostgres:
   image:
     repository: postgres
     tag: 15.18-trixie
-  imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
   password: ""
   resources: {}
 
@@ -162,7 +162,7 @@ harborInit:
   image:
     repository: docker.io/library/alpine
     tag: "3.24"
-  imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
   waitTimeoutSeconds: 600
   resources: {}
 

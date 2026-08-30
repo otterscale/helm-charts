@@ -89,7 +89,7 @@ spec:
       containers:
         - name: postgres
           image: "{{ .Values.keycloakPostgres.image.repository }}:{{ .Values.keycloakPostgres.image.tag }}"
-          imagePullPolicy: {{ .Values.keycloakPostgres.imagePullPolicy | default "IfNotPresent" }}
+          imagePullPolicy: {{ .Values.keycloakPostgres.image.pullPolicy | default "IfNotPresent" }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

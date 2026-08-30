@@ -30,7 +30,7 @@ spec:
       containers:
         - name: otterscale-dashboard
           image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
-          imagePullPolicy: {{ .Values.dashboard.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
