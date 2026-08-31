@@ -17,6 +17,9 @@ hami:
     nvidiaDriverRoot: /
     service:
       type: ClusterIP
+    securityContext:
+      seLinuxOptions:
+        type: spc_t
     nvidiaNodeSelector:
       otterscale.io/gpu: "true"
 
