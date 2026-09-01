@@ -91,14 +91,14 @@
       "standardFlowEnabled": true,
       "frontchannelLogout": true,
       "redirectUris": [
-        "{{ .Values.harbor.externalURL }}/*"
+        "{{ include "otterscale.harbor.externalURL" . }}/*"
       ],
       "webOrigins": [
         "{{ include "otterscale.externalURL" . }}"
       ],
       "attributes": {
         "frontchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "{{ .Values.harbor.externalURL }}/*"
+        "post.logout.redirect.uris": "{{ include "otterscale.harbor.externalURL" . }}/*"
       },
       "protocolMappers": [
         {

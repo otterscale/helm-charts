@@ -1,4 +1,4 @@
-{{- if and .Values.httpRoute.enabled .Values.harbor.enabled (eq (include "otterscale.scheme" .) "https") }}
+{{- if .Values.harbor.enabled }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -8,9 +8,9 @@ metadata:
     {{- include "otterscale.labels" . | nindent 4 }}
 spec:
   parentRefs:
-  - name: {{ include "otterscale.gateway.name" . }}
-    namespace: {{ include "otterscale.gateway.namespace" . }}
-    sectionName: {{ .Values.httpRoute.gateway.sectionName }}
+  - kind: ListenerSet
+    name: {{ include "otterscale.listenerSet.name" . }}
+    sectionName: {{ include "otterscale.harbor.sectionName" . }}
   hostnames:
   - {{ include "otterscale.harbor.host" . | quote }}
   rules:

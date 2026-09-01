@@ -1,176 +1,133 @@
-# OtterScale chart values.
-#
-# PART 1 is this chart's own settings; PART 2 is passed through to the
-# keycloak / valkey / harbor subcharts.
-#
-# SHARED         = a subchart reads it and so do this chart's templates.
-# INTERNAL WIRING = ties the two halves together. Do not edit.
-#
-# resources: {} means "use the defaults in the component's template".
+# REQUIRED. https, and a different host from harbor.externalURL.
+# Fixed at install time: --import-realm skips a realm that already exists, so
+# changing this later leaves the Keycloak clients' redirectUris on the old host
+# and every login fails. Changing it means rebuilding the realm.
+externalURL: ""
 
-# ═══════════════════════════════════════════════════════════════════════
-# PART 1 — OtterScale's own settings
-# ═══════════════════════════════════════════════════════════════════════
+# Needs Gateway API >= v1.5 and Envoy Gateway >= v1.8 (ListenerSet).
+expose:
+  gateway:
+    name: "otterscale-gateway"
+    namespace: "envoy-gateway-system"
 
-# ── Server ──
+  # One HTTPS listener, shared by the dashboard and Harbor.
+  listener:
+    port: "" # empty = 443
+    tls:
+      # auto   = cert-manager signs it (cert-manager must already be installed)
+      # secret = you supply it
+      certSource: auto
+      auto:
+        secretName: "otterscale-tls"
+        caSecretName: "otterscale-ca"
+        subjectAltNames: [] # empty = the hosts from the two externalURLs
+      secret:
+        # Keys: "tls.crt", "tls.key"
+        secretName: "otterscale-tls"
+
+# The server and the dashboard call Keycloak over externalURL, so a private CA
+# has to be trusted inside them or the server will not start.
+# Empty is right for a public CA and for certSource "auto"; set it only for a
+# Secret this chart did not create.
+trustedCA:
+  secretName: ""
+  key: "ca.crt"
+
+# Root secret for issuing agent enrolment tokens. The registration endpoint is
+# unauthenticated, so without it any caller could claim any cluster.
+# Empty = generated, reused on upgrade. Changing it invalidates every token
+# already handed to an agent.
+enrolmentSecret: ""
+
+# Agents dial this directly. Not behind the Gateway: mTLS would not survive a
+# terminating listener.
+tunnel:
+  externalURL: "" # REQUIRED, e.g. https://<node>:<nodePort>
+  type: NodePort
+  port: 8300
+  nodePort: "30300" # NodePort only
+
 server:
-  # URL agents dial for the tunnel.
-  # Empty = derive from tunnelService.nodePort, else fall back to
-  # dashboard.externalURL — which reaches the Gateway, and the Gateway carries
-  # no tunnel route. Set this or the nodePort if agents use the tunnel.
-  externalTunnelURL: ""
-
   replicas: 1
   image:
     repository: ghcr.io/otterscale/otterscale
     tag: ""
     pullPolicy: IfNotPresent
 
-  # Service ports only. The container always listens on 8299 and 8300.
-  service: # type: ClusterIP | NodePort | LoadBalancer
+  service:
     type: ClusterIP
     port: 8299
 
-  tunnelService:
-    type: ClusterIP
-    port: 8300
-    nodePort: "" # NodePort only
-
   resources: {}
-
   nodeSelector: {}
   tolerations: []
   affinity: {}
   terminationGracePeriodSeconds: 30
-
   env: []
 
-# ── Dashboard ──
 dashboard:
-  # Browser-facing base URL. Required — everything user-visible derives from
-  # it: the Keycloak realm URL, CORS origins, OIDC redirects, and whether the
-  # HTTPRoutes attach to the Gateway's HTTP or HTTPS listener.
-  externalURL: ""
-
   replicas: 1
   image:
     repository: ghcr.io/otterscale/dashboard
     tag: v1.4.4
     pullPolicy: IfNotPresent
 
-  # Service port only. The dashboard image always listens on 3000.
-  service: # type: ClusterIP | NodePort | LoadBalancer
+  service:
     type: ClusterIP
     port: 3000
 
   resources: {}
-
   nodeSelector: {}
   tolerations: []
   affinity: {}
   terminationGracePeriodSeconds: 30
-
   env: []
 
-# ── Ingress routes (Gateway API) ──
-# Only HTTPRoutes. The Gateway, GatewayClass and their controller are created
-# out-of-band by the cluster operator so the ingress path survives chart
-# upgrades — any Gateway API implementation works.
-httpRoute:
-  # The Gateway below is a prerequisite of a normal install. Set false when
-  # reaching the dashboard another way (port-forward, NodePort, other ingress).
-  enabled: true
-  # Must already exist, and must allow routes from the release namespace.
-  gateway:
-    name: "otterscale-gateway"
-    namespace: "envoy-gateway-system"
-    # Use the Gateway's HTTPS listener when dashboard.externalURL is https.
-    sectionName: "http"
-  hostnames: [] # empty = the host from dashboard.externalURL
-  # Extra route that 301s HTTP → HTTPS, attached to a plain-HTTP listener.
-  redirectToHTTPS: false
-  redirectSectionName: "http"
-
-# ── Keycloak realm ──
-# Seeded into files/keycloak-realm.json at import time. The keycloak subchart
-# reads none of this — it only runs the server.
-# Every password below: empty = reuse the existing Secret on upgrade, else
-# generate a random one.
+# Seeded into files/keycloak-realm.json. The subchart reads none of this.
+# Seeded ONCE: --import-realm skips a realm that already exists, so nothing here
+# reaches a realm that is already there. See externalURL.
+# Every password: empty = reuse on upgrade, else generate.
 keycloakRealm:
   name: otterscale
 
   auth:
-    # Bootstrap admin of the master realm, not a user inside the realm above.
-    adminUser: admin
+    adminUser: admin # master realm, not a user in the realm above
     adminPassword: ""
 
   clients:
     dashboard:
-      # The server validates tokens against this same client id.
-      id: otterscale-dashboard
+      id: otterscale-dashboard # the server validates tokens against this
       secret: ""
     harbor:
       id: otterscale-harbor
       secret: ""
 
-# ── Keycloak's PostgreSQL ──
-# A StatefulSet this chart owns, not the subchart's. Connection details are
-# SHARED and live under keycloak.database in PART 2.
-# Neither this PVC nor its Secret is retained on uninstall, so a reinstall
-# starts from an empty database with a matching password.
 keycloakPostgres:
   image:
     repository: postgres
-    tag: 15.18-trixie
+    tag: 18-trixie
     pullPolicy: IfNotPresent
   password: ""
   resources: {}
 
   persistence:
     enabled: true
-    storageClassName: "" # "" = cluster default StorageClass
+    storageClassName: ""
     accessMode: ReadWriteOnce
-    size: 5Gi
+    size: 20Gi
 
-# ── Harbor OIDC ──
-# Harbor keeps auth settings in its own database and its chart exposes no OIDC
-# values, so this is rendered into a Secret that harbor-core reads through
-# CONFIG_OVERWRITE_JSON (see harbor.core.extraEnvVars).
+# Rendered into a Secret harbor-core reads as CONFIG_OVERWRITE_JSON. Not
+# harbor.core.configureUserSettings: Helm cannot template a subchart value, and
+# this JSON embeds a generated client secret.
 harborOIDC:
   enabled: true
   scope: "openid,profile,email"
   autoOnboard: true
   groupsClaim: "groups"
-  # Members of this Keycloak group become Harbor admins.
-  adminGroup: "harbor_admin"
-  # INTERNAL WIRING: must match the Secret named in harbor.core.extraEnvVars.
+  adminGroup: "harbor_admin" # members become Harbor admins
+  # INTERNAL WIRING: must match harbor.core.extraEnvVars.
   configSecretName: "otterscale-harbor-oidc-config"
 
-# ── Harbor init hook ──
-# Post-install Job that creates the projects below. Idempotent.
-harborInit:
-  enabled: true
-
-  projects:
-    - name: "modules"
-      public: "true"
-    - name: "models"
-      public: "true"
-    - name: "operators"
-      public: "true"
-  # Needs a POSIX shell and busybox-style nc/base64.
-  image:
-    repository: docker.io/library/alpine
-    tag: "3.24"
-    pullPolicy: IfNotPresent
-  waitTimeoutSeconds: 600
-  resources: {}
-
-# ═══════════════════════════════════════════════════════════════════════
-# PART 2 — Subchart passthrough
-# ═══════════════════════════════════════════════════════════════════════
-
-# ── Valkey (dashboard session cache) ──
 valkey:
   enabled: true
   podLabels: {}
@@ -179,19 +136,15 @@ valkey:
     port: 6379 # SHARED: also builds the dashboard's REDIS_URL
 
   auth:
-    # Off in the subchart by default, which would leave the session cache open
-    # to anything that can reach its Service.
-    enabled: true
-    # INTERNAL WIRING: Secret from templates/valkey-secret.yaml. Its key is the
-    # ACL username — that is how valkey looks the password up. The subchart
-    # tpl's this in its own context, so only .Release.Name is safe here.
+    enabled: true # off in the subchart by default
+    # INTERNAL WIRING: Secret from templates/valkey-secret.yaml, keyed by ACL
+    # username. tpl'd in the SUBCHART's context, so only .Release.Name is safe.
     usersExistingSecret: "{{ .Release.Name }}-valkey-auth"
     aclUsers:
-      # "default" must be listed or the user is dropped and anyone can connect.
+      # Must be listed, or the user is dropped and anyone can connect.
       default:
         permissions: "~* &* +@all"
 
-# ── Keycloak (codecentric keycloakx subchart, aliased to "keycloak") ──
 keycloak:
   enabled: true
   podLabels: {}
@@ -202,13 +155,11 @@ keycloak:
   service:
     httpPort: 80 # SHARED: also the HTTPRoute backendRef port
 
-  # Holds Keycloak back until postgres accepts connections. Without it Keycloak
-  # crash-loops through its schema migration.
+  # Without it Keycloak crash-loops through its schema migration.
   dbchecker:
     enabled: true
 
-  # SHARED: the subchart builds its JDBC URL from these, and this chart names
-  # the postgres Service, StatefulSet, PVC and Secret after them.
+  # SHARED: the subchart's JDBC URL, and this chart's postgres resource names.
   database:
     vendor: postgres
     database: keycloak
@@ -218,13 +169,10 @@ keycloak:
     hostname: otterscale-keycloak-postgres
     port: 5432
 
-  # ── INTERNAL WIRING to the end of this block ──
-  # These strings are tpl'd in the SUBCHART's context: .Values inside them is
-  # keycloak's, not this file's top level.
+  # ── To the end of this block: tpl'd in the SUBCHART's context ──
 
-  # --import-realm seeds the realm only when it does not exist yet.
-  # --proxy-headers=xforwarded makes Keycloak trust the X-Forwarded-Proto the
-  # HTTPRoute sets, so it builds redirects with the browser's scheme.
+  # --import-realm only seeds a realm that does not exist yet.
+  # --proxy-headers=xforwarded trusts the X-Forwarded-Proto the HTTPRoute sets.
   command:
     - /bin/sh
     - -c
@@ -243,7 +191,7 @@ keycloak:
     - secretRef:
         name: {{ include "keycloak.fullname" . }}-admin
 
-  # cp's destination filename must match the theme subPath below.
+  # cp's destination must match the theme subPath below.
   extraInitContainers: |
     - name: theme-provider
       image: ghcr.io/otterscale/keycloakify:1.2.7
@@ -270,25 +218,29 @@ keycloak:
     - name: theme-import-volume
       emptyDir: {}
 
-# ── Harbor (container registry) ──
 harbor:
   enabled: true
-  # SHARED: must match the browser URL (scheme://host:nodePort). Also drives
-  # the Harbor OIDC client's redirect URIs and the harbor HTTPRoute hostname.
-  externalURL: "http://127.0.0.1:32180"
-  # Required. Harbor stores it verbatim in its own <release>-harbor-core Secret
-  # and only applies it when first creating the admin user. Harbor's PVCs are
-  # retained on uninstall, so this must stay stable across a reinstall.
+  # SHARED: the harbor route's hostname and port, and the OIDC redirect URIs.
+  # https, and must differ from externalURL by host or by port — a port here
+  # gives Harbor its own listener, which is how one bare IP serves both.
+  # Fixed at install time for the same reason as externalURL.
+  externalURL: ""
+  # Empty = generated into the Secret below and reused on upgrade. Harbor
+  # applies it only when it first creates the admin user.
   harborAdminPassword: ""
+  # INTERNAL WIRING: this chart generates that Secret under this name. Kept on
+  # uninstall, like Harbor's PVCs.
+  existingSecretAdminPassword: "otterscale-harbor-admin"
 
-  # Image tags are deliberately not pinned here: the subchart's defaults track
-  # its appVersion, so a pin would silently freeze images when the dependency
-  # is bumped in Chart.yaml.
+  # INTERNAL WIRING: the same CA as trustedCA, injected into core, jobservice,
+  # registry and trivy. Aligned by hand; empty under a private CA is refused.
+  caBundleSecretName: "otterscale-ca"
+
+  # Image tags stay unpinned: the subchart's defaults track its appVersion.
 
   core:
-    # INTERNAL WIRING: name must match harborOIDC.configSecretName.
-    # optional, because that Secret only exists when Keycloak and OIDC are both
-    # on — without the flag harbor-core fails to start whenever they are not.
+    # INTERNAL WIRING: name must match harborOIDC.configSecretName. optional,
+    # because that Secret is absent unless Keycloak and OIDC are both on.
     extraEnvVars:
       - name: CONFIG_OVERWRITE_JSON
         valueFrom:
@@ -297,38 +249,8 @@ harbor:
             key: CONFIG_OVERWRITE_JSON
             optional: true
 
+  # Reached through the Gateway, which already terminated TLS.
   expose:
-    type: nodePort
+    type: clusterIP
     tls:
       enabled: false
-    nodePort:
-      name: harbor
-      ports:
-        http:
-          port: 80
-          nodePort: 32180
-
-  ipFamily:
-    ipv6:
-      enabled: false
-
-  # storageClass "" = cluster default. "-" = no dynamic provisioning.
-  persistence:
-    enabled: true
-    persistentVolumeClaim:
-      registry:
-        storageClass: ""
-        size: 50Gi
-      database:
-        storageClass: ""
-        size: 5Gi
-      jobservice:
-        jobLog:
-          storageClass: ""
-          size: 1Gi
-      redis:
-        storageClass: ""
-        size: 1Gi
-      trivy:
-        storageClass: ""
-        size: 5Gi

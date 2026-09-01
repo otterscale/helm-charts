@@ -1,0 +1,32 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: {{ include "otterscale.listenerSet.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale.labels" . | nindent 4 }}
+spec:
+  parentRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: {{ include "otterscale.gateway.name" . }}
+    namespace: {{ include "otterscale.gateway.namespace" . }}
+  listeners:
+  - name: {{ include "otterscale.listenerSet.sectionName" . }}
+    protocol: HTTPS
+    port: {{ include "otterscale.listenerSet.port" . }}
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: {{ include "otterscale.listenerSet.tlsSecretName" . }}
+  {{- if and .Values.harbor.enabled (include "otterscale.harbor.ownListener" .) }}
+  - name: {{ include "otterscale.harbor.sectionName" . }}
+    protocol: HTTPS
+    port: {{ include "otterscale.harbor.port" . }}
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: {{ include "otterscale.listenerSet.tlsSecretName" . }}
+  {{- end }}

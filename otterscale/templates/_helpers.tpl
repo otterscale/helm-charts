@@ -22,14 +22,6 @@
 {{- end }}
 {{- end -}}
 
-{{- define "otterscale.harbor.core" -}}
-{{- if contains "harbor" .Release.Name }}
-{{- printf "%s-core" (.Release.Name | trunc 63 | trimSuffix "-") }}
-{{- else }}
-{{- printf "%s-harbor-core" (.Release.Name | trunc 57 | trimSuffix "-") }}
-{{- end }}
-{{- end -}}
-
 {{- define "otterscale.valkey.secretName" -}}
 {{- printf "%s-valkey-auth" .Release.Name -}}
 {{- end -}}
@@ -71,29 +63,48 @@ app.kubernetes.io/component: frontend
 {{- end -}}
 
 {{- define "otterscale.externalURL" -}}
-{{- .Values.dashboard.externalURL | trimSuffix "/" -}}
-{{- end -}}
-
-{{- define "otterscale.scheme" -}}
-{{- (splitList "://" .Values.dashboard.externalURL) | first -}}
+{{- .Values.externalURL | trimSuffix "/" -}}
 {{- end -}}
 
 {{- define "otterscale.host" -}}
-{{- (splitList "://" .Values.dashboard.externalURL) | last | trimSuffix "/" -}}
+{{- include "otterscale.externalURL" . | trimPrefix "https://" -}}
+{{- end -}}
+
+{{- define "otterscale.harbor.externalURL" -}}
+{{- .Values.harbor.externalURL | trimSuffix "/" -}}
 {{- end -}}
 
 {{- define "otterscale.harbor.host" -}}
-{{- (splitList "://" .Values.harbor.externalURL) | last | trimSuffix "/" | splitList ":" | first -}}
+{{- $hostport := include "otterscale.harbor.externalURL" . | trimPrefix "https://" -}}
+{{- regexReplaceAll ":[0-9]+$" $hostport "" -}}
 {{- end -}}
 
-{{- define "otterscale.server.externalTunnelURL" -}}
-{{- if .Values.server.externalTunnelURL -}}
-  {{- .Values.server.externalTunnelURL -}}
-{{- else if .Values.server.tunnelService.nodePort -}}
-  {{- printf "%s://%s:%v" (include "otterscale.scheme" .) (include "otterscale.host" .) .Values.server.tunnelService.nodePort -}}
+{{- define "otterscale.harbor.port" -}}
+{{- $hostport := include "otterscale.harbor.externalURL" . | trimPrefix "https://" -}}
+{{- $found := regexFind ":[0-9]+$" $hostport -}}
+{{- if $found -}}
+  {{- trimPrefix ":" $found -}}
 {{- else -}}
-  {{- include "otterscale.externalURL" . -}}
+  {{- 443 -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "otterscale.harbor.ownListener" -}}
+{{- if ne (include "otterscale.harbor.port" .) (include "otterscale.listenerSet.port" . | toString) -}}
+  {{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "otterscale.harbor.sectionName" -}}
+{{- if include "otterscale.harbor.ownListener" . -}}
+  {{- printf "%s-harbor" (include "otterscale.listenerSet.sectionName" .) -}}
+{{- else -}}
+  {{- include "otterscale.listenerSet.sectionName" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "otterscale.tunnel.externalURL" -}}
+{{- .Values.tunnel.externalURL -}}
 {{- end -}}
 
 {{- define "otterscale.keycloak.realmURL" -}}
@@ -102,11 +113,55 @@ app.kubernetes.io/component: frontend
 {{- end -}}
 
 {{- define "otterscale.gateway.name" -}}
-{{- .Values.httpRoute.gateway.name | required "httpRoute.gateway.name must be set when httpRoute.enabled is true" -}}
+{{- .Values.expose.gateway.name -}}
 {{- end -}}
 
 {{- define "otterscale.gateway.namespace" -}}
-{{- .Values.httpRoute.gateway.namespace | default .Release.Namespace -}}
+{{- .Values.expose.gateway.namespace | default .Release.Namespace -}}
+{{- end -}}
+
+{{- define "otterscale.listenerSet.name" -}}
+{{- include "otterscale.fullname" . -}}
+{{- end -}}
+
+{{- define "otterscale.listenerSet.sectionName" -}}
+https
+{{- end -}}
+
+{{- define "otterscale.listenerSet.port" -}}
+{{- .Values.expose.listener.port | default 443 -}}
+{{- end -}}
+
+{{- define "otterscale.certHost" -}}
+{{- regexReplaceAll ":[0-9]+$" (include "otterscale.host" .) "" -}}
+{{- end -}}
+
+{{- define "otterscale.listenerSet.certSource" -}}
+{{- .Values.expose.listener.tls.certSource -}}
+{{- end -}}
+
+{{- define "otterscale.listenerSet.tlsSecretName" -}}
+{{- if eq (include "otterscale.listenerSet.certSource" .) "auto" -}}
+  {{- .Values.expose.listener.tls.auto.secretName -}}
+{{- else -}}
+  {{- .Values.expose.listener.tls.secret.secretName -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "otterscale.trustedCA.secretName" -}}
+{{- if .Values.trustedCA.secretName -}}
+  {{- .Values.trustedCA.secretName -}}
+{{- else if eq (include "otterscale.listenerSet.certSource" .) "auto" -}}
+  {{- .Values.expose.listener.tls.auto.caSecretName -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "otterscale.trustedCA.dir" -}}
+/etc/otterscale/ca
+{{- end -}}
+
+{{- define "otterscale.trustedCA.path" -}}
+{{- printf "%s/%s" (include "otterscale.trustedCA.dir" .) .Values.trustedCA.key -}}
 {{- end -}}
 
 {{- define "otterscale.harbor.serviceName" -}}
@@ -140,6 +195,28 @@ app.kubernetes.io/component: frontend
   {{- $_ := set $ctx.Values .cache $value -}}
 {{- end -}}
 {{- index $ctx.Values .cache -}}
+{{- end -}}
+
+{{- define "otterscale.harbor.adminSecretName" -}}
+{{- .Values.harbor.existingSecretAdminPassword -}}
+{{- end -}}
+
+{{- define "otterscale.harbor.adminSecretKey" -}}
+{{- .Values.harbor.existingSecretAdminPasswordKey | default "HARBOR_ADMIN_PASSWORD" -}}
+{{- end -}}
+
+{{- define "otterscale.harbor.adminPassword" -}}
+{{- include "otterscale.credential" (dict "ctx" . "cache" "_cachedHarborAdminPassword"
+    "name" (include "otterscale.harbor.adminSecretName" .)
+    "key" (include "otterscale.harbor.adminSecretKey" .)
+    "override" .Values.harbor.harborAdminPassword "length" 16) -}}
+{{- end -}}
+
+{{- define "otterscale.enrolmentSecret" -}}
+{{- include "otterscale.credential" (dict "ctx" . "cache" "_cachedEnrolmentSecret"
+    "name" (include "otterscale.server.fullname" .)
+    "key" "enrolment-secret"
+    "override" .Values.enrolmentSecret "length" 32) -}}
 {{- end -}}
 
 {{- define "otterscale.keycloak.adminPassword" -}}

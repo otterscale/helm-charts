@@ -15,5 +15,5 @@ data:
   KEYCLOAK_CLIENT_ID: {{ .Values.keycloakRealm.clients.dashboard.id | quote }}
   {{- end }}
   {{- if .Values.harbor.enabled }}
-  PUBLIC_HARBOR_URL: {{ .Values.harbor.externalURL | quote }}
+  PUBLIC_HARBOR_URL: {{ include "otterscale.harbor.externalURL" . | quote }}
   {{- end }}

@@ -1,3 +1,4 @@
+{{- $trustedCA := include "otterscale.trustedCA.secretName" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,6 +17,7 @@ spec:
         {{- include "otterscale.server.selectorLabels" . | nindent 8 }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/server-configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/server-secret.yaml") . | sha256sum }}
     spec:
       serviceAccountName: {{ include "otterscale.server.fullname" . }}
       securityContext:
@@ -47,10 +49,16 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "otterscale.server.fullname" . }}-config
-          {{- with .Values.server.env }}
           env:
+            - name: OTTERSCALE_SERVER_ENROLMENT_SECRET_FILE
+              value: /etc/otterscale/enrolment/secret
+            {{- if $trustedCA }}
+            - name: SSL_CERT_DIR
+              value: {{ include "otterscale.trustedCA.dir" . | quote }}
+            {{- end }}
+            {{- with .Values.server.env }}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- end }}
           readinessProbe:
             tcpSocket:
               port: http
@@ -78,9 +86,31 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            - name: enrolment
+              mountPath: /etc/otterscale/enrolment
+              readOnly: true
+            {{- if $trustedCA }}
+            - name: trusted-ca
+              mountPath: {{ include "otterscale.trustedCA.dir" . | quote }}
+              readOnly: true
+            {{- end }}
       volumes:
         - name: tmp
           emptyDir: {}
+        - name: enrolment
+          secret:
+            secretName: {{ include "otterscale.server.fullname" . }}
+            items:
+              - key: enrolment-secret
+                path: secret
+        {{- if $trustedCA }}
+        - name: trusted-ca
+          secret:
+            secretName: {{ $trustedCA | quote }}
+            items:
+              - key: {{ .Values.trustedCA.key | quote }}
+                path: {{ .Values.trustedCA.key | quote }}
+        {{- end }}
       {{- with .Values.server.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

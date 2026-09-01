@@ -1,0 +1,56 @@
+
+{{- if not .Values.externalURL }}
+  {{- fail "externalURL must be set: it is the browser-facing base URL the OIDC redirects, CORS origins and the Keycloak realm URL are built from" }}
+{{- end }}
+{{- if not (hasPrefix "https://" .Values.externalURL) }}
+  {{- fail (printf "externalURL must start with https:// — this chart serves HTTPS only, got %q" .Values.externalURL) }}
+{{- end }}
+
+{{- if not .Values.tunnel.externalURL }}
+  {{- fail "tunnel.externalURL must be set: it is the URL agents dial for the tunnel, and nothing else in this chart reaches that listener" }}
+{{- end }}
+
+{{- if not .Values.expose.gateway.name }}
+  {{- fail "expose.gateway.name must be set: it is the Gateway this release hangs its listener off" }}
+{{- end }}
+
+{{- $certSource := .Values.expose.listener.tls.certSource }}
+{{- if not (has $certSource (list "auto" "secret")) }}
+  {{- fail (printf "expose.listener.tls.certSource must be auto or secret, got %q" $certSource) }}
+{{- end }}
+{{- if eq $certSource "auto" }}
+  {{- if not .Values.expose.listener.tls.auto.secretName }}
+    {{- fail "expose.listener.tls.auto.secretName must be set: it is where cert-manager writes the certificate" }}
+  {{- end }}
+  {{- if not .Values.expose.listener.tls.auto.caSecretName }}
+    {{- fail "expose.listener.tls.auto.caSecretName must be set: it is the CA cert-manager signs the certificate with" }}
+  {{- end }}
+{{- else }}
+  {{- if not .Values.expose.listener.tls.secret.secretName }}
+    {{- fail "expose.listener.tls.secret.secretName must be set: it is the certificate the HTTPS listener serves" }}
+  {{- end }}
+{{- end }}
+
+{{- $trustedCA := include "otterscale.trustedCA.secretName" . }}
+{{- if and $trustedCA (not .Values.trustedCA.key) }}
+  {{- fail "trustedCA.key must be set: it is the key inside the Secret holding the CA certificate" }}
+{{- end }}
+
+{{- if .Values.harbor.enabled }}
+  {{- if not .Values.harbor.externalURL }}
+    {{- fail "harbor.externalURL must be set when harbor.enabled: it is the browser URL the Harbor OIDC redirect URIs and the harbor HTTPRoute hostname are built from" }}
+  {{- end }}
+  {{- if not (hasPrefix "https://" .Values.harbor.externalURL) }}
+    {{- fail (printf "harbor.externalURL must start with https:// — Harbor is served through the same HTTPS listener as the dashboard, got %q" .Values.harbor.externalURL) }}
+  {{- end }}
+  {{- $host := include "otterscale.harbor.host" . }}
+  {{- if and (eq $host (include "otterscale.certHost" .)) (not (include "otterscale.harbor.ownListener" .)) }}
+    {{- fail (printf "harbor.externalURL and externalURL are both %q on port %s: give Harbor its own DNS name, or its own port by writing one into harbor.externalURL (e.g. https://%s:8443)" $host (include "otterscale.listenerSet.port" .) $host) }}
+  {{- end }}
+  {{- if not .Values.harbor.existingSecretAdminPassword }}
+    {{- fail "harbor.existingSecretAdminPassword must name the Secret this chart generates the admin password into" }}
+  {{- end }}
+  {{- if and $trustedCA (not .Values.harbor.caBundleSecretName) }}
+    {{- fail "harbor.caBundleSecretName must name the CA Secret too: harbor-core verifies Keycloak's certificate like the server and the dashboard do, and this deployment serves one they cannot verify from public roots alone" }}
+  {{- end }}
+{{- end }}

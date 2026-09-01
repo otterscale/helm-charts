@@ -1,3 +1,4 @@
+{{- $trustedCA := include "otterscale.trustedCA.secretName" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,6 +45,10 @@ spec:
           env:
             - name: PUBLIC_APP_VERSION
               value: {{ .Chart.AppVersion | quote }}
+            {{- if $trustedCA }}
+            - name: NODE_EXTRA_CA_CERTS
+              value: {{ include "otterscale.trustedCA.path" . | quote }}
+            {{- end }}
             {{- with .Values.dashboard.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -78,6 +83,21 @@ spec:
             limits:
               memory: 1024Mi
             {{- end }}
+          {{- if $trustedCA }}
+          volumeMounts:
+            - name: trusted-ca
+              mountPath: {{ include "otterscale.trustedCA.dir" . | quote }}
+              readOnly: true
+          {{- end }}
+      {{- if $trustedCA }}
+      volumes:
+        - name: trusted-ca
+          secret:
+            secretName: {{ $trustedCA | quote }}
+            items:
+              - key: {{ .Values.trustedCA.key | quote }}
+                path: {{ .Values.trustedCA.key | quote }}
+      {{- end }}
       {{- with .Values.dashboard.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

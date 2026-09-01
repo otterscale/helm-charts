@@ -1,0 +1,7 @@
+externalURL: "https://192.0.2.1"
+
+harbor:
+  externalURL: "https://192.0.2.1:8443"
+
+tunnel:
+  externalURL: "https://192.0.2.1:30300"

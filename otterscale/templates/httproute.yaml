@@ -1,4 +1,3 @@
-{{- if .Values.httpRoute.enabled }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -8,16 +7,11 @@ metadata:
     {{- include "otterscale.labels" . | nindent 4 }}
 spec:
   parentRefs:
-  - name: {{ include "otterscale.gateway.name" . }}
-    namespace: {{ include "otterscale.gateway.namespace" . }}
-    sectionName: {{ .Values.httpRoute.gateway.sectionName }}
-  {{- if .Values.httpRoute.hostnames }}
-  hostnames:
-    {{- toYaml .Values.httpRoute.hostnames | nindent 4 }}
-  {{- else if eq (include "otterscale.scheme" .) "https" }}
+  - kind: ListenerSet
+    name: {{ include "otterscale.listenerSet.name" . }}
+    sectionName: {{ include "otterscale.listenerSet.sectionName" . }}
   hostnames:
   - {{ include "otterscale.host" . | quote }}
-  {{- end }}
   rules:
   {{- if .Values.keycloak.enabled }}
   - matches:
@@ -29,7 +23,7 @@ spec:
       requestHeaderModifier:
         set:
         - name: X-Forwarded-Proto
-          value: {{ include "otterscale.scheme" . | quote }}
+          value: "https"
     backendRefs:
     - name: {{ include "otterscale.keycloak.fullname" . }}-http
       port: {{ .Values.keycloak.service.httpPort }}
@@ -63,4 +57,3 @@ spec:
     timeouts:
       backendRequest: 0s
       request: 0s
-{{- end }}
