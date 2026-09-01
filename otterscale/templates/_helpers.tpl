@@ -212,11 +212,11 @@ https
     "override" .Values.harbor.harborAdminPassword "length" 16) -}}
 {{- end -}}
 
-{{- define "otterscale.enrolmentSecret" -}}
-{{- include "otterscale.credential" (dict "ctx" . "cache" "_cachedEnrolmentSecret"
+{{- define "otterscale.joinSecret" -}}
+{{- include "otterscale.credential" (dict "ctx" . "cache" "_cachedJoinSecret"
     "name" (include "otterscale.server.fullname" .)
-    "key" "enrolment-secret"
-    "override" .Values.enrolmentSecret "length" 32) -}}
+    "key" "join-secret"
+    "override" .Values.joinSecret "length" 32) -}}
 {{- end -}}
 
 {{- define "otterscale.keycloak.adminPassword" -}}

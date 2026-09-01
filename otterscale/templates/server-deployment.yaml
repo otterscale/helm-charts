@@ -50,11 +50,13 @@ spec:
             - configMapRef:
                 name: {{ include "otterscale.server.fullname" . }}-config
           env:
-            - name: OTTERSCALE_SERVER_ENROLMENT_SECRET_FILE
-              value: /etc/otterscale/enrolment/secret
+            - name: OTTERSCALE_SERVER_JOIN_SECRET_FILE
+              value: /etc/otterscale/join/secret
             {{- if $trustedCA }}
             - name: SSL_CERT_DIR
               value: {{ include "otterscale.trustedCA.dir" . | quote }}
+            - name: OTTERSCALE_SERVER_TRUSTED_CA_FILE
+              value: {{ include "otterscale.trustedCA.path" . | quote }}
             {{- end }}
             {{- with .Values.server.env }}
             {{- toYaml . | nindent 12 }}
@@ -86,8 +88,8 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-            - name: enrolment
-              mountPath: /etc/otterscale/enrolment
+            - name: join
+              mountPath: /etc/otterscale/join
               readOnly: true
             {{- if $trustedCA }}
             - name: trusted-ca
@@ -97,11 +99,11 @@ spec:
       volumes:
         - name: tmp
           emptyDir: {}
-        - name: enrolment
+        - name: join
           secret:
             secretName: {{ include "otterscale.server.fullname" . }}
             items:
-              - key: enrolment-secret
+              - key: join-secret
                 path: secret
         {{- if $trustedCA }}
         - name: trusted-ca

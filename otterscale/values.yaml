@@ -33,11 +33,11 @@ trustedCA:
   secretName: ""
   key: "ca.crt"
 
-# Root secret for issuing agent enrolment tokens. The registration endpoint is
+# Root secret for issuing agent join tokens. The registration endpoint is
 # unauthenticated, so without it any caller could claim any cluster.
 # Empty = generated, reused on upgrade. Changing it invalidates every token
 # already handed to an agent.
-enrolmentSecret: ""
+joinSecret: ""
 
 # Agents dial this directly. Not behind the Gateway: mTLS would not survive a
 # terminating listener.
