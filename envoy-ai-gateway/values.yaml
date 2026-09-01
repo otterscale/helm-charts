@@ -1,5 +1,0 @@
-ai-gateway-crds-helm:
-  enabled: true
-
-ai-gateway-helm:
-  enabled: true

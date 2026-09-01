@@ -38,7 +38,7 @@ gateway-helm:
             # IMPORTANT: Update this to match your AI Gateway controller service
             # Format: <service-name>.<namespace>.svc.cluster.local
             # Default if you followed the installation steps above:
-            hostname: ai-gateway-controller.envoy-ai-gateway-system.svc.cluster.local
+            hostname: ai-gateway-controller
             port: 1063
 
         # https://raw.githubusercontent.com/envoyproxy/ai-gateway/<version>/examples/inference-pool/envoy-gateway-values-addon.yaml
@@ -47,3 +47,9 @@ gateway-helm:
           - group: inference.networking.k8s.io
             kind: InferencePool
             version: v1
+
+ai-gateway-crds-helm:
+  enabled: true
+
+ai-gateway-helm:
+  enabled: true
