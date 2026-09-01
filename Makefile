@@ -6,16 +6,21 @@ CHARTS := $(patsubst $(ROOT)/%/Chart.yaml,%,$(wildcard $(ROOT)/*/Chart.yaml))
 # helm shares a repository cache, so keep chart updates serialized.
 .NOTPARALLEL:
 
-.PHONY: all deps list clean help $(CHARTS)
+.PHONY: all deps repo-update list clean help $(CHARTS)
 
 all: deps
 
 ## deps: run `helm dependency update` for all charts
 deps: $(CHARTS)
 
-$(CHARTS):
+# refresh the repository indexes once, then let each chart resolve from cache
+repo-update:
+	@echo "==> helm repo update"
+	@$(HELM) repo update
+
+$(CHARTS): repo-update
 	@echo "==> $@"
-	$(HELM) dependency update $(ROOT)/$@
+	$(HELM) dependency update --skip-refresh $(ROOT)/$@
 
 ## list: print the charts discovered in this folder
 list:

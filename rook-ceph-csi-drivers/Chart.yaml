@@ -3,14 +3,14 @@ name: rook-ceph-csi-drivers
 description: A Helm chart for rook-ceph-csi-drivers
 type: application
 version: 1.0.0
-appVersion: "v1.0.4"
+appVersion: 1.0.4
 annotations:
   otterscale.io/type: infrastructure
-  module.otterscale.io/namespace: "rook-ceph"
-  module.otterscale.io/depends-on: "rook-ceph"
+  module.otterscale.io/namespace: rook-ceph
+  module.otterscale.io/depends-on: rook-ceph
 dependencies:
   - name: ceph-csi-drivers
     # renovate: helm=ceph-csi-drivers registry=https://ceph.github.io/ceph-csi-operator
-    version: "1.0.4"
-    repository: "https://ceph.github.io/ceph-csi-operator"
+    version: 1.0.4
+    repository: https://ceph.github.io/ceph-csi-operator
     condition: ceph-csi-drivers.enabled

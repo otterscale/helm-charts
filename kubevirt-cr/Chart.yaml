@@ -4,8 +4,8 @@ description: A Helm chart for kubevirt-cr
 type: application
 version: 1.0.0
 # renovate: github=kubevirt/kubevirt
-appVersion: "v1.8.4"
+appVersion: 1.8.4
 annotations:
   otterscale.io/type: module
-  module.otterscale.io/namespace: "kubevirt"
-  module.otterscale.io/depends-on: "kubevirt,prometheus-stack"
+  module.otterscale.io/namespace: kubevirt
+  module.otterscale.io/depends-on: kubevirt,prometheus-stack

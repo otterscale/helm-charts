@@ -4,18 +4,18 @@ description: A Helm chart for otterscale-agent
 type: application
 version: 1.0.0
 # renovate: image=ghcr.io/otterscale/otterscale
-appVersion: "v1.5.0-rc.4"
+appVersion: 1.5.0-rc.4
 annotations:
   otterscale.io/type: module
-  module.otterscale.io/namespace: "otterscale-system"
+  module.otterscale.io/namespace: otterscale-system
 dependencies:
   - name: flux2
     # renovate: helm=flux2 registry=oci://ghcr.io/fluxcd-community/charts
-    version: "2.19.0"
-    repository: "oci://ghcr.io/fluxcd-community/charts"
+    version: 2.19.0
+    repository: oci://ghcr.io/fluxcd-community/charts
     condition: flux2.enabled
   - name: topolvm
     # renovate: helm=topolvm registry=https://topolvm.github.io/topolvm
-    version: "17.1.0"
-    repository: "https://topolvm.github.io/topolvm"
+    version: 17.1.0
+    repository: https://topolvm.github.io/topolvm
     condition: topolvm.enabled
