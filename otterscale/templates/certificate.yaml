@@ -43,7 +43,7 @@ spec:
   ca:
     secretName: {{ $caSecret | quote }}
 ---
-{{- $default := list (include "otterscale.certHost" .) }}
+{{- $default := list (include "otterscale.host" .) }}
 {{- if .Values.harbor.enabled }}
   {{- $default = append $default (include "otterscale.harbor.host" .) }}
 {{- end }}

@@ -67,7 +67,7 @@ app.kubernetes.io/component: frontend
 {{- end -}}
 
 {{- define "otterscale.host" -}}
-{{- include "otterscale.externalURL" . | trimPrefix "https://" -}}
+{{- regexReplaceAll ":[0-9]+$" (include "otterscale.externalURL" . | trimPrefix "https://") "" -}}
 {{- end -}}
 
 {{- define "otterscale.harbor.externalURL" -}}
@@ -130,10 +130,6 @@ https
 
 {{- define "otterscale.listenerSet.port" -}}
 {{- .Values.expose.listener.port | default 443 -}}
-{{- end -}}
-
-{{- define "otterscale.certHost" -}}
-{{- regexReplaceAll ":[0-9]+$" (include "otterscale.host" .) "" -}}
 {{- end -}}
 
 {{- define "otterscale.listenerSet.certSource" -}}

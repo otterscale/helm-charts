@@ -44,7 +44,7 @@
     {{- fail (printf "harbor.externalURL must start with https:// — Harbor is served through the same HTTPS listener as the dashboard, got %q" .Values.harbor.externalURL) }}
   {{- end }}
   {{- $host := include "otterscale.harbor.host" . }}
-  {{- if and (eq $host (include "otterscale.certHost" .)) (not (include "otterscale.harbor.ownListener" .)) }}
+  {{- if and (eq $host (include "otterscale.host" .)) (not (include "otterscale.harbor.ownListener" .)) }}
     {{- fail (printf "harbor.externalURL and externalURL are both %q on port %s: give Harbor its own DNS name, or its own port by writing one into harbor.externalURL (e.g. https://%s:8443)" $host (include "otterscale.listenerSet.port" .) $host) }}
   {{- end }}
   {{- if not .Values.harbor.existingSecretAdminPassword }}
