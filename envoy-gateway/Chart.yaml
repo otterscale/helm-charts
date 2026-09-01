@@ -10,7 +10,7 @@ annotations:
 dependencies:
   - name: gateway-helm
     # renovate: helm=gateway-helm registry=oci://docker.io/envoyproxy
-    version: 1.8.4
+    version: 1.9.1
     repository: oci://docker.io/envoyproxy
     condition: gateway-helm.enabled
   - name: ai-gateway-crds-helm
