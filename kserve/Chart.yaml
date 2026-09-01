@@ -9,7 +9,6 @@ annotations:
   module.otterscale.io/namespace: kserve
 dependencies:
   - name: kserve-llmisvc-crd
-    # renovate: helm=kserve-llmisvc-crd registry=oci://ghcr.io/kserve/charts
     version: v0.20.0
     repository: oci://ghcr.io/kserve/charts
     condition: kserve-llmisvc-crd.enabled

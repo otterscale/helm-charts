@@ -10,7 +10,6 @@ annotations:
   module.otterscale.io/depends-on: kserve-resources
 dependencies:
   - name: kserve-runtime-configs
-    # renovate: helm=kserve-runtime-configs registry=oci://ghcr.io/kserve/charts
     version: v0.20.0
     repository: oci://ghcr.io/kserve/charts
     condition: kserve-runtime-configs.enabled

@@ -10,7 +10,6 @@ annotations:
   module.otterscale.io/depends-on: prometheus-stack,node-feature-discovery
 dependencies:
   - name: gpu-operator
-    # renovate: helm=gpu-operator registry=https://nvidia.github.io/gpu-operator
     version: 26.7.0
     repository: https://nvidia.github.io/gpu-operator
     condition: gpu-operator.enabled

@@ -10,7 +10,6 @@ annotations:
   module.otterscale.io/depends-on: rook-ceph
 dependencies:
   - name: ceph-csi-drivers
-    # renovate: helm=ceph-csi-drivers registry=https://ceph.github.io/ceph-csi-operator
     version: 1.0.4
     repository: https://ceph.github.io/ceph-csi-operator
     condition: ceph-csi-drivers.enabled

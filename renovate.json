@@ -2,5 +2,84 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "rebaseWhen": "behind-base-branch",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": [
+        "Track values annotated with `# renovate: <datasource>=<depName> [registry=<url>] [versioning=<id>]` on the preceding line (appVersion, image versions, ...). Chart `dependencies:` are handled by the built-in helmv3 manager and must NOT be annotated."
+      ],
+      "managerFilePatterns": [
+        "/(^|/).+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "[\\t ]*(?:#|//) ?renovate: (?<datasource>[^=\\s]+)=(?<depName>\\S+)(?: registry=(?<registryUrl>\\S+))?(?: versioning=(?<versioning>\\S+))?[\\t ]*\\r?\\n[\\t ]*[\\w.\\-]+:[\\t ]*[\"']?(?<currentValue>[^@\\s\"'=]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?[\"']?"
+      ],
+      "datasourceTemplate": "{{#if (equals datasource 'image')}}docker{{else}}{{{datasource}}}{{/if}}",
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else if (equals datasource 'image')}}docker{{else}}semver{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "description": [
+        "Track container images in the plain Kubernetes manifests shipped under */files/ (values.yaml is covered by the built-in helm-values manager)."
+      ],
+      "managerFilePatterns": [
+        "/(^|/)files/.+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "[\\t ]*image:[\\t ]+[\"']?(?<registry>\\S+\\.\\S+?)\\/(?<repository>.*?):(?<currentValue>[\\w+\\.\\-]*)(?:@(?<currentDigest>sha256:[a-f0-9]+))?[\"']?"
+      ],
+      "depNameTemplate": "{{{ registry }}}/{{{ repository }}}",
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": [
+        "Group and label updates per chart directory."
+      ],
+      "matchFileNames": [
+        "*/Chart.yaml",
+        "*/values.yaml",
+        "*/templates/**",
+        "*/files/**",
+        "*/ci/**"
+      ],
+      "matchPackageNames": [
+        "*"
+      ],
+      "commitMessagePrefix": "[{{ lookup (split packageFileDir '/') 0 }}] ",
+      "groupName": "{{ lookup (split packageFileDir '/') 0 }} dependency non-major updates",
+      "separateMajorMinor": true,
+      "labels": [
+        "dependencies",
+        "dependencies/auto-merge"
+      ],
+      "major": {
+        "description": [
+          "Exclude major version bumps from auto merge."
+        ],
+        "labels": [
+          "dependencies"
+        ],
+        "groupName": "{{ lookup (split packageFileDir '/') 0 }} dependency major updates"
+      },
+      "bumpVersions": [
+        {
+          "name": "Updating Chart version",
+          "filePatterns": [
+            "/^({{#each (distinct (lookupArray upgrades \"packageFileDir\"))}}{{{lookup (split . \"/\") 0}}}{{#unless @last}}|{{/unless}}{{/each}})/Chart\\.ya?ml$/"
+          ],
+          "matchStrings": [
+            "(?:^|\\n)version:\\s\"?(?<version>\\d+\\.\\d+\\.\\d+)\"?(?:$|\\n)"
+          ],
+          "bumpType": "{{#if (or isPinDigest isPatch)}}patch{{else}}minor{{/if}}"
+        }
+      ]
+    }
   ]
 }

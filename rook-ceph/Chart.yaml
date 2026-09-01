@@ -9,7 +9,6 @@ annotations:
   module.otterscale.io/namespace: rook-ceph
 dependencies:
   - name: rook-ceph
-    # renovate: helm=rook-ceph registry=https://charts.rook.io/release
     version: 1.20.6
     repository: https://charts.rook.io/release
     condition: rook-ceph.enabled

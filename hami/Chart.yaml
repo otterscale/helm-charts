@@ -10,7 +10,6 @@ annotations:
   module.otterscale.io/depends-on: gpu-operator,prometheus-stack
 dependencies:
   - name: hami
-    # renovate: helm=hami registry=https://project-hami.github.io/HAMi
     version: 2.10.0
     repository: https://project-hami.github.io/HAMi
     condition: hami.enabled

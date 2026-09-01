@@ -9,7 +9,6 @@ annotations:
   module.otterscale.io/namespace: monitoring
 dependencies:
   - name: kube-prometheus-stack
-    # renovate: helm=kube-prometheus-stack registry=https://prometheus-community.github.io/helm-charts
     version: 88.6.1
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-prometheus-stack.enabled
