@@ -1,0 +1,344 @@
+apiVersion: v1
+entries:
+  cert-manager:
+  - annotations:
+      module.otterscale.io/namespace: cert-manager
+      otterscale.io/type: infrastructure
+    apiVersion: v2
+    appVersion: 1.21.1
+    created: "2026-09-01T18:14:48.717078454Z"
+    dependencies:
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: oci://quay.io/jetstack/charts
+      version: 1.21.1
+    description: A Helm chart for cert-manager
+    digest: 1fd9e34b9705ef3cd753c065119c1771f7cae128db954b3cfa66c913d5c600c1
+    name: cert-manager
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/cert-manager-1.0.0/cert-manager-1.0.0.tgz
+    version: 1.0.0
+  envoy-gateway:
+  - annotations:
+      module.otterscale.io/namespace: envoy-gateway-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 1.8.4
+    created: "2026-09-01T18:14:48.909716471Z"
+    dependencies:
+    - condition: gateway-helm.enabled
+      name: gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.8.4
+    - condition: ai-gateway-crds-helm.enabled
+      name: ai-gateway-crds-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.1.0
+    - condition: ai-gateway-helm.enabled
+      name: ai-gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.1.0
+    description: A Helm chart for envoy-gateway
+    digest: 0f3efcfa117fa360b6baaf1f37e2ce062077454bb89fd770ce7b92935eb04183
+    name: envoy-gateway
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/envoy-gateway-1.0.0/envoy-gateway-1.0.0.tgz
+    version: 1.0.0
+  gpu-operator:
+  - annotations:
+      module.otterscale.io/depends-on: prometheus-stack,node-feature-discovery
+      module.otterscale.io/namespace: gpu-operator
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 26.7.0
+    created: "2026-09-01T18:14:49.07315536Z"
+    dependencies:
+    - condition: gpu-operator.enabled
+      name: gpu-operator
+      repository: https://nvidia.github.io/gpu-operator
+      version: 26.7.0
+    description: A Helm chart for gpu-operator
+    digest: 5518548cc9734d78a9aa2c8de48b234b288cf01eca93ed02d6aa6256cdb1d15d
+    name: gpu-operator
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/gpu-operator-1.0.0/gpu-operator-1.0.0.tgz
+    version: 1.0.0
+  hami:
+  - annotations:
+      module.otterscale.io/depends-on: gpu-operator,prometheus-stack
+      module.otterscale.io/namespace: kube-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 2.10.0
+    created: "2026-09-01T18:14:49.242258707Z"
+    dependencies:
+    - condition: hami.enabled
+      name: hami
+      repository: https://project-hami.github.io/HAMi
+      version: 2.10.0
+    description: A Helm chart for hami
+    digest: af71abb112dcd01ecfbef0eea55e28dfd7f6edc3e88daa4565cacc69b3f726e0
+    name: hami
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/hami-1.0.0/hami-1.0.0.tgz
+    version: 1.0.0
+  kserve:
+  - annotations:
+      module.otterscale.io/namespace: kserve
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 0.20.0
+    created: "2026-09-01T18:14:49.405021427Z"
+    dependencies:
+    - condition: kserve-llmisvc-crd.enabled
+      name: kserve-llmisvc-crd
+      repository: oci://ghcr.io/kserve/charts
+      version: v0.20.0
+    description: A Helm chart for kserve
+    digest: c240d3fdebec760cd5f4b88c9dcdfe1782e52cea3c575bbd3e0fbc3777e79e04
+    name: kserve
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kserve-1.0.0/kserve-1.0.0.tgz
+    version: 1.0.0
+  kserve-configs:
+  - annotations:
+      module.otterscale.io/depends-on: kserve-resources
+      module.otterscale.io/namespace: kserve
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 0.20.0
+    created: "2026-09-01T18:14:49.568108437Z"
+    dependencies:
+    - condition: kserve-runtime-configs.enabled
+      name: kserve-runtime-configs
+      repository: oci://ghcr.io/kserve/charts
+      version: v0.20.0
+    description: A Helm chart for kserve-configs
+    digest: 19768ccd5e78aa0b19ecb2e5547a10504741f2041ecdb3ea60143c1d456f7fdf
+    name: kserve-configs
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kserve-configs-1.0.0/kserve-configs-1.0.0.tgz
+    version: 1.0.0
+  kserve-resources:
+  - annotations:
+      module.otterscale.io/depends-on: kserve
+      module.otterscale.io/namespace: kserve
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 0.20.0
+    created: "2026-09-01T18:14:49.751191018Z"
+    dependencies:
+    - condition: kserve-llmisvc-resources.enabled
+      name: kserve-llmisvc-resources
+      repository: oci://ghcr.io/kserve/charts
+      version: v0.20.0
+    description: A Helm chart for kserve-resources
+    digest: f4f4358ef5cee2f142a8a98c6f261f6e4e2dd01f037139788a2df277a24331c9
+    name: kserve-resources
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kserve-resources-1.0.0/kserve-resources-1.0.0.tgz
+    version: 1.0.0
+  kubevirt:
+  - annotations:
+      module.otterscale.io/namespace: kubevirt
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 1.8.4
+    created: "2026-09-01T18:14:49.930903422Z"
+    description: A Helm chart for kubevirt
+    digest: 971d6a0b3c2b410030150e1a7046626a5b6c5db015795ea0d5800bd84e59fb7e
+    name: kubevirt
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kubevirt-1.0.0/kubevirt-1.0.0.tgz
+    version: 1.0.0
+  kubevirt-cr:
+  - annotations:
+      module.otterscale.io/depends-on: kubevirt,prometheus-stack
+      module.otterscale.io/namespace: kubevirt
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 1.8.4
+    created: "2026-09-01T18:14:50.093498494Z"
+    description: A Helm chart for kubevirt-cr
+    digest: 392b3707f0cb4899cee60b8b6e16e005c0f4aa8d81303f1f25c0de56f71c02b1
+    name: kubevirt-cr
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kubevirt-cr-1.0.0/kubevirt-cr-1.0.0.tgz
+    version: 1.0.0
+  leader-worker-set:
+  - annotations:
+      module.otterscale.io/namespace: lws-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 0.8.0
+    created: "2026-09-01T18:14:50.2651038Z"
+    dependencies:
+    - condition: lws.enabled
+      name: lws
+      repository: oci://registry.k8s.io/lws/charts
+      version: 0.8.0
+    description: A Helm chart for leader-worker-set
+    digest: 7205a34e0a832969b9320367924e80de521039dc09bc8bcdf863498e00fe4195
+    name: leader-worker-set
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/leader-worker-set-1.0.0/leader-worker-set-1.0.0.tgz
+    version: 1.0.0
+  node-feature-discovery:
+  - annotations:
+      module.otterscale.io/namespace: node-feature-discovery
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 0.19.0
+    created: "2026-09-01T18:14:50.413983794Z"
+    dependencies:
+    - condition: node-feature-discovery.enabled
+      name: node-feature-discovery
+      repository: oci://registry.k8s.io/nfd/charts
+      version: 0.19.0
+    description: A Helm chart for node-feature-discovery
+    digest: 6f7ae7b1fd398b52a5e0d6e427c9db2cc61b18c8dc12f07d4173b365d028450f
+    name: node-feature-discovery
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/node-feature-discovery-1.0.0/node-feature-discovery-1.0.0.tgz
+    version: 1.0.0
+  otterscale:
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: core
+    apiVersion: v2
+    appVersion: 1.5.0-rc.4
+    created: "2026-09-01T18:14:50.619934773Z"
+    dependencies:
+    - alias: keycloak
+      condition: keycloak.enabled
+      name: keycloakx
+      repository: https://codecentric.github.io/helm-charts
+      version: 7.2.3
+    - condition: valkey.enabled
+      name: valkey
+      repository: https://valkey.io/valkey-helm/
+      version: 0.11.0
+    - condition: harbor.enabled
+      name: harbor
+      repository: https://helm.goharbor.io
+      version: 1.19.2
+    description: A Helm chart for otterscale
+    digest: 46faa744ad5dcdbf3b5ff828834b52830cd3fb6f61d5dda137e7c68cd5b46eaa
+    name: otterscale
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-1.0.0/otterscale-1.0.0.tgz
+    version: 1.0.0
+  otterscale-agent:
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 1.5.0-rc.4
+    created: "2026-09-01T18:14:50.801720275Z"
+    dependencies:
+    - condition: flux2.enabled
+      name: flux2
+      repository: oci://ghcr.io/fluxcd-community/charts
+      version: 2.19.0
+    - condition: topolvm.enabled
+      name: topolvm
+      repository: https://topolvm.github.io/topolvm
+      version: 17.1.0
+    description: A Helm chart for otterscale-agent
+    digest: d05c7a8e53cc7650f6e171be1832afadcdd4a62f775391ab15c0c5b6da4bf2a9
+    name: otterscale-agent
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-1.0.0/otterscale-agent-1.0.0.tgz
+    version: 1.0.0
+  prometheus-stack:
+  - annotations:
+      module.otterscale.io/namespace: monitoring
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 88.6.1
+    created: "2026-09-01T18:14:51.033623552Z"
+    dependencies:
+    - condition: kube-prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 88.6.1
+    description: A Helm chart for prometheus-stack
+    digest: 80de8758d80ff7acc2dc800a3a1acfa9d97ed04c0a27ecff12a3fa3f7461329a
+    name: prometheus-stack
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/prometheus-stack-1.0.0/prometheus-stack-1.0.0.tgz
+    version: 1.0.0
+  rook-ceph:
+  - annotations:
+      module.otterscale.io/namespace: rook-ceph
+      otterscale.io/type: infrastructure
+    apiVersion: v2
+    appVersion: 1.20.6
+    created: "2026-09-01T18:14:51.200614108Z"
+    dependencies:
+    - condition: rook-ceph.enabled
+      name: rook-ceph
+      repository: https://charts.rook.io/release
+      version: 1.20.6
+    description: A Helm chart for rook-ceph
+    digest: 8268116e15a30200a9d5651cf5c7d8928460978c41186590962817c09e47f640
+    name: rook-ceph
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-1.0.0/rook-ceph-1.0.0.tgz
+    version: 1.0.0
+  rook-ceph-cluster:
+  - annotations:
+      module.otterscale.io/depends-on: rook-ceph-csi-drivers
+      module.otterscale.io/namespace: rook-ceph
+      otterscale.io/type: infrastructure
+    apiVersion: v2
+    appVersion: 1.20.6
+    created: "2026-09-01T18:14:51.359157566Z"
+    dependencies:
+    - condition: rook-ceph-cluster.enabled
+      name: rook-ceph-cluster
+      repository: https://charts.rook.io/release
+      version: 1.20.6
+    description: A Helm chart for rook-ceph-cluster
+    digest: 413063406a0f7ed0f6b524f001b4cf082dca1a739f7ea520a6b5bba4a736f896
+    name: rook-ceph-cluster
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-cluster-1.0.0/rook-ceph-cluster-1.0.0.tgz
+    version: 1.0.0
+  rook-ceph-csi-drivers:
+  - annotations:
+      module.otterscale.io/depends-on: rook-ceph
+      module.otterscale.io/namespace: rook-ceph
+      otterscale.io/type: infrastructure
+    apiVersion: v2
+    appVersion: 1.0.4
+    created: "2026-09-01T18:14:51.590692389Z"
+    dependencies:
+    - condition: ceph-csi-drivers.enabled
+      name: ceph-csi-drivers
+      repository: https://ceph.github.io/ceph-csi-operator
+      version: 1.0.4
+    description: A Helm chart for rook-ceph-csi-drivers
+    digest: 9e03f71b9a0ebcf011b72ed4d674de982cb307fec18bf438cc0e6cf4ef84e239
+    name: rook-ceph-csi-drivers
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
+    version: 1.0.0
+generated: "2026-09-01T18:14:51.59069674Z"
