@@ -10,6 +10,6 @@ annotations:
 dependencies:
   - name: kube-prometheus-stack
     # renovate: helm=kube-prometheus-stack registry=https://prometheus-community.github.io/helm-charts
-    version: 88.6.1
+    version: 88.6.2
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-prometheus-stack.enabled
