@@ -6,7 +6,7 @@ version: 1.0.0
 # renovate: helm=ceph-csi-drivers registry=https://ceph.github.io/ceph-csi-operator
 appVersion: "v1.0.4"
 annotations:
-  otterscale.io/type: infra
+  otterscale.io/type: infrastructure
   module.otterscale.io/namespace: "rook-ceph"
   module.otterscale.io/depends-on: "rook-ceph"
 dependencies:
