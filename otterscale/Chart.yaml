@@ -4,24 +4,24 @@ description: A Helm chart for otterscale
 type: application
 version: 1.0.0
 # renovate: image=ghcr.io/otterscale/otterscale
-appVersion: "v1.5.0-rc.4"
+appVersion: 1.5.0-rc.4
 annotations:
   otterscale.io/type: core
-  module.otterscale.io/namespace: "otterscale-system"
+  module.otterscale.io/namespace: otterscale-system
 dependencies:
   - name: keycloakx
     alias: keycloak
     # renovate: helm=keycloakx registry=https://codecentric.github.io/helm-charts
     version: 7.2.3
-    repository: "https://codecentric.github.io/helm-charts"
+    repository: https://codecentric.github.io/helm-charts
     condition: keycloak.enabled
   - name: valkey
     # renovate: helm=valkey registry=https://valkey.io/valkey-helm/
     version: 0.11.0
-    repository: "https://valkey.io/valkey-helm/"
+    repository: https://valkey.io/valkey-helm/
     condition: valkey.enabled
   - name: harbor
     # renovate: helm=harbor registry=https://helm.goharbor.io
     version: 1.19.2
-    repository: "https://helm.goharbor.io"
+    repository: https://helm.goharbor.io
     condition: harbor.enabled

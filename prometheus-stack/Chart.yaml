@@ -3,13 +3,13 @@ name: prometheus-stack
 description: A Helm chart for prometheus-stack
 type: application
 version: 1.0.0
-appVersion: "v88.6.1"
+appVersion: 88.6.1
 annotations:
   otterscale.io/type: module
-  module.otterscale.io/namespace: "monitoring"
+  module.otterscale.io/namespace: monitoring
 dependencies:
   - name: kube-prometheus-stack
     # renovate: helm=kube-prometheus-stack registry=https://prometheus-community.github.io/helm-charts
-    version: "88.6.1"
-    repository: "https://prometheus-community.github.io/helm-charts"
+    version: 88.6.1
+    repository: https://prometheus-community.github.io/helm-charts
     condition: kube-prometheus-stack.enabled

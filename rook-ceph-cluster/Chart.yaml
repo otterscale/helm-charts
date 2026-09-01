@@ -4,14 +4,14 @@ description: A Helm chart for rook-ceph-cluster
 type: application
 version: 1.0.0
 # renovate: helm=rook-ceph-cluster registry=https://charts.rook.io/release
-appVersion: "v1.20.6"
+appVersion: 1.20.6
 annotations:
   otterscale.io/type: infrastructure
-  module.otterscale.io/namespace: "rook-ceph"
-  module.otterscale.io/depends-on: "rook-ceph-csi-drivers"
+  module.otterscale.io/namespace: rook-ceph
+  module.otterscale.io/depends-on: rook-ceph-csi-drivers
 dependencies:
   - name: rook-ceph-cluster
     # renovate: helm=rook-ceph-cluster registry=https://charts.rook.io/release
-    version: "v1.20.6"
-    repository: "https://charts.rook.io/release"
+    version: 1.20.6
+    repository: https://charts.rook.io/release
     condition: rook-ceph-cluster.enabled

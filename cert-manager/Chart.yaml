@@ -3,13 +3,13 @@ name: cert-manager
 description: A Helm chart for cert-manager
 type: application
 version: 1.0.0
-appVersion: "v1.21.1"
+appVersion: 1.21.1
 annotations:
   otterscale.io/type: infrastructure
-  module.otterscale.io/namespace: "cert-manager"
+  module.otterscale.io/namespace: cert-manager
 dependencies:
   # renovate: helm=cert-manager registry=oci://quay.io/jetstack/charts
   - name: cert-manager
-    version: "1.21.1"
-    repository: "oci://quay.io/jetstack/charts"
+    version: 1.21.1
+    repository: oci://quay.io/jetstack/charts
     condition: cert-manager.enabled
