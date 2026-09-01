@@ -19,6 +19,31 @@
 {{- if and .Values.trustedCA.secretName (not .Values.trustedCA.key) }}
   {{- fail "trustedCA.key must be set: it is the key inside the Secret holding the CA certificate" }}
 {{- end }}
+{{- if .Values.clusterInfo.enabled }}
+  {{- $address := .Values.clusterInfo.externalAddress }}
+  {{- if not $address }}
+    {{- fail "clusterInfo.externalAddress must be set: it is the address users reach this cluster's NodePort services at. Set clusterInfo.enabled=false to leave the dashboard without it." }}
+  {{- end }}
+  {{- if contains "://" $address }}
+    {{- fail (printf "clusterInfo.externalAddress must be a bare address, got %q: the scheme is the dashboard's to choose" $address) }}
+  {{- end }}
+  {{- if and (regexMatch ":[0-9]+$" $address) (eq (len (splitList ":" $address)) 2) }}
+    {{- fail (printf "clusterInfo.externalAddress must not carry a port, got %q: the port comes from clusterInfo.nodePortRange" $address) }}
+  {{- end }}
+  {{- $range := .Values.clusterInfo.nodePortRange | toString }}
+  {{- if not (regexMatch "^[0-9]+-[0-9]+$" $range) }}
+    {{- fail (printf "clusterInfo.nodePortRange must look like \"30000-32767\", got %q" $range) }}
+  {{- end }}
+  {{- $bounds := splitList "-" $range }}
+  {{- if ge (atoi (index $bounds 0)) (atoi (index $bounds 1)) }}
+    {{- fail (printf "clusterInfo.nodePortRange is inverted: %q" $range) }}
+  {{- end }}
+  {{- with .Values.clusterInfo.inferenceURL }}
+    {{- if not (or (hasPrefix "http://" .) (hasPrefix "https://" .)) }}
+      {{- fail (printf "clusterInfo.inferenceURL must be an absolute http or https URL, got %q" .) }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 {{- if .Values.tenantOperator.enabled }}
   {{- if not .Values.tenantOperator.harbor.url }}
     {{- fail "tenantOperator.harbor.url must be set: it is the upstream Harbor the operator provisions per-workspace projects in" }}

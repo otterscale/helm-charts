@@ -4,3 +4,6 @@
 {{- if .Values.rbac.storageClassReader.enabled }}
 {{ .Files.Get "files/rbac/storage-class-reader.yaml" }}
 {{- end }}
+{{- if .Values.clusterInfo.enabled }}
+{{ .Files.Get "files/rbac/info-reader.yaml" }}
+{{- end }}

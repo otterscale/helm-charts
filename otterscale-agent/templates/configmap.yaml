@@ -9,3 +9,19 @@ data:
   OTTERSCALE_AGENT_SERVER_URL: {{ .Values.agent.serverURL | quote }}
   OTTERSCALE_AGENT_TUNNEL_SERVER_URL: {{ .Values.agent.tunnelServerURL | quote }}
   OTTERSCALE_AGENT_CLUSTER: {{ .Values.agent.cluster | quote }}
+{{- if .Values.clusterInfo.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otterscale-info
+  namespace: kube-public
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
+data:
+  externalAddress: {{ .Values.clusterInfo.externalAddress | quote }}
+  nodePortRange: {{ .Values.clusterInfo.nodePortRange | quote }}
+  {{- with .Values.clusterInfo.inferenceURL }}
+  inferenceURL: {{ . | trimSuffix "/" | quote }}
+  {{- end }}
+{{- end }}

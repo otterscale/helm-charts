@@ -41,6 +41,15 @@ rbac:
   storageClassReader:
     enabled: true
 
+# How users reach workloads on THIS cluster. The API cannot answer that, so the
+# answer is written into the otterscale-info ConfigMap in kube-public, which the
+# dashboard reads as any logged-in user.
+clusterInfo:
+  enabled: true
+  externalAddress: "192.0.2.1"
+  nodePortRange: "30000-32767"
+  inferenceURL: "https://inference.example.com"
+
 # files/tenant-operator/install.yaml is a rendered manifest pinned to
 # otterscale-system, so this chart only installs into that namespace while the
 # operator is enabled.
