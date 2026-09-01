@@ -347,21 +347,6 @@ spec:
                 x-kubernetes-list-map-keys:
                 - type
                 x-kubernetes-list-type: map
-              configMapRef:
-                description: ConfigMapRef is a reference to the ConfigMap managed
-                  by this Workspace.
-                properties:
-                  name:
-                    description: Name is the name of the referenced resource.
-                    type: string
-                  namespace:
-                    description: |-
-                      Namespace is the namespace of the referenced resource.
-                      Empty for cluster-scoped resources.
-                    type: string
-                required:
-                - name
-                type: object
               helmRepositoryRef:
                 description: |-
                   HelmRepositoryRef is a reference to the FluxCD HelmRepository for the
@@ -550,6 +535,13 @@ rules:
   - ""
   resources:
   - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
   - limitranges
   - namespaces
   - resourcequotas
@@ -561,15 +553,6 @@ rules:
   - list
   - patch
   - update
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - services
-  verbs:
-  - get
-  - list
   - watch
 - apiGroups:
   - ""
@@ -595,14 +578,6 @@ rules:
   verbs:
   - create
   - patch
-- apiGroups:
-  - gateway.networking.k8s.io
-  resources:
-  - gateways
-  verbs:
-  - get
-  - list
-  - watch
 - apiGroups:
   - networking.k8s.io
   resources:
@@ -898,7 +873,10 @@ spec:
         - --webhook-cert-path=/tmp/k8s-webhook-server/serving-certs
         command:
         - /manager
-        image: ghcr.io/otterscale/tenant-operator:v1.5.0-rc.5
+        env:
+        - name: SSL_CERT_DIR
+          value: /etc/tenant-operator/ca
+        image: ghcr.io/otterscale/tenant-operator:v1.5.0-rc.6
         livenessProbe:
           httpGet:
             path: /healthz
@@ -933,6 +911,9 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
+        - mountPath: /etc/tenant-operator/ca
+          name: trusted-ca
+          readOnly: true
         - mountPath: /tmp/k8s-webhook-server/serving-certs
           name: webhook-certs
           readOnly: true
@@ -943,6 +924,10 @@ spec:
       serviceAccountName: tenant-operator
       terminationGracePeriodSeconds: 10
       volumes:
+      - name: trusted-ca
+        secret:
+          optional: true
+          secretName: otterscale-ca
       - name: webhook-certs
         secret:
           secretName: webhook-server-cert

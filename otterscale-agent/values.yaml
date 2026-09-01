@@ -23,6 +23,8 @@ agent:
 # The CA behind agent.serverURL's certificate, from `otterscale join ca`.
 # Without it a privately signed certificate fails registration with x509.
 # Empty is right for a public CA. Create the Secret here; the chart does not.
+# INTERNAL WIRING: tenant-operator mounts this same Secret by name (optional),
+# so it must stay "otterscale-ca" while that operator is enabled.
 trustedCA:
   secretName: ""
   key: "ca.crt"
