@@ -19,6 +19,17 @@
 {{- if and .Values.trustedCA.secretName (not .Values.trustedCA.key) }}
   {{- fail "trustedCA.key must be set: it is the key inside the Secret holding the CA certificate" }}
 {{- end }}
+{{- if .Values.tenantOperator.enabled }}
+  {{- if not .Values.tenantOperator.harbor.url }}
+    {{- fail "tenantOperator.harbor.url must be set: it is the upstream Harbor the operator provisions per-workspace projects in" }}
+  {{- end }}
+  {{- if not .Values.tenantOperator.harbor.robot.name }}
+    {{- fail "tenantOperator.harbor.robot.name must be set: the operator authenticates to Harbor as this robot" }}
+  {{- end }}
+  {{- if not .Values.tenantOperator.harbor.robot.secret }}
+    {{- fail "tenantOperator.harbor.robot.secret must be set: create the robot in the upstream Harbor first. Without it every Workspace stalls at Ready=False, because the operator refuses to run half-configured rather than leave workspaces without registry access." }}
+  {{- end }}
+{{- end }}
 {{- if and .Values.tenantOperator.enabled (ne .Release.Namespace "otterscale-system") }}
   {{- fail (printf "release namespace must be otterscale-system, got %q: files/tenant-operator/install.yaml is a rendered manifest that pins that namespace, so the operator and this chart's own resources would land apart. Set tenantOperator.enabled=false to install elsewhere." .Release.Namespace) }}
 {{- end }}

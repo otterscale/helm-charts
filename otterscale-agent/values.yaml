@@ -48,7 +48,10 @@ tenantOperator:
   enabled: true
   rancherProjectID: "" # empty = no Rancher project annotation
 
-  # A Harbor robot account the operator uses to create per-workspace projects.
+  # SHARED: the upstream Harbor (its harbor.externalURL) and a robot account you
+  # created there. The operator uses them to give each workspace its own project,
+  # robot and imagePullSecret. All three are required when enabled — the
+  # operator refuses to run half-configured.
   harbor:
     url: https://harbor.example.com
     robot:
