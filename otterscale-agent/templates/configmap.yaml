@@ -1,9 +1,10 @@
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: otterscale-agent-config
-  namespace: otterscale-system
+  name: {{ include "otterscale-agent.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
 data:
   OTTERSCALE_AGENT_SERVER_URL: {{ .Values.agent.serverURL | quote }}
   OTTERSCALE_AGENT_TUNNEL_SERVER_URL: {{ .Values.agent.tunnelServerURL | quote }}

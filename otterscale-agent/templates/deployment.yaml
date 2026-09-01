@@ -1,23 +1,24 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: otterscale-agent
-  namespace: otterscale-system
+  name: {{ include "otterscale-agent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: otterscale-agent
+      {{- include "otterscale-agent.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: otterscale-agent
+        {{- include "otterscale-agent.selectorLabels" . | nindent 8 }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
     spec:
-      serviceAccountName: otterscale-agent
+      serviceAccountName: {{ include "otterscale-agent.fullname" . }}
       containers:
         - name: otterscale
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -26,6 +27,6 @@ spec:
             - agent
           envFrom:
             - configMapRef:
-                name: otterscale-agent-config
+                name: {{ include "otterscale-agent.fullname" . }}-config
             - secretRef:
-                name: otterscale-agent-secret
+                name: {{ include "otterscale-agent.fullname" . }}

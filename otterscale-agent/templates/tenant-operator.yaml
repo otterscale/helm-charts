@@ -4,8 +4,12 @@
 apiVersion: v1
 kind: Secret
 metadata:
+  # INTERNAL WIRING: the name is read by files/tenant-operator/install.yaml and
+  # by the operator itself, so it cannot carry the release name.
   name: tenant-operator-secret
-  namespace: otterscale-system
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
 type: Opaque
 stringData:
   HARBOR_URL: {{ .Values.tenantOperator.harbor.url | quote }}
@@ -16,8 +20,11 @@ stringData:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  # INTERNAL WIRING: same, see OperatorConfigName in the operator's source.
   name: tenant-operator-config
-  namespace: otterscale-system
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
 data:
   RancherProjectID: {{ .Values.tenantOperator.rancherProjectID | quote }}
 {{- end }}

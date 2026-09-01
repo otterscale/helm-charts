@@ -1,0 +1,15 @@
+{{- if not .Values.agent.enrolmentToken }}
+  {{- fail "agent.enrolmentToken must be set. Issue one on the server with: kubectl -n otterscale-system exec deploy/<release>-otterscale-server -- /otterscale enrolment-token --cluster <name>" }}
+{{- end }}
+{{- if not .Values.agent.serverURL }}
+  {{- fail "agent.serverURL must be set: it is the otterscale API this agent registers against" }}
+{{- end }}
+{{- if not .Values.agent.tunnelServerURL }}
+  {{- fail "agent.tunnelServerURL must be set: it is the tunnel listener this agent dials" }}
+{{- end }}
+{{- if not .Values.agent.cluster }}
+  {{- fail "agent.cluster must be set: it is the name this cluster registers under" }}
+{{- end }}
+{{- if and .Values.tenantOperator.enabled (ne .Release.Namespace "otterscale-system") }}
+  {{- fail (printf "release namespace must be otterscale-system, got %q: files/tenant-operator/install.yaml is a rendered manifest that pins that namespace, so the operator and this chart's own resources would land apart. Set tenantOperator.enabled=false to install elsewhere." .Release.Namespace) }}
+{{- end }}
