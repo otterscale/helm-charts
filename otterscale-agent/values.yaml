@@ -4,15 +4,36 @@ image:
   pullPolicy: IfNotPresent
 
 agent:
+  # The upstream API. Keep the /api/ prefix — that is the route the Gateway
+  # rewrites onto the server.
   serverURL: "https://otterscale.example.com/api/"
+  # SHARED: must equal the upstream's tunnel.externalURL. Dialled directly, not
+  # through the Gateway.
   tunnelServerURL: "https://10.0.0.1:30300"
+  # SHARED: the name the join token is bound to. A token issued for another
+  # name is rejected.
   cluster: "devel"
-  enrolmentToken: ""
+  # Issued by `otterscale join token --cluster <name>` on the server. Either an
+  # inline token or a Secret you created here; both are mounted as a file, so
+  # neither reaches the agent's environment. Inline lands in the Helm release.
+  joinToken: ""
+  existingSecret: ""
+  existingSecretKey: "join-token"
 
+# The CA behind agent.serverURL's certificate, from `otterscale join ca`.
+# Without it a privately signed certificate fails registration with x509.
+# Empty is right for a public CA. Create the Secret here; the chart does not.
+trustedCA:
+  secretName: ""
+  key: "ca.crt"
+
+# Binds cluster-admin to the listed users on THIS cluster. Empty = no binding.
 clusterAdmin:
   enabled: true
   users: []
 
+# Read-only access granted to system:authenticated, so the dashboard can show
+# nodes and storage classes to any logged-in user.
 rbac:
   nodeReader:
     enabled: true
@@ -20,10 +41,14 @@ rbac:
   storageClassReader:
     enabled: true
 
+# files/tenant-operator/install.yaml is a rendered manifest pinned to
+# otterscale-system, so this chart only installs into that namespace while the
+# operator is enabled.
 tenantOperator:
   enabled: true
-  rancherProjectID: ""
+  rancherProjectID: "" # empty = no Rancher project annotation
 
+  # A Harbor robot account the operator uses to create per-workspace projects.
   harbor:
     url: https://harbor.example.com
     robot:
@@ -74,6 +99,8 @@ flux2:
 
   watchAllNamespaces: true
 
+  # The policy below pins every HelmRelease to a fixed service account, so a
+  # workspace cannot deploy with more privilege than its own.
   extraObjects:
     - apiVersion: v1
       kind: ServiceAccount

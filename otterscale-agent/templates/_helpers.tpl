@@ -21,3 +21,23 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{- define "otterscale-agent.trustedCA.dir" -}}
+/etc/otterscale/ca
+{{- end -}}
+
+{{- define "otterscale-agent.join.dir" -}}
+/etc/otterscale/join
+{{- end -}}
+
+{{- define "otterscale-agent.join.secretName" -}}
+{{- .Values.agent.existingSecret | default (include "otterscale-agent.fullname" .) -}}
+{{- end -}}
+
+{{- define "otterscale-agent.join.secretKey" -}}
+{{- if .Values.agent.existingSecret -}}
+  {{- .Values.agent.existingSecretKey -}}
+{{- else -}}
+  {{- "join-token" -}}
+{{- end -}}
+{{- end -}}

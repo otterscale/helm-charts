@@ -1,3 +1,4 @@
+{{- $trustedCA := .Values.trustedCA.secretName }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,8 +26,37 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - agent
+          env:
+            - name: OTTERSCALE_AGENT_JOIN_TOKEN_FILE
+              value: {{ printf "%s/token" (include "otterscale-agent.join.dir" .) | quote }}
+            {{- if $trustedCA }}
+            - name: SSL_CERT_DIR
+              value: {{ include "otterscale-agent.trustedCA.dir" . | quote }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "otterscale-agent.fullname" . }}-config
-            - secretRef:
-                name: {{ include "otterscale-agent.fullname" . }}
+          volumeMounts:
+            - name: join
+              mountPath: {{ include "otterscale-agent.join.dir" . | quote }}
+              readOnly: true
+            {{- if $trustedCA }}
+            - name: trusted-ca
+              mountPath: {{ include "otterscale-agent.trustedCA.dir" . | quote }}
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: join
+          secret:
+            secretName: {{ include "otterscale-agent.join.secretName" . | quote }}
+            items:
+              - key: {{ include "otterscale-agent.join.secretKey" . | quote }}
+                path: token
+        {{- if $trustedCA }}
+        - name: trusted-ca
+          secret:
+            secretName: {{ $trustedCA | quote }}
+            items:
+              - key: {{ .Values.trustedCA.key | quote }}
+                path: {{ .Values.trustedCA.key | quote }}
+        {{- end }}

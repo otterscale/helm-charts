@@ -1,5 +1,11 @@
-{{- if not .Values.agent.enrolmentToken }}
-  {{- fail "agent.enrolmentToken must be set. Issue one on the server with: kubectl -n otterscale-system exec deploy/<release>-otterscale-server -- /otterscale enrolment-token --cluster <name>" }}
+{{- if and .Values.agent.joinToken .Values.agent.existingSecret }}
+  {{- fail "set either agent.joinToken or agent.existingSecret, not both" }}
+{{- end }}
+{{- if not (or .Values.agent.joinToken .Values.agent.existingSecret) }}
+  {{- fail "agent.joinToken or agent.existingSecret must be set. Issue a token on the server with: kubectl -n otterscale-system exec deploy/<release>-otterscale-server -- /otterscale join token --cluster <name>" }}
+{{- end }}
+{{- if and .Values.agent.existingSecret (not .Values.agent.existingSecretKey) }}
+  {{- fail "agent.existingSecretKey must be set: it is the key inside agent.existingSecret holding the join token" }}
 {{- end }}
 {{- if not .Values.agent.serverURL }}
   {{- fail "agent.serverURL must be set: it is the otterscale API this agent registers against" }}
@@ -9,6 +15,9 @@
 {{- end }}
 {{- if not .Values.agent.cluster }}
   {{- fail "agent.cluster must be set: it is the name this cluster registers under" }}
+{{- end }}
+{{- if and .Values.trustedCA.secretName (not .Values.trustedCA.key) }}
+  {{- fail "trustedCA.key must be set: it is the key inside the Secret holding the CA certificate" }}
 {{- end }}
 {{- if and .Values.tenantOperator.enabled (ne .Release.Namespace "otterscale-system") }}
   {{- fail (printf "release namespace must be otterscale-system, got %q: files/tenant-operator/install.yaml is a rendered manifest that pins that namespace, so the operator and this chart's own resources would land apart. Set tenantOperator.enabled=false to install elsewhere." .Release.Namespace) }}
