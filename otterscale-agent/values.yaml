@@ -9,7 +9,7 @@ agent:
   serverURL: "https://otterscale.example.com/api/"
   # SHARED: must equal the upstream's tunnel.externalURL. Dialled directly, not
   # through the Gateway.
-  tunnelServerURL: "https://10.0.0.1:30300"
+  tunnelServerURL: "https://192.0.2.1:30300"
   # SHARED: the name the join token is bound to. A token issued for another
   # name is rejected.
   cluster: "devel"
