@@ -10,12 +10,10 @@ annotations:
   module.otterscale.io/namespace: otterscale-system
 dependencies:
   - name: flux2
-    # renovate: helm=flux2 registry=oci://ghcr.io/fluxcd-community/charts
     version: 2.19.0
     repository: oci://ghcr.io/fluxcd-community/charts
     condition: flux2.enabled
   - name: topolvm
-    # renovate: helm=topolvm registry=https://topolvm.github.io/topolvm
     version: 17.1.0
     repository: https://topolvm.github.io/topolvm
     condition: topolvm.enabled

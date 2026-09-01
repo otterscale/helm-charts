@@ -9,7 +9,6 @@ annotations:
   module.otterscale.io/namespace: lws-system
 dependencies:
   - name: lws
-    # renovate: helm=lws registry=oci://registry.k8s.io/lws/charts
     version: 0.8.0
     repository: oci://registry.k8s.io/lws/charts
     condition: lws.enabled

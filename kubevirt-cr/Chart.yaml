@@ -3,7 +3,6 @@ name: kubevirt-cr
 description: A Helm chart for kubevirt-cr
 type: application
 version: 1.0.0
-# renovate: github=kubevirt/kubevirt
 appVersion: 1.8.4
 annotations:
   otterscale.io/type: module
