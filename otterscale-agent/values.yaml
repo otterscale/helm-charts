@@ -33,9 +33,6 @@ tenantOperator:
 licenseOperator:
   enabled: false
 
-cert-manager:
-  enabled: true
-
 flux2:
   enabled: true
   installCRDs: true

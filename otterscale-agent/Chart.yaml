@@ -9,11 +9,6 @@ annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: "otterscale-system"
 dependencies:
-  - name: cert-manager
-    # renovate: helm=cert-manager registry=oci://quay.io/jetstack/charts
-    version: "1.21.1"
-    repository: "oci://quay.io/jetstack/charts"
-    condition: cert-manager.enabled
   - name: flux2
     # renovate: helm=flux2 registry=oci://ghcr.io/fluxcd-community/charts
     version: "2.19.0"

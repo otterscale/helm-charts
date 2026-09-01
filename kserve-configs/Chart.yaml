@@ -3,7 +3,6 @@ name: kserve-configs
 description: A Helm chart for kserve-configs
 type: application
 version: 1.0.0
-# renovate: helm=kserve-runtime-configs registry=oci://ghcr.io/kserve/charts
 appVersion: "v0.20.0"
 annotations:
   otterscale.io/type: module
@@ -11,6 +10,7 @@ annotations:
   module.otterscale.io/depends-on: "kserve-resources"
 dependencies:
   - name: kserve-runtime-configs
+    # renovate: helm=kserve-runtime-configs registry=oci://ghcr.io/kserve/charts
     version: "v0.20.0"
     repository: "oci://ghcr.io/kserve/charts"
     condition: kserve-runtime-configs.enabled

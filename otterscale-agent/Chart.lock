@@ -1,12 +1,9 @@
 dependencies:
-- name: cert-manager
-  repository: oci://quay.io/jetstack/charts
-  version: 1.21.1
 - name: flux2
   repository: oci://ghcr.io/fluxcd-community/charts
   version: 2.19.0
 - name: topolvm
   repository: https://topolvm.github.io/topolvm
   version: 17.1.0
-digest: sha256:f79896870a265c9439c75d3c632f0f2e58207928aaef49cc299a67f1f7b99718
-generated: "2026-08-30T22:06:59.995264+08:00"
+digest: sha256:20611f57502453ec61f0d871ffc2b733cd267dc21416a6281a391acdc22ac7b9
+generated: "2026-09-01T17:43:53.613259+08:00"

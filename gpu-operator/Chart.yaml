@@ -3,7 +3,6 @@ name: gpu-operator
 description: A Helm chart for gpu-operator
 type: application
 version: 1.0.0
-# renovate: helm=gpu-operator registry=https://nvidia.github.io/gpu-operator
 appVersion: "v26.7.0"
 annotations:
   otterscale.io/type: module
@@ -11,6 +10,7 @@ annotations:
   module.otterscale.io/depends-on: "prometheus-stack,node-feature-discovery"
 dependencies:
   - name: gpu-operator
+    # renovate: helm=gpu-operator registry=https://nvidia.github.io/gpu-operator
     version: v26.7.0
     repository: https://nvidia.github.io/gpu-operator
     condition: gpu-operator.enabled
