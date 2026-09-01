@@ -103,7 +103,7 @@ flux2:
     create: false
 
   policies:
-    create: true
+    create: false
 
   rbac:
     create: true
