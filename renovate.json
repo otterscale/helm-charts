@@ -90,7 +90,8 @@
       ],
       "matchPackageNames": [
         "ghcr.io/otterscale/otterscale",
-        "ghcr.io/otterscale/dashboard"
+        "ghcr.io/otterscale/dashboard",
+        "ghcr.io/otterscale/tenant-operator"
       ],
       "versioning": "semver"
     }
