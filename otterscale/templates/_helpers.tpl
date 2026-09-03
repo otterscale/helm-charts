@@ -62,6 +62,24 @@ app.kubernetes.io/component: frontend
 app.kubernetes.io/component: frontend
 {{- end -}}
 
+{{- define "otterscale.server.imageTag" -}}
+{{- .Values.server.image.tag | default .Chart.AppVersion -}}
+{{- end -}}
+
+{{- define "otterscale.dashboard.imageTag" -}}
+{{- .Values.dashboard.image.tag | default .Chart.AppVersion -}}
+{{- end -}}
+
+{{- define "otterscale.appVersion" -}}
+{{- if .Values.releaseVersion -}}
+  {{- .Values.releaseVersion -}}
+{{- else -}}
+  {{- $server := regexReplaceAll "@sha256:.*$" (include "otterscale.server.imageTag" .) "" -}}
+  {{- $dashboard := regexReplaceAll "@sha256:.*$" (include "otterscale.dashboard.imageTag" .) "" -}}
+  {{- printf "%s / %s" $server $dashboard -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "otterscale.externalURL" -}}
 {{- .Values.externalURL | trimSuffix "/" -}}
 {{- end -}}

@@ -30,7 +30,7 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.dashboard.terminationGracePeriodSeconds }}
       containers:
         - name: otterscale-dashboard
-          image: "{{ .Values.dashboard.image.repository }}:{{ .Values.dashboard.image.tag }}"
+          image: "{{ .Values.dashboard.image.repository }}:{{ include "otterscale.dashboard.imageTag" . }}"
           imagePullPolicy: {{ .Values.dashboard.image.pullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
@@ -44,7 +44,7 @@ spec:
               protocol: TCP
           env:
             - name: PUBLIC_APP_VERSION
-              value: {{ .Chart.AppVersion | quote }}
+              value: {{ include "otterscale.appVersion" . | quote }}
             {{- if $trustedCA }}
             - name: NODE_EXTRA_CA_CERTS
               value: {{ include "otterscale.trustedCA.path" . | quote }}
