@@ -56,7 +56,7 @@ server:
   replicas: 1
   image:
     repository: ghcr.io/otterscale/otterscale
-    tag: ""
+    tag: v1.5.0-rc.4
     pullPolicy: IfNotPresent
 
   service:

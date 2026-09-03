@@ -2,9 +2,8 @@ apiVersion: v2
 name: otterscale-agent
 description: A Helm chart for otterscale-agent
 type: application
-version: 1.0.1
-# renovate: image=ghcr.io/otterscale/otterscale
-appVersion: 1.5.0-rc.4
+version: 1.0.2
+appVersion: 1.5.0
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: otterscale-system

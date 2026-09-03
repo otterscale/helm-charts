@@ -22,7 +22,7 @@ spec:
       serviceAccountName: {{ include "otterscale-agent.fullname" . }}
       containers:
         - name: otterscale
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - agent
