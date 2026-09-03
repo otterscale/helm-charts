@@ -4,6 +4,11 @@
 # and every login fails. Changing it means rebuilding the realm.
 externalURL: ""
 
+# What the dashboard shows as its version (PUBLIC_APP_VERSION). Set it to a
+# release's version code.
+# Empty = the server and dashboard image tags, "<server> / <dashboard>".
+releaseVersion: ""
+
 # Needs Gateway API >= v1.5 and Envoy Gateway >= v1.8 (ListenerSet).
 expose:
   gateway:
