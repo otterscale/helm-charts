@@ -2,7 +2,7 @@ apiVersion: v2
 name: otterscale-agent
 description: A Helm chart for otterscale-agent
 type: application
-version: 1.0.0
+version: 1.1.0
 # renovate: image=ghcr.io/otterscale/otterscale
 appVersion: 1.5.0-rc.4
 annotations:
@@ -14,6 +14,6 @@ dependencies:
     repository: oci://ghcr.io/fluxcd-community/charts
     condition: flux2.enabled
   - name: topolvm
-    version: 17.1.0
+    version: 17.2.0
     repository: https://topolvm.github.io/topolvm
     condition: topolvm.enabled
