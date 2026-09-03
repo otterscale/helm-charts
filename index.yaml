@@ -273,6 +273,24 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: 1.5.0-rc.4
+    created: "2026-09-03T07:27:34.744759973Z"
+    dependencies:
+    - condition: flux2.enabled
+      name: flux2
+      repository: oci://ghcr.io/fluxcd-community/charts
+      version: 2.19.0
+    description: A Helm chart for otterscale-agent
+    digest: cb32f24dba3d91ac1bed5f8161e6505e0a0ffaea936d338f31731ee24724e6a2
+    name: otterscale-agent
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-1.0.1/otterscale-agent-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 1.5.0-rc.4
     created: "2026-09-01T18:14:50.801720275Z"
     dependencies:
     - condition: flux2.enabled
@@ -368,4 +386,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-03T04:15:09.156746997Z"
+generated: "2026-09-03T07:27:34.74477824Z"
