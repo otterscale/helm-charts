@@ -63,11 +63,11 @@ app.kubernetes.io/component: frontend
 {{- end -}}
 
 {{- define "otterscale.server.imageTag" -}}
-{{- .Values.server.image.tag | default .Chart.AppVersion -}}
+{{- .Values.server.image.tag -}}
 {{- end -}}
 
 {{- define "otterscale.dashboard.imageTag" -}}
-{{- .Values.dashboard.image.tag | default .Chart.AppVersion -}}
+{{- .Values.dashboard.image.tag -}}
 {{- end -}}
 
 {{- define "otterscale.appVersion" -}}
