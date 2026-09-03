@@ -69,9 +69,6 @@ tenantOperator:
       name: "robot$devel"
       secret: ""
 
-licenseOperator:
-  enabled: false
-
 flux2:
   enabled: true
   installCRDs: true
@@ -168,6 +165,3 @@ flux2:
         policyName: otterscale-helmrelease-identity
         validationActions: ["Deny"]
         matchResources: {}
-
-topolvm:
-  enabled: false

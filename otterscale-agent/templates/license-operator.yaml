@@ -1,3 +1,0 @@
-{{- if .Values.licenseOperator.enabled }}
-{{ .Files.Get "files/license-operator/install.yaml" }}
-{{- end }}
