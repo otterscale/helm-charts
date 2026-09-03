@@ -218,6 +218,33 @@ entries:
       otterscale.io/type: core
     apiVersion: v2
     appVersion: 1.5.0-rc.4
+    created: "2026-09-03T04:15:08.415358146Z"
+    dependencies:
+    - alias: keycloak
+      condition: keycloak.enabled
+      name: keycloakx
+      repository: https://codecentric.github.io/helm-charts
+      version: 7.2.3
+    - condition: valkey.enabled
+      name: valkey
+      repository: https://valkey.io/valkey-helm/
+      version: 0.11.0
+    - condition: harbor.enabled
+      name: harbor
+      repository: https://helm.goharbor.io
+      version: 1.19.2
+    description: A Helm chart for otterscale
+    digest: 0e863efc95b9686bc2ad1859ffe55c6e84d4e28261c1b11085aa3c928a03df09
+    name: otterscale
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-1.0.1/otterscale-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: core
+    apiVersion: v2
+    appVersion: 1.5.0-rc.4
     created: "2026-09-01T18:14:50.619934773Z"
     dependencies:
     - alias: keycloak
@@ -341,4 +368,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-01T18:14:51.59069674Z"
+generated: "2026-09-03T04:15:09.156746997Z"
