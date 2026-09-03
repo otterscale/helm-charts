@@ -2,8 +2,5 @@ dependencies:
 - name: flux2
   repository: oci://ghcr.io/fluxcd-community/charts
   version: 2.19.0
-- name: topolvm
-  repository: https://topolvm.github.io/topolvm
-  version: 17.1.0
-digest: sha256:20611f57502453ec61f0d871ffc2b733cd267dc21416a6281a391acdc22ac7b9
-generated: "2026-09-01T17:43:53.613259+08:00"
+digest: sha256:55373dd42d7b80e704b080482bfdb451fa1a813dc833464de71b97bf1bd6ee93
+generated: "2026-09-03T15:26:12.045569042+08:00"
