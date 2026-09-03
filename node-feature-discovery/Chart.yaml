@@ -3,6 +3,7 @@ name: node-feature-discovery
 description: A Helm chart for node-feature-discovery
 type: application
 version: 1.0.0
+# renovate: image=registry.k8s.io/nfd/charts/node-feature-discovery
 appVersion: 0.19.0
 annotations:
   otterscale.io/type: module

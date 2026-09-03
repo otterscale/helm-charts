@@ -3,6 +3,7 @@ name: hami
 description: A Helm chart for hami
 type: application
 version: 1.0.0
+# renovate: helm=hami registry=https://project-hami.github.io/HAMi
 appVersion: 2.10.0
 annotations:
   otterscale.io/type: module

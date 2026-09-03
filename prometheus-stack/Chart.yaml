@@ -3,6 +3,7 @@ name: prometheus-stack
 description: A Helm chart for prometheus-stack
 type: application
 version: 1.0.0
+# renovate: helm=kube-prometheus-stack registry=https://prometheus-community.github.io/helm-charts
 appVersion: 88.6.1
 annotations:
   otterscale.io/type: module

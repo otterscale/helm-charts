@@ -3,7 +3,8 @@ name: otterscale
 description: A Helm chart for otterscale
 type: application
 version: 1.0.2
-appVersion: 1.5.0
+# renovate: image=ghcr.io/otterscale/otterscale
+appVersion: v1.5.0-rc.4
 annotations:
   otterscale.io/type: core
   module.otterscale.io/namespace: otterscale-system
