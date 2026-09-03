@@ -3,7 +3,8 @@ name: kserve
 description: A Helm chart for kserve
 type: application
 version: 1.0.0
-appVersion: 0.20.0
+# renovate: image=ghcr.io/kserve/charts/kserve-llmisvc-crd
+appVersion: v0.20.0
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: kserve

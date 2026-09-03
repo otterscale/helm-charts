@@ -3,7 +3,8 @@ name: gpu-operator
 description: A Helm chart for gpu-operator
 type: application
 version: 1.0.0
-appVersion: 26.7.0
+# renovate: helm=gpu-operator registry=https://nvidia.github.io/gpu-operator
+appVersion: v26.7.0
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: gpu-operator
