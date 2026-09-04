@@ -52,6 +52,25 @@ entries:
       module.otterscale.io/namespace: gpu-operator
       otterscale.io/type: module
     apiVersion: v2
+    appVersion: v26.7.0
+    created: "2026-09-04T02:27:54.915131516Z"
+    dependencies:
+    - condition: gpu-operator.enabled
+      name: gpu-operator
+      repository: https://nvidia.github.io/gpu-operator
+      version: 26.7.0
+    description: A Helm chart for gpu-operator
+    digest: 2e767d5903a5df610808cd5f696e350a34df64ce35cd55d299d2fb3a270c6912
+    name: gpu-operator
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/gpu-operator-1.0.1/gpu-operator-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      module.otterscale.io/depends-on: prometheus-stack,node-feature-discovery
+      module.otterscale.io/namespace: gpu-operator
+      otterscale.io/type: module
+    apiVersion: v2
     appVersion: 26.7.0
     created: "2026-09-01T18:14:49.07315536Z"
     dependencies:
@@ -431,4 +450,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-03T11:29:09.830169084Z"
+generated: "2026-09-04T02:27:57.293311102Z"
