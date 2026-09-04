@@ -13,8 +13,11 @@ hami:
     enabled: true
     runtimeClassName: nvidia
     deviceListStrategy: cdi-annotations
-    nvidiaHookPath: /usr/bin/nvidia-ctk
-    nvidiaDriverRoot: /
+    nvidiaHookPath: /usr/local/nvidia/toolkit/nvidia-ctk
+    nvidiaDriverRoot: /run/nvidia/driver
+    gpuOperatorToolkitReady:
+      enabled: true
+      hostPath: /run/nvidia/validations
     service:
       type: ClusterIP
     securityContext:
