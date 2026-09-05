@@ -1,12 +1,12 @@
 kubevirt:
   # renovate: image=quay.io/kubevirt/virt-operator
-  version: v1.8.4
+  version: v1.9.0
   images:
     operator: quay.io/kubevirt/virt-operator
 
 cdi:
   # renovate: image=quay.io/kubevirt/cdi-operator
-  version: v1.65.0
+  version: v1.66.0
   images:
     operator: quay.io/kubevirt/cdi-operator
     controller: quay.io/kubevirt/cdi-controller
