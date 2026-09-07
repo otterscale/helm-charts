@@ -19,6 +19,12 @@ expose:
       certSource: auto
       auto:
         secretName: "otterscale-tls"
+        # SHARED: the import-cluster wizard passes this name straight into the
+        # agent's trustedCA.secretName, and otterscale-agent refuses any name
+        # but "otterscale-ca" while its tenantOperator is enabled — its
+        # files/tenant-operator/install.yaml mounts that name, and Helm cannot
+        # template a rendered manifest. Renaming it here makes every generated
+        # install command fail at the agent's own validation.
         caSecretName: "otterscale-ca"
         subjectAltNames: [] # empty = the hosts from the two externalURLs
       secret:
