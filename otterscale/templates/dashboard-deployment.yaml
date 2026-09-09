@@ -18,6 +18,12 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/dashboard-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/dashboard-secret.yaml") . | sha256sum }}
+        {{- if .Values.harbor.enabled }}
+        # HARBOR_ADMIN_PASSWORD is read via secretKeyRef from
+        # harbor-admin-secret.yaml, not from dashboard-secret.yaml above, so
+        # it needs its own checksum to still trigger a rollout when it changes.
+        checksum/harbor-admin-secret: {{ include (print $.Template.BasePath "/harbor-admin-secret.yaml") . | sha256sum }}
+        {{- end }}
     spec:
       automountServiceAccountToken: false
       securityContext:
@@ -48,6 +54,17 @@ spec:
             {{- if $trustedCA }}
             - name: NODE_EXTRA_CA_CERTS
               value: {{ include "otterscale.trustedCA.path" . | quote }}
+            {{- end }}
+            {{- if .Values.harbor.enabled }}
+            # Sourced straight from the Secret this chart already generates
+            # the admin password into (harbor-admin-secret.yaml), rather than
+            # copied through this chart's own dashboard-secret.yaml — so
+            # there is exactly one Secret holding this value, not two.
+            - name: HARBOR_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "otterscale.harbor.adminSecretName" . | quote }}
+                  key: {{ include "otterscale.harbor.adminSecretKey" . | quote }}
             {{- end }}
             {{- with .Values.dashboard.env }}
             {{- toYaml . | nindent 12 }}
