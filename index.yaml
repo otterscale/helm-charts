@@ -25,6 +25,32 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: 1.8.4
+    created: "2026-09-09T12:05:03.675636605Z"
+    dependencies:
+    - condition: gateway-helm.enabled
+      name: gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.8.4
+    - condition: ai-gateway-crds-helm.enabled
+      name: ai-gateway-crds-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.1.0
+    - condition: ai-gateway-helm.enabled
+      name: ai-gateway-helm
+      repository: oci://docker.io/envoyproxy
+      version: 1.1.0
+    description: A Helm chart for envoy-gateway
+    digest: ccf1dc0ba0653304fae243750b9b2ec64c7cde695f63ecb2bfc6401a0753dcaa
+    name: envoy-gateway
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/envoy-gateway-1.0.1/envoy-gateway-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      module.otterscale.io/namespace: envoy-gateway-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 1.8.4
     created: "2026-09-01T18:14:48.909716471Z"
     dependencies:
     - condition: gateway-helm.enabled
@@ -528,4 +554,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-09T11:13:41.299402022Z"
+generated: "2026-09-09T12:05:03.675670266Z"
