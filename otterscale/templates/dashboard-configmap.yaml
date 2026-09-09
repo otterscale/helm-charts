@@ -17,10 +17,6 @@ data:
   {{- if .Values.harbor.enabled }}
   PUBLIC_HARBOR_URL: {{ include "otterscale.harbor.externalURL" . | quote }}
   {{- end }}
-  # The import-cluster wizard needs these two for the otterscale-agent install
-  # command it generates, and nothing else in this pod carries them. Everything
-  # else that command needs the wizard derives from the values above, resolves
-  # from the chart repository, or holds as a constant of the agent chart.
   AGENT_TUNNEL_SERVER_URL: {{ include "otterscale.tunnel.externalURL" . | quote }}
   {{- with include "otterscale.trustedCA.secretName" . }}
   AGENT_TRUSTED_CA_SECRET_NAME: {{ . | quote }}
