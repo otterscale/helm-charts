@@ -1,0 +1,37 @@
+{{- $resources := list
+  (dict "group" "gateway.networking.k8s.io" "singular" "httproute" "plural" "httproutes")
+  (dict "group" "gateway.envoyproxy.io" "singular" "envoyextensionpolicy" "plural" "envoyextensionpolicies")
+  (dict "group" "gateway.networking.k8s.io" "singular" "gateway" "plural" "gateways")
+  (dict "group" "gateway.envoyproxy.io" "singular" "backendtrafficpolicy" "plural" "backendtrafficpolicies")
+  (dict "group" "gateway.envoyproxy.io" "singular" "securitypolicy" "plural" "securitypolicies")
+  (dict "group" "gateway.envoyproxy.io" "singular" "clienttrafficpolicy" "plural" "clienttrafficpolicies")
+}}
+{{- $tiers := list
+  (dict "suffix" "admin" "aggregate" "admin" "verbs" (list "*"))
+  (dict "suffix" "editor" "aggregate" "edit" "verbs" (list "create" "delete" "get" "list" "patch" "update" "watch"))
+  (dict "suffix" "viewer" "aggregate" "view" "verbs" (list "get" "list" "watch"))
+}}
+{{- range $resource := $resources }}
+  {{- range $tier := $tiers }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-{{ $tier.aggregate }}: "true"
+  name: otterscale-{{ $resource.singular }}-{{ $tier.suffix }}
+rules:
+  - apiGroups:
+      - {{ $resource.group }}
+    resources:
+      - {{ $resource.plural }}
+    verbs:
+      {{- toYaml $tier.verbs | nindent 6 }}
+  - apiGroups:
+      - {{ $resource.group }}
+    resources:
+      - {{ $resource.plural }}/status
+    verbs:
+      - get
+  {{- end }}
+{{- end }}
