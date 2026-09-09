@@ -80,6 +80,20 @@
           "bumpType": "{{#if (or isPinDigest isPatch)}}patch{{else}}minor{{/if}}"
         }
       ]
+    },
+    {
+      "description": [
+        "Our own images release as `vX.Y.Z-rc.N` before `vX.Y.Z`. Docker versioning treats `rc.N` as a compatibility suffix, so an RC would only ever match another `-rc.N` of the same number and never the GA tag; semver reads it as a prerelease and orders rc.4 < rc.5 < 1.5.0 correctly. Applies to both the helm-values image tags and the annotated appVersion, which keeps the two in step."
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/otterscale/otterscale",
+        "ghcr.io/otterscale/dashboard",
+        "ghcr.io/otterscale/tenant-operator"
+      ],
+      "versioning": "semver"
     }
   ]
 }

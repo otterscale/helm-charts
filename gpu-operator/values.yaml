@@ -18,10 +18,10 @@ gpu-operator:
     enabled: false
 
   driver:
-    enabled: false
+    enabled: true
 
   toolkit:
-    enabled: false
+    enabled: true
 
   devicePlugin:
     enabled: false

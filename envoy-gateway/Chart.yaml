@@ -3,6 +3,7 @@ name: envoy-gateway
 description: A Helm chart for envoy-gateway
 type: application
 version: 1.0.0
+# renovate: image=docker.io/envoyproxy/gateway-helm
 appVersion: 1.8.4
 annotations:
   otterscale.io/type: module

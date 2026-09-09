@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/otterscale/otterscale
-  tag: ""
+  tag: v1.5.0-rc.4
   pullPolicy: IfNotPresent
 
 agent:
@@ -68,9 +68,6 @@ tenantOperator:
     robot:
       name: "robot$devel"
       secret: ""
-
-licenseOperator:
-  enabled: false
 
 flux2:
   enabled: true
@@ -168,6 +165,3 @@ flux2:
         policyName: otterscale-helmrelease-identity
         validationActions: ["Deny"]
         matchResources: {}
-
-topolvm:
-  enabled: false

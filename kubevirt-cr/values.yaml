@@ -1,3 +1,0 @@
-kubevirt:
-  imageRegistry: ""
-  imageTag: ""

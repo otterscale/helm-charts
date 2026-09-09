@@ -4,38 +4,54 @@ hami:
   scheduler:
     certManager:
       enabled: true
+
     patch:
       enabled: false
+
     service:
       type: ClusterIP
 
   devicePlugin:
     enabled: true
+
+    gpuOperatorToolkitReady:
+      enabled: true
+      hostPath: /run/nvidia/validations
+
     runtimeClassName: nvidia
     deviceListStrategy: cdi-annotations
-    nvidiaHookPath: /usr/bin/nvidia-ctk
-    nvidiaDriverRoot: /
+    nvidiaHookPath: /usr/local/nvidia/toolkit/nvidia-ctk
+    nvidiaDriverRoot: /run/nvidia/driver
+
     service:
       type: ClusterIP
+
     securityContext:
       seLinuxOptions:
         type: spc_t
+
     nvidiaNodeSelector:
       otterscale.io/gpu: "true"
 
   devices:
     kunlun:
       enabled: false
+
     enflame:
       enabled: false
+
     mthreads:
       enabled: false
+
     vastai:
       enabled: false
+
     biren:
       enabled: false
+
     ascend:
       enabled: false
+
     iluvatar:
       enabled: false
 
