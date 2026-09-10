@@ -214,6 +214,19 @@ entries:
       module.otterscale.io/namespace: kubevirt
       otterscale.io/type: module
     apiVersion: v2
+    appVersion: v1.9.0
+    created: "2026-09-10T08:13:05.150883995Z"
+    description: A Helm chart for kubevirt
+    digest: f4c7c6190094edf602f6406aea593fc691865c33c969db80bc7bf821e33ba9b8
+    name: kubevirt
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kubevirt-1.1.0/kubevirt-1.1.0.tgz
+    version: 1.1.0
+  - annotations:
+      module.otterscale.io/namespace: kubevirt
+      otterscale.io/type: module
+    apiVersion: v2
     appVersion: 1.8.4
     created: "2026-09-01T18:14:49.930903422Z"
     description: A Helm chart for kubevirt
@@ -224,6 +237,20 @@ entries:
     - https://github.com/otterscale/helm-charts/releases/download/kubevirt-1.0.0/kubevirt-1.0.0.tgz
     version: 1.0.0
   kubevirt-cr:
+  - annotations:
+      module.otterscale.io/depends-on: kubevirt,prometheus-stack
+      module.otterscale.io/namespace: kubevirt
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v1.9.0
+    created: "2026-09-10T08:13:05.27557097Z"
+    description: A Helm chart for kubevirt-cr
+    digest: 52f63e15b63168dcec314900b79cdb1cad86d13619cbf5d66d262ad1a40a01e8
+    name: kubevirt-cr
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kubevirt-cr-1.1.0/kubevirt-cr-1.1.0.tgz
+    version: 1.1.0
   - annotations:
       module.otterscale.io/depends-on: kubevirt,prometheus-stack
       module.otterscale.io/namespace: kubevirt
@@ -572,4 +599,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-09T17:35:28.858003811Z"
+generated: "2026-09-10T08:13:05.275612758Z"
