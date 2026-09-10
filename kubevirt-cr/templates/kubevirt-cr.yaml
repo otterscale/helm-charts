@@ -8,10 +8,16 @@ spec:
   certificateRotateStrategy: {}
   configuration:
     developerConfiguration:
-      featureGates: []
+      featureGates:
+        {{- toYaml .Values.kubevirt.featureGates | nindent 8 }}
       disabledFeatureGates:
         - Template
     imagePullPolicy: IfNotPresent
+    {{- with .Values.kubevirt.pciHostDevices }}
+    permittedHostDevices:
+      pciHostDevices:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
   workloadUpdateStrategy: {}
