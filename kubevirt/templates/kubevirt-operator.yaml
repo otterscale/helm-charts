@@ -8698,9 +8698,10 @@ spec:
               (dict "env" "VIRT_LAUNCHER_IMAGE" "image" $images.launcher)
               (dict "env" "VIRT_EXPORTPROXY_IMAGE" "image" $images.exportProxy)
               (dict "env" "VIRT_EXPORTSERVER_IMAGE" "image" $images.exportServer) }}
-        {{- if $component.image.repository }}
+        {{- $image := $component.image | default dict }}
+        {{- if $image.repository }}
         - name: {{ $component.env }}
-          value: "{{ include "kubevirt.image" (dict "image" $component.image "defaultTag" $.Values.kubevirt.version) }}"
+          value: "{{ include "kubevirt.image" (dict "image" $image "defaultTag" $.Values.kubevirt.version) }}"
         {{- end }}
         {{- end }}
         image: "{{ include "kubevirt.image" (dict "image" .Values.kubevirt.images.operator "defaultTag" .Values.kubevirt.version "key" "kubevirt.images.operator") }}"
