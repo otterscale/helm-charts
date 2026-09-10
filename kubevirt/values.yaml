@@ -1,18 +1,95 @@
 kubevirt:
+  # KUBEVIRT_VERSION, and the fallback tag for the images below.
   # renovate: image=quay.io/kubevirt/virt-operator
-  version: v1.8.4
+  version: v1.9.0
+
   images:
-    operator: quay.io/kubevirt/virt-operator
+    operator:
+      repository: quay.io/kubevirt/virt-operator
+      tag: ""
+      digest: ""
+
+    # virt-operator derives the component images from its own registry, prefix
+    # and version. Set a repository here to pin one to its own tag and digest
+    # instead - the chart then passes it as the matching *_IMAGE env var.
+    api:
+      # quay.io/kubevirt/virt-api
+      repository: ""
+      tag: ""
+      digest: ""
+
+    controller:
+      # quay.io/kubevirt/virt-controller
+      repository: ""
+      tag: ""
+      digest: ""
+
+    handler:
+      # quay.io/kubevirt/virt-handler
+      repository: ""
+      tag: ""
+      digest: ""
+
+    launcher:
+      # quay.io/kubevirt/virt-launcher
+      repository: ""
+      tag: ""
+      digest: ""
+
+    exportProxy:
+      # quay.io/kubevirt/virt-exportproxy
+      repository: ""
+      tag: ""
+      digest: ""
+
+    exportServer:
+      # quay.io/kubevirt/virt-exportserver
+      repository: ""
+      tag: ""
+      digest: ""
 
 cdi:
+  # OPERATOR_VERSION, and the fallback tag for the images below.
   # renovate: image=quay.io/kubevirt/cdi-operator
-  version: v1.65.0
+  version: v1.66.1
+
   images:
-    operator: quay.io/kubevirt/cdi-operator
-    controller: quay.io/kubevirt/cdi-controller
-    importer: quay.io/kubevirt/cdi-importer
-    cloner: quay.io/kubevirt/cdi-cloner
-    ovirtPopulator: quay.io/kubevirt/cdi-importer
-    apiServer: quay.io/kubevirt/cdi-apiserver
-    uploadServer: quay.io/kubevirt/cdi-uploadserver
-    uploadProxy: quay.io/kubevirt/cdi-uploadproxy
+    operator:
+      repository: quay.io/kubevirt/cdi-operator
+      tag: ""
+      digest: ""
+
+    controller:
+      repository: quay.io/kubevirt/cdi-controller
+      tag: ""
+      digest: ""
+
+    importer:
+      repository: quay.io/kubevirt/cdi-importer
+      tag: ""
+      digest: ""
+
+    cloner:
+      repository: quay.io/kubevirt/cdi-cloner
+      tag: ""
+      digest: ""
+
+    ovirtPopulator:
+      repository: quay.io/kubevirt/cdi-importer
+      tag: ""
+      digest: ""
+
+    apiServer:
+      repository: quay.io/kubevirt/cdi-apiserver
+      tag: ""
+      digest: ""
+
+    uploadServer:
+      repository: quay.io/kubevirt/cdi-uploadserver
+      tag: ""
+      digest: ""
+
+    uploadProxy:
+      repository: quay.io/kubevirt/cdi-uploadproxy
+      tag: ""
+      digest: ""
