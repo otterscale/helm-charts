@@ -437,6 +437,12 @@ spec:
                   uploadProxyURLOverride:
                     description: Override the URL used when uploading to a DataVolume
                     type: string
+                  webhookPvcRendering:
+                    description: |-
+                      WebhookPvcRendering controls whether the PVC mutating webhook that completes
+                      PVC specs from StorageProfiles is enabled or disabled
+                      Allowed values are "Enabled" (default) and "Disabled"
+                    type: string
                 type: object
               customizeComponents:
                 description: CustomizeComponents defines patches for components deployed
@@ -2954,6 +2960,12 @@ spec:
                   uploadProxyURLOverride:
                     description: Override the URL used when uploading to a DataVolume
                     type: string
+                  webhookPvcRendering:
+                    description: |-
+                      WebhookPvcRendering controls whether the PVC mutating webhook that completes
+                      PVC specs from StorageProfiles is enabled or disabled
+                      Allowed values are "Enabled" (default) and "Disabled"
+                    type: string
                 type: object
               customizeComponents:
                 description: CustomizeComponents defines patches for components deployed
@@ -5425,6 +5437,12 @@ rules:
   verbs:
   - update
 - apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
   - authorization.k8s.io
   resources:
   - subjectaccessreviews
@@ -5444,6 +5462,16 @@ rules:
   - get
   - list
   - update
+  - patch
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+- nonResourceURLs:
+  - /debug/pprof
+  - /debug/pprof/*
+  verbs:
+  - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -5716,25 +5744,25 @@ spec:
         - name: OPERATOR_VERSION
           value: "{{ .Values.cdi.version }}"
         - name: CONTROLLER_IMAGE
-          value: "{{ .Values.cdi.images.controller }}:{{ .Values.cdi.version }}"
+          value: "{{ include "kubevirt.image" (dict "image" .Values.cdi.images.controller "defaultTag" .Values.cdi.version "key" "cdi.images.controller") }}"
         - name: IMPORTER_IMAGE
-          value: "{{ .Values.cdi.images.importer }}:{{ .Values.cdi.version }}"
+          value: "{{ include "kubevirt.image" (dict "image" .Values.cdi.images.importer "defaultTag" .Values.cdi.version "key" "cdi.images.importer") }}"
         - name: CLONER_IMAGE
-          value: "{{ .Values.cdi.images.cloner }}:{{ .Values.cdi.version }}"
+          value: "{{ include "kubevirt.image" (dict "image" .Values.cdi.images.cloner "defaultTag" .Values.cdi.version "key" "cdi.images.cloner") }}"
         - name: OVIRT_POPULATOR_IMAGE
-          value: "{{ .Values.cdi.images.ovirtPopulator }}:{{ .Values.cdi.version }}"
+          value: "{{ include "kubevirt.image" (dict "image" .Values.cdi.images.ovirtPopulator "defaultTag" .Values.cdi.version "key" "cdi.images.ovirtPopulator") }}"
         - name: APISERVER_IMAGE
-          value: "{{ .Values.cdi.images.apiServer }}:{{ .Values.cdi.version }}"
+          value: "{{ include "kubevirt.image" (dict "image" .Values.cdi.images.apiServer "defaultTag" .Values.cdi.version "key" "cdi.images.apiServer") }}"
         - name: UPLOAD_SERVER_IMAGE
-          value: "{{ .Values.cdi.images.uploadServer }}:{{ .Values.cdi.version }}"
+          value: "{{ include "kubevirt.image" (dict "image" .Values.cdi.images.uploadServer "defaultTag" .Values.cdi.version "key" "cdi.images.uploadServer") }}"
         - name: UPLOAD_PROXY_IMAGE
-          value: "{{ .Values.cdi.images.uploadProxy }}:{{ .Values.cdi.version }}"
+          value: "{{ include "kubevirt.image" (dict "image" .Values.cdi.images.uploadProxy "defaultTag" .Values.cdi.version "key" "cdi.images.uploadProxy") }}"
         - name: VERBOSITY
           value: "1"
         - name: PULL_POLICY
           value: IfNotPresent
         - name: MONITORING_NAMESPACE
-        image: "{{ .Values.cdi.images.operator }}:{{ .Values.cdi.version }}"
+        image: "{{ include "kubevirt.image" (dict "image" .Values.cdi.images.operator "defaultTag" .Values.cdi.version "key" "cdi.images.operator") }}"
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:

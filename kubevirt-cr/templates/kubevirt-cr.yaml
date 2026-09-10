@@ -9,6 +9,8 @@ spec:
   configuration:
     developerConfiguration:
       featureGates: []
+      disabledFeatureGates:
+        - Template
     imagePullPolicy: IfNotPresent
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
