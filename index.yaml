@@ -155,6 +155,24 @@ entries:
       module.otterscale.io/namespace: kserve
       otterscale.io/type: module
     apiVersion: v2
+    appVersion: v0.21.0-rc0
+    created: "2026-09-11T03:08:13.759263942Z"
+    dependencies:
+    - condition: kserve-llmisvc-crd.enabled
+      name: kserve-llmisvc-crd
+      repository: oci://ghcr.io/kserve/charts
+      version: v0.21.0-rc0
+    description: A Helm chart for kserve
+    digest: 6e584030f8395e2137ed591d4c3168eae73eb9379d17f3ee3d152d62e89e0201
+    name: kserve
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kserve-1.1.0/kserve-1.1.0.tgz
+    version: 1.1.0
+  - annotations:
+      module.otterscale.io/namespace: kserve
+      otterscale.io/type: module
+    apiVersion: v2
     appVersion: 0.20.0
     created: "2026-09-01T18:14:49.405021427Z"
     dependencies:
@@ -175,6 +193,25 @@ entries:
       module.otterscale.io/namespace: kserve
       otterscale.io/type: module
     apiVersion: v2
+    appVersion: v0.21.0-rc0
+    created: "2026-09-11T03:08:13.986990724Z"
+    dependencies:
+    - condition: kserve-runtime-configs.enabled
+      name: kserve-runtime-configs
+      repository: oci://ghcr.io/kserve/charts
+      version: v0.21.0-rc0
+    description: A Helm chart for kserve-configs
+    digest: dafe8e002cd9a644f64c22b89908bb702dbc139573c090341e4e69eb1aabde86
+    name: kserve-configs
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kserve-configs-1.1.0/kserve-configs-1.1.0.tgz
+    version: 1.1.0
+  - annotations:
+      module.otterscale.io/depends-on: kserve-resources
+      module.otterscale.io/namespace: kserve
+      otterscale.io/type: module
+    apiVersion: v2
     appVersion: 0.20.0
     created: "2026-09-01T18:14:49.568108437Z"
     dependencies:
@@ -190,6 +227,25 @@ entries:
     - https://github.com/otterscale/helm-charts/releases/download/kserve-configs-1.0.0/kserve-configs-1.0.0.tgz
     version: 1.0.0
   kserve-resources:
+  - annotations:
+      module.otterscale.io/depends-on: kserve
+      module.otterscale.io/namespace: kserve
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v0.21.0-rc0
+    created: "2026-09-11T03:08:14.1819443Z"
+    dependencies:
+    - condition: kserve-llmisvc-resources.enabled
+      name: kserve-llmisvc-resources
+      repository: oci://ghcr.io/kserve/charts
+      version: v0.21.0-rc0
+    description: A Helm chart for kserve-resources
+    digest: 20714e0a803d3484469f6895b835811d8a040affaf81072564a00f55becf7aac
+    name: kserve-resources
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kserve-resources-1.1.0/kserve-resources-1.1.0.tgz
+    version: 1.1.0
   - annotations:
       module.otterscale.io/depends-on: kserve
       module.otterscale.io/namespace: kserve
@@ -599,4 +655,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-10T08:13:05.275612758Z"
+generated: "2026-09-11T03:08:14.181999383Z"
