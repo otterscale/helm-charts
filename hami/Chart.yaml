@@ -2,13 +2,18 @@ apiVersion: v2
 name: hami
 description: A Helm chart for hami
 type: application
-version: 1.0.1
+version: 1.0.2
 # renovate: helm=hami registry=https://project-hami.github.io/HAMi
 appVersion: 2.10.0
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: kube-system
   module.otterscale.io/depends-on: gpu-operator,prometheus-stack
+  module.otterscale.io/post-renderer: >-
+    postRenderers[0].kustomize.patches[0].target.kind=DaemonSet,
+    postRenderers[0].kustomize.patches[0].target.name=hami-device-plugin,
+    postRenderers[0].kustomize.patches[0].patch[0].op=remove,
+    postRenderers[0].kustomize.patches[0].patch[0].path=/spec/template/spec/nodeSelector/gpu
 dependencies:
   - name: hami
     version: 2.10.0
