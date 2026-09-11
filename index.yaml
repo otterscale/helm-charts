@@ -115,6 +115,28 @@ entries:
   - annotations:
       module.otterscale.io/depends-on: gpu-operator,prometheus-stack
       module.otterscale.io/namespace: kube-system
+      module.otterscale.io/post-renderer: postRenderers[0].kustomize.patches[0].target.kind=DaemonSet,
+        postRenderers[0].kustomize.patches[0].target.name=hami-device-plugin, postRenderers[0].kustomize.patches[0].patch[0].op=remove,
+        postRenderers[0].kustomize.patches[0].patch[0].path=/spec/template/spec/nodeSelector/gpu
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 2.10.0
+    created: "2026-09-11T16:59:26.508340736Z"
+    dependencies:
+    - condition: hami.enabled
+      name: hami
+      repository: https://project-hami.github.io/HAMi
+      version: 2.10.0
+    description: A Helm chart for hami
+    digest: 5750872540a3ea64b96d472699bf96c8546a6077917dec274f1e95c239b4b991
+    name: hami
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/hami-1.0.2/hami-1.0.2.tgz
+    version: 1.0.2
+  - annotations:
+      module.otterscale.io/depends-on: gpu-operator,prometheus-stack
+      module.otterscale.io/namespace: kube-system
       otterscale.io/type: module
     apiVersion: v2
     appVersion: 2.10.0
@@ -701,4 +723,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-11T04:47:32.16981802Z"
+generated: "2026-09-11T16:59:26.508398532Z"
