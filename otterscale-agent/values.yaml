@@ -59,6 +59,16 @@ tenantOperator:
   enabled: true
   rancherProjectID: "" # empty = no Rancher project annotation
 
+  # Each entry rewrites `from` (the image reference hardcoded in
+  # files/tenant-operator/install.yaml) to repository:tag[@digest].
+  # Rendering fails if `from` no longer appears in that file.
+  images:
+    tenantOperator:
+      from: ghcr.io/otterscale/tenant-operator:v1.5.0-ea.1
+      repository: ghcr.io/otterscale/tenant-operator
+      # renovate: image=ghcr.io/otterscale/tenant-operator
+      tag: v1.5.0-ea.1
+
   # SHARED: the upstream Harbor (its harbor.externalURL) and a robot account you
   # created there. The operator uses them to give each workspace its own project,
   # robot and imagePullSecret. All three are required when enabled — the

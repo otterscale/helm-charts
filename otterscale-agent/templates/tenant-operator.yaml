@@ -1,5 +1,19 @@
 {{- if .Values.tenantOperator.enabled }}
-{{ .Files.Get "files/tenant-operator/install.yaml" }}
+{{- $content := .Files.Get "files/tenant-operator/install.yaml" }}
+{{- range $key, $image := .Values.tenantOperator.images }}
+{{- if not $image.from }}
+{{- fail (printf "tenantOperator.images.%s.from is required" $key) }}
+{{- end }}
+{{- $ref := printf "%s:%s" (required (printf "tenantOperator.images.%s.repository is required" $key) $image.repository) (required (printf "tenantOperator.images.%s.tag is required" $key) $image.tag) }}
+{{- with $image.digest }}
+{{- $ref = printf "%s@%s" $ref . }}
+{{- end }}
+{{- if not (contains $image.from $content) }}
+{{- fail (printf "tenantOperator.images.%s.from (%s) not found in files/tenant-operator/install.yaml" $key $image.from) }}
+{{- end }}
+{{- $content = $content | replace $image.from $ref }}
+{{- end }}
+{{ $content }}
 ---
 apiVersion: v1
 kind: Secret
