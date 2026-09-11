@@ -1,8 +1,2 @@
 kserve-llmisvc-resources:
   enabled: true
-
-  kserve:
-    controller:
-      gateway:
-        ingressGateway:
-          kserveGateway: kserve/kserve-gateway
