@@ -194,6 +194,20 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: v0.21.0-rc0
+    created: "2026-09-11T03:46:29.314522632Z"
+    description: A Helm chart for kserve-configs
+    digest: 38694a36f058b40f860d6085e098cc327164d77de2e66bed513ec68256c9176a
+    name: kserve-configs
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kserve-configs-1.1.1/kserve-configs-1.1.1.tgz
+    version: 1.1.1
+  - annotations:
+      module.otterscale.io/depends-on: kserve-resources
+      module.otterscale.io/namespace: kserve
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v0.21.0-rc0
     created: "2026-09-11T03:08:13.986990724Z"
     dependencies:
     - condition: kserve-runtime-configs.enabled
@@ -655,4 +669,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-11T03:08:14.181999383Z"
+generated: "2026-09-11T03:46:29.314564494Z"
