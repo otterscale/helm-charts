@@ -194,6 +194,20 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: v0.21.0-rc0
+    created: "2026-09-11T04:47:32.05024575Z"
+    description: A Helm chart for kserve-configs
+    digest: e9bc1555f5922f42ba9aa32e5fea9356655e4ae000c4366537f18caad4a4605c
+    name: kserve-configs
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kserve-configs-1.1.2/kserve-configs-1.1.2.tgz
+    version: 1.1.2
+  - annotations:
+      module.otterscale.io/depends-on: kserve-resources
+      module.otterscale.io/namespace: kserve
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v0.21.0-rc0
     created: "2026-09-11T03:46:29.314522632Z"
     description: A Helm chart for kserve-configs
     digest: 38694a36f058b40f860d6085e098cc327164d77de2e66bed513ec68256c9176a
@@ -502,6 +516,24 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: v1.5.0-rc.5
+    created: "2026-09-11T04:47:32.169752438Z"
+    dependencies:
+    - condition: flux2.enabled
+      name: flux2
+      repository: oci://ghcr.io/fluxcd-community/charts
+      version: 2.19.0
+    description: A Helm chart for otterscale-agent
+    digest: 70690a5a5b53df49f5055e8dd63d8e8a167280bc0a1f5d1950b9582eeb89dc9a
+    name: otterscale-agent
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-1.0.4/otterscale-agent-1.0.4.tgz
+    version: 1.0.4
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v1.5.0-rc.5
     created: "2026-09-09T17:35:28.857968495Z"
     dependencies:
     - condition: flux2.enabled
@@ -669,4 +701,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-11T03:46:29.314564494Z"
+generated: "2026-09-11T04:47:32.16981802Z"
