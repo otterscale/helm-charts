@@ -2785,7 +2785,7 @@ spec:
               value: /tmp/hf
             - name: DO_NOT_TRACK
               value: "1"
-            image: docker.io/vllm/vllm-openai-cpu:v0.23.0@sha256:89e1fbe829038b1a560601990c8ec89625c622a969fcbc8f10ce48b6139795be
+            image: docker.io/vllm/vllm-openai-cpu:v0.29.0@sha256:c2414ae3dfe4fbcd1fb5d1430f032618aca92dcfb0d8e5179165d512a0336f91
             imagePullPolicy: IfNotPresent
             name: main
             ports:
