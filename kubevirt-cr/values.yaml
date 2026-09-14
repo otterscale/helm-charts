@@ -1,0 +1,198 @@
+kubevirt:
+  # KubeVirt feature gates. GPU passthrough needs GPU and HostDevices.
+  featureGates:
+    - GPU
+    - HostDevices
+
+  # PCI devices VMs may claim. pciVendorSelector is the vendor:device ID from
+  # `lspci -nn` on the node (case-insensitive); resourceName is the extended
+  # resource name VMs request. Entries for hardware that is not present are
+  # harmless. Several selectors may share one resourceName to form a pool.
+  #
+  # Desktop / workstation cards have an HDA audio function in the same IOMMU
+  # group as the GPU, so it must be passed through as well. The audio ID is
+  # shared by every card built on the same chip and may only be listed once.
+  # Datacenter cards are single-function and need no audio entry.
+  pciHostDevices:
+    # ─────────────────────────────────────────────
+    # Blackwell — GeForce RTX 50 series / RTX PRO
+    # ─────────────────────────────────────────────
+    - pciVendorSelector: "10DE:2B85"
+      resourceName: nvidia.com/GB202_GEFORCE_RTX_5090
+    - pciVendorSelector: "10DE:2B87"
+      resourceName: nvidia.com/GB202_GEFORCE_RTX_5090_D
+    - pciVendorSelector: "10DE:2C02"
+      resourceName: nvidia.com/GB203_GEFORCE_RTX_5080
+    - pciVendorSelector: "10DE:2C05"
+      resourceName: nvidia.com/GB203_GEFORCE_RTX_5070_TI
+    - pciVendorSelector: "10DE:2F04"
+      resourceName: nvidia.com/GB205_GEFORCE_RTX_5070
+    - pciVendorSelector: "10DE:2D04"
+      resourceName: nvidia.com/GB206_GEFORCE_RTX_5060_TI
+    - pciVendorSelector: "10DE:2BB1"
+      resourceName: nvidia.com/GB202GL_RTX_PRO_6000_BLACKWELL_WS
+    - pciVendorSelector: "10DE:2BB5"
+      resourceName: nvidia.com/GB202GL_RTX_PRO_6000_BLACKWELL_SERVER
+
+    # Newer GB203-based RTX 5070 (added in later drivers) — enable only if this is the chip you have
+    # - pciVendorSelector: "10DE:2C09"
+    #   resourceName: nvidia.com/GB203_GEFORCE_RTX_5070
+    # RTX PRO 6000 Blackwell Max-Q Workstation Edition — from pci-ids, not yet verified on hardware
+    # - pciVendorSelector: "10DE:2BB4"
+    #   resourceName: nvidia.com/GB202GL_RTX_PRO_6000_BLACKWELL_MAXQ
+
+    # ─────────────────────────────────────────────
+    # Ada Lovelace — GeForce RTX 40 series
+    # ─────────────────────────────────────────────
+    - pciVendorSelector: "10DE:2684"
+      resourceName: nvidia.com/AD102_GEFORCE_RTX_4090
+    - pciVendorSelector: "10DE:2685"
+      resourceName: nvidia.com/AD102_GEFORCE_RTX_4090_D
+    - pciVendorSelector: "10DE:2704"
+      resourceName: nvidia.com/AD103_GEFORCE_RTX_4080
+    # RTX 4080 SUPER ships with two IDs; pool them under one resource
+    - pciVendorSelector: "10DE:2702"
+      resourceName: nvidia.com/AD103_GEFORCE_RTX_4080_SUPER
+    - pciVendorSelector: "10DE:2703"
+      resourceName: nvidia.com/AD103_GEFORCE_RTX_4080_SUPER
+    # RTX 4070 Ti SUPER likewise exists as AD103 and AD102 variants
+    - pciVendorSelector: "10DE:2705"
+      resourceName: nvidia.com/GEFORCE_RTX_4070_TI_SUPER
+    - pciVendorSelector: "10DE:2689"
+      resourceName: nvidia.com/GEFORCE_RTX_4070_TI_SUPER
+    - pciVendorSelector: "10DE:2782"
+      resourceName: nvidia.com/AD104_GEFORCE_RTX_4070_TI
+    - pciVendorSelector: "10DE:2783"
+      resourceName: nvidia.com/AD104_GEFORCE_RTX_4070_SUPER
+    - pciVendorSelector: "10DE:2786"
+      resourceName: nvidia.com/AD104_GEFORCE_RTX_4070
+    # RTX 4060 Ti 8GB / 16GB are 2803 / 2805 respectively
+    - pciVendorSelector: "10DE:2803"
+      resourceName: nvidia.com/AD106_GEFORCE_RTX_4060_TI
+    - pciVendorSelector: "10DE:2805"
+      resourceName: nvidia.com/AD106_GEFORCE_RTX_4060_TI_16GB
+    - pciVendorSelector: "10DE:2882"
+      resourceName: nvidia.com/AD107_GEFORCE_RTX_4060
+
+    # ─────────────────────────────────────────────
+    # Ada Lovelace — workstation / datacenter (single function)
+    # ─────────────────────────────────────────────
+    - pciVendorSelector: "10DE:26B1"
+      resourceName: nvidia.com/AD102GL_RTX_6000_ADA
+    - pciVendorSelector: "10DE:26B2"
+      resourceName: nvidia.com/AD102GL_RTX_5000_ADA
+    - pciVendorSelector: "10DE:26B3"
+      resourceName: nvidia.com/AD102GL_RTX_5880_ADA
+    - pciVendorSelector: "10DE:27B2"
+      resourceName: nvidia.com/AD104GL_RTX_4000_ADA
+    - pciVendorSelector: "10DE:27B0"
+      resourceName: nvidia.com/AD104GL_RTX_4000_SFF_ADA
+    - pciVendorSelector: "10DE:26B5"
+      resourceName: nvidia.com/AD102GL_L40
+    - pciVendorSelector: "10DE:26B9"
+      resourceName: nvidia.com/AD102GL_L40S
+    - pciVendorSelector: "10DE:27B8"
+      resourceName: nvidia.com/AD104GL_L4
+    - pciVendorSelector: "10DE:27B6"
+      resourceName: nvidia.com/AD104GL_L2
+
+    # ─────────────────────────────────────────────
+    # Hopper — H series (single function)
+    # ─────────────────────────────────────────────
+    - pciVendorSelector: "10DE:2330"
+      resourceName: nvidia.com/GH100_H100_SXM5_80GB
+    - pciVendorSelector: "10DE:2331"
+      resourceName: nvidia.com/GH100_H100_PCIE
+    - pciVendorSelector: "10DE:2335"
+      resourceName: nvidia.com/GH100_H200_SXM_141GB
+    - pciVendorSelector: "10DE:2321"
+      resourceName: nvidia.com/GH100_H100L_94GB
+    - pciVendorSelector: "10DE:2322"
+      resourceName: nvidia.com/GH100_H800_PCIE
+    - pciVendorSelector: "10DE:2324"
+      resourceName: nvidia.com/GH100_H800_SXM
+    - pciVendorSelector: "10DE:2329"
+      resourceName: nvidia.com/GH100_H20
+    - pciVendorSelector: "10DE:2342"
+      resourceName: nvidia.com/GH100_GH200
+
+    # ─────────────────────────────────────────────
+    # Ampere — datacenter / workstation (single function)
+    # ─────────────────────────────────────────────
+    - pciVendorSelector: "10DE:20B0"
+      resourceName: nvidia.com/GA100_A100_SXM4_40GB
+    - pciVendorSelector: "10DE:20B2"
+      resourceName: nvidia.com/GA100_A100_SXM4_80GB
+    - pciVendorSelector: "10DE:20B5"
+      resourceName: nvidia.com/GA100_A100_PCIE_80GB
+    - pciVendorSelector: "10DE:20F1"
+      resourceName: nvidia.com/GA100_A100_PCIE_40GB
+    - pciVendorSelector: "10DE:20B7"
+      resourceName: nvidia.com/GA100_A30
+    - pciVendorSelector: "10DE:2235"
+      resourceName: nvidia.com/GA102GL_A40
+    - pciVendorSelector: "10DE:2236"
+      resourceName: nvidia.com/GA102GL_A10
+    - pciVendorSelector: "10DE:2237"
+      resourceName: nvidia.com/GA102GL_A10G
+    - pciVendorSelector: "10DE:25B6"
+      resourceName: nvidia.com/GA107GL_A2_A16
+    - pciVendorSelector: "10DE:2230"
+      resourceName: nvidia.com/GA102GL_RTX_A6000
+    - pciVendorSelector: "10DE:2233"
+      resourceName: nvidia.com/GA102GL_RTX_A5500
+    - pciVendorSelector: "10DE:2231"
+      resourceName: nvidia.com/GA102GL_RTX_A5000
+    - pciVendorSelector: "10DE:2232"
+      resourceName: nvidia.com/GA102GL_RTX_A4500
+    - pciVendorSelector: "10DE:24B0"
+      resourceName: nvidia.com/GA104GL_RTX_A4000
+    - pciVendorSelector: "10DE:2531"
+      resourceName: nvidia.com/GA106GL_RTX_A2000
+
+    # ─────────────────────────────────────────────
+    # Ampere — GeForce RTX 30 series
+    # ─────────────────────────────────────────────
+    - pciVendorSelector: "10DE:2204"
+      resourceName: nvidia.com/GA102_GEFORCE_RTX_3090
+    - pciVendorSelector: "10DE:2206"
+      resourceName: nvidia.com/GA102_GEFORCE_RTX_3080
+
+    # ─────────────────────────────────────────────
+    # Turing — datacenter (single function)
+    # ─────────────────────────────────────────────
+    - pciVendorSelector: "10DE:1EB8"
+      resourceName: nvidia.com/TU104GL_T4
+
+    # ─────────────────────────────────────────────
+    # HDA audio functions (must be allowed alongside desktop / workstation GPUs)
+    # One entry per chip. For other generations, read the ID with
+    #   lspci -nn -s <GPU bus>.1
+    # and add it here
+    # ─────────────────────────────────────────────
+    - pciVendorSelector: "10DE:22E8"
+      resourceName: nvidia.com/GB202_HDA_AUDIO   # RTX 5090 / 5090 D / RTX PRO 6000
+    - pciVendorSelector: "10DE:22E9"
+      resourceName: nvidia.com/GB203_HDA_AUDIO   # RTX 5080 / 5070 Ti
+    - pciVendorSelector: "10DE:2F80"
+      resourceName: nvidia.com/GB205_HDA_AUDIO   # RTX 5070
+    - pciVendorSelector: "10DE:22BA"
+      resourceName: nvidia.com/AD102_HDA_AUDIO   # RTX 4090 / 4090 D, RTX 6000/5880/5000 Ada
+    - pciVendorSelector: "10DE:22BB"
+      resourceName: nvidia.com/AD103_HDA_AUDIO   # RTX 4080 / 4080 SUPER / 4070 Ti SUPER
+    - pciVendorSelector: "10DE:22BC"
+      resourceName: nvidia.com/AD104_HDA_AUDIO   # RTX 4070 / 4070 SUPER / 4070 Ti, RTX 4000 Ada
+    - pciVendorSelector: "10DE:1AEF"
+      resourceName: nvidia.com/GA102_HDA_AUDIO   # RTX 3090 / 3080, RTX A6000/A5500/A5000/A4500
+    - pciVendorSelector: "10DE:228B"
+      resourceName: nvidia.com/GA104_HDA_AUDIO   # RTX A4000
+    - pciVendorSelector: "10DE:228E"
+      resourceName: nvidia.com/GA106_HDA_AUDIO   # RTX A2000
+
+    # Taken from the pci-ids database, not yet verified on real hardware — enable once confirmed
+    # - pciVendorSelector: "10DE:22EB"
+    #   resourceName: nvidia.com/GB206_HDA_AUDIO   # RTX 5060 Ti
+    # - pciVendorSelector: "10DE:22BD"
+    #   resourceName: nvidia.com/AD106_HDA_AUDIO   # RTX 4060 Ti
+    # - pciVendorSelector: "10DE:22BE"
+    #   resourceName: nvidia.com/AD107_HDA_AUDIO   # RTX 4060
