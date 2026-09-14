@@ -67,7 +67,7 @@ tenantOperator:
       from: ghcr.io/otterscale/tenant-operator:v1.5.0-ea.1
       repository: ghcr.io/otterscale/tenant-operator
       # renovate: image=ghcr.io/otterscale/tenant-operator
-      tag: v1.5.0-ea.1
+      tag: v1.5.0-rc.7
 
   # SHARED: the upstream Harbor (its harbor.externalURL) and a robot account you
   # created there. The operator uses them to give each workspace its own project,
