@@ -1,34 +1,33 @@
-{{- if not .Values.name }}
-  {{- fail "name must be set: it is the HelmRelease and Helm release name of the agent" }}
-{{- end }}
-{{- if eq .Values.name .Release.Name }}
-  {{- fail (printf "name must differ from this chart's release name (%q): the agent installs as a Helm release of its own in the same namespace" .Release.Name) }}
-{{- end }}
-{{- if not .Values.chart.name }}
-  {{- fail "chart.name must be set: it is the chart Flux installs" }}
-{{- end }}
-{{- if not .Values.chart.repository.url }}
-  {{- fail "chart.repository.url must be set: it is the repository Flux fetches the chart from" }}
+{{- if not .Values.repository.url }}
+  {{- fail "repository.url must be set: it is the repository Flux fetches every chart from" }}
 {{- end }}
 {{- if not .Values.serviceAccountName }}
   {{- fail "serviceAccountName must be set: the flux chart's admission policy rejects a HelmRelease without one" }}
 {{- end }}
-{{- /* The agent chart refuses to install without a join token. Catch the plain omission here rather than in the HelmRelease status. */}}
-{{- $agent := dig "agent" (dict) .Values.values }}
-{{- if and (not .Values.valuesFrom) (not (or $agent.joinToken $agent.existingSecret)) }}
-  {{- fail "values.agent.joinToken or values.agent.existingSecret must be set, or valuesFrom must supply one: the agent chart refuses to install without a join token" }}
+{{- range $key := list "agent" "flux" }}
+  {{- $rel := index $.Values $key }}
+  {{- if $rel.enabled }}
+    {{- if not $rel.name }}
+      {{- fail (printf "%s.name must be set: it is the HelmRelease and Helm release name" $key) }}
+    {{- end }}
+    {{- if eq $rel.name $.Release.Name }}
+      {{- fail (printf "%s.name must differ from this chart's release name (%q): it installs as a Helm release of its own in the same namespace" $key $.Release.Name) }}
+    {{- end }}
+    {{- if not $rel.chart }}
+      {{- fail (printf "%s.chart must be set: it is the chart Flux installs" $key) }}
+    {{- end }}
+  {{- end }}
 {{- end }}
-{{- if .Values.flux.enabled }}
-  {{- if not .Values.flux.name }}
-    {{- fail "flux.name must be set: it is the Helm release name the flux chart was installed as, which the HelmRelease takes over" }}
+{{- if and .Values.agent.enabled .Values.flux.enabled (eq .Values.agent.name .Values.flux.name) }}
+  {{- fail (printf "agent.name and flux.name must differ, both are %q: they are separate Helm releases in the same namespace" .Values.agent.name) }}
+{{- end }}
+{{- if .Values.agent.enabled }}
+  {{- /* The agent chart refuses to install without a join token. Catch the plain omission here rather than in the HelmRelease status. */}}
+  {{- $agent := dig "agent" (dict) .Values.agent.values }}
+  {{- if and (not .Values.agent.valuesFrom) (not (or $agent.joinToken $agent.existingSecret)) }}
+    {{- fail "agent.values.agent.joinToken or agent.values.agent.existingSecret must be set, or agent.valuesFrom must supply one: the agent chart refuses to install without a join token" }}
   {{- end }}
-  {{- if or (eq .Values.flux.name .Release.Name) (eq .Values.flux.name .Values.name) }}
-    {{- fail (printf "flux.name (%q) must differ from this chart's release name and from name: they are all Helm releases in the same namespace" .Values.flux.name) }}
-  {{- end }}
-  {{- if not .Values.flux.chart.name }}
-    {{- fail "flux.chart.name must be set: it is the chart the flux release was installed from" }}
-  {{- end }}
-  {{- if not .Values.flux.chart.version }}
-    {{- fail "flux.chart.version must be set: a pinned version or a semver range" }}
-  {{- end }}
+{{- end }}
+{{- if and .Values.flux.enabled (not .Values.flux.version) }}
+  {{- fail "flux.version must be set: a pinned version or a semver range. Unlike agent.version it has no default, this chart's appVersion is the agent's" }}
 {{- end }}
