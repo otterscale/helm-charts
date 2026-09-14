@@ -1,0 +1,15 @@
+apiVersion: v2
+name: flux
+description: A Helm chart for flux
+type: application
+version: 1.0.0
+# renovate: docker=ghcr.io/fluxcd-community/charts/flux2
+appVersion: 2.19.0
+annotations:
+  otterscale.io/type: module
+  module.otterscale.io/namespace: otterscale-system
+dependencies:
+  - name: flux2
+    version: 2.19.0
+    repository: oci://ghcr.io/fluxcd-community/charts
+    condition: flux2.enabled

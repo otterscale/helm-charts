@@ -1,0 +1,38 @@
+{{- if .Values.flux.enabled }}
+{{- $repo := .Values.chart.repository }}
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: {{ .Values.flux.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale-agent-flux.labels" . | nindent 4 }}
+spec:
+  interval: {{ .Values.interval }}
+  timeout: {{ .Values.timeout }}
+  releaseName: {{ .Values.flux.name }}
+  serviceAccountName: {{ .Values.serviceAccountName }}
+  chart:
+    spec:
+      chart: {{ .Values.flux.chart.name }}
+      version: {{ .Values.flux.chart.version | quote }}
+      sourceRef:
+        kind: HelmRepository
+        name: {{ $repo.name }}
+      interval: {{ $repo.interval }}
+  install:
+    remediation:
+      retries: {{ .Values.install.remediation.retries }}
+  upgrade:
+    remediation:
+      retries: {{ .Values.upgrade.remediation.retries }}
+  {{- with .Values.flux.valuesFrom }}
+  valuesFrom:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.flux.values }}
+  values:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

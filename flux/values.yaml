@@ -1,0 +1,53 @@
+# The identity every HelmRelease on this cluster must run as, so a workspace
+# cannot deploy with more privilege than its own.
+deployer:
+  # Bound to cluster-admin and used in the release namespace only. The
+  # otterscale-agent-flux chart and the otterscale server's module releases
+  # run as it.
+  name: platform-deployer
+  # Expected everywhere else.
+  workspaceName: workspace-deployer
+  # The ValidatingAdmissionPolicy that enforces the two names above.
+  policy:
+    enabled: true
+
+flux2:
+  enabled: true
+  installCRDs: true
+
+  multitenancy:
+    enabled: true
+    defaultServiceAccount: "default"
+    privileged: false
+
+  helmController:
+    create: true
+
+  imageAutomationController:
+    create: false
+
+  imageReflectionController:
+    create: false
+
+  kustomizeController:
+    create: false
+
+  notificationController:
+    create: false
+
+  sourceController:
+    create: true
+
+  sourceWatcher:
+    create: false
+
+  policies:
+    create: false
+
+  rbac:
+    create: true
+    createAggregation: true
+    roleRef:
+      name: crd-controller
+
+  watchAllNamespaces: true

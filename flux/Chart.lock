@@ -3,4 +3,4 @@ dependencies:
   repository: oci://ghcr.io/fluxcd-community/charts
   version: 2.19.0
 digest: sha256:55373dd42d7b80e704b080482bfdb451fa1a813dc833464de71b97bf1bd6ee93
-generated: "2026-09-03T15:26:12.045569042+08:00"
+generated: "2026-09-14T22:40:18.989779+08:00"

@@ -1,0 +1,34 @@
+{{- if not .Values.name }}
+  {{- fail "name must be set: it is the HelmRelease and Helm release name of the agent" }}
+{{- end }}
+{{- if eq .Values.name .Release.Name }}
+  {{- fail (printf "name must differ from this chart's release name (%q): the agent installs as a Helm release of its own in the same namespace" .Release.Name) }}
+{{- end }}
+{{- if not .Values.chart.name }}
+  {{- fail "chart.name must be set: it is the chart Flux installs" }}
+{{- end }}
+{{- if not .Values.chart.repository.url }}
+  {{- fail "chart.repository.url must be set: it is the repository Flux fetches the chart from" }}
+{{- end }}
+{{- if not .Values.serviceAccountName }}
+  {{- fail "serviceAccountName must be set: the flux chart's admission policy rejects a HelmRelease without one" }}
+{{- end }}
+{{- /* The agent chart refuses to install without a join token. Catch the plain omission here rather than in the HelmRelease status. */}}
+{{- $agent := dig "agent" (dict) .Values.values }}
+{{- if and (not .Values.valuesFrom) (not (or $agent.joinToken $agent.existingSecret)) }}
+  {{- fail "values.agent.joinToken or values.agent.existingSecret must be set, or valuesFrom must supply one: the agent chart refuses to install without a join token" }}
+{{- end }}
+{{- if .Values.flux.enabled }}
+  {{- if not .Values.flux.name }}
+    {{- fail "flux.name must be set: it is the Helm release name the flux chart was installed as, which the HelmRelease takes over" }}
+  {{- end }}
+  {{- if or (eq .Values.flux.name .Release.Name) (eq .Values.flux.name .Values.name) }}
+    {{- fail (printf "flux.name (%q) must differ from this chart's release name and from name: they are all Helm releases in the same namespace" .Values.flux.name) }}
+  {{- end }}
+  {{- if not .Values.flux.chart.name }}
+    {{- fail "flux.chart.name must be set: it is the chart the flux release was installed from" }}
+  {{- end }}
+  {{- if not .Values.flux.chart.version }}
+    {{- fail "flux.chart.version must be set: a pinned version or a semver range" }}
+  {{- end }}
+{{- end }}
