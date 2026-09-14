@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.deployer.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "flux.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: otterscale-{{ .Values.deployer.name }}
+  labels:
+    {{- include "flux.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.deployer.name }}
+    namespace: {{ .Release.Namespace }}
+{{- if .Values.deployer.policy.enabled }}
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: otterscale-helmrelease-identity
+  labels:
+    {{- include "flux.labels" . | nindent 4 }}
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["helm.toolkit.fluxcd.io"]
+        apiVersions: ["*"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["helmreleases"]
+  variables:
+    - name: serviceAccountName
+      expression: "has(object.spec.serviceAccountName) ? object.spec.serviceAccountName : ''"
+    - name: isPlatformNamespace
+      expression: "request.namespace == {{ .Release.Namespace | squote }}"
+  validations:
+    - expression: "variables.serviceAccountName != ''"
+      message: "spec.serviceAccountName is required"
+    - expression: "!has(object.spec.kubeConfig)"
+      message: "spec.kubeConfig is not allowed"
+    - expression: >-
+        variables.isPlatformNamespace ?
+        variables.serviceAccountName == {{ .Values.deployer.name | squote }} :
+        variables.serviceAccountName == {{ .Values.deployer.workspaceName | squote }}
+      message: "spec.serviceAccountName must be {{ .Values.deployer.name | squote }} in {{ .Release.Namespace }} and {{ .Values.deployer.workspaceName | squote }} elsewhere"
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: otterscale-helmrelease-identity
+  labels:
+    {{- include "flux.labels" . | nindent 4 }}
+spec:
+  policyName: otterscale-helmrelease-identity
+  validationActions: ["Deny"]
+  matchResources: {}
+{{- end }}

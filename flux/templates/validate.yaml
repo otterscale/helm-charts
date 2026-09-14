@@ -1,0 +1,6 @@
+{{- if not .Values.deployer.name }}
+  {{- fail "deployer.name must be set: it is the ServiceAccount every HelmRelease in this namespace runs as" }}
+{{- end }}
+{{- if and .Values.deployer.policy.enabled (not .Values.deployer.workspaceName) }}
+  {{- fail "deployer.workspaceName must be set: it is the ServiceAccount the policy requires of HelmReleases outside this namespace" }}
+{{- end }}
