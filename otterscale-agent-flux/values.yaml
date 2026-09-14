@@ -1,30 +1,18 @@
-# The HelmRelease that has Flux install otterscale-agent. Everything under
-# values is the agent chart's own values, passed through untouched.
+# The HelmReleases that have Flux install otterscale-agent, and take over Flux
+# itself. Shared settings first, then one block per release.
 
-# HelmRelease name, and the Helm release name it installs as. The agent chart
-# names its resources after the release, so keep the chart name in it. It must
-# differ from this chart's own release name: two Helm releases cannot share a
-# name in one namespace.
-name: otterscale-agent
+# The chart repository every release below pulls from.
+repository:
+  name: otterscale
+  # An oci:// URL switches the HelmRepository to type oci.
+  url: https://otterscale.github.io/helm-charts
+  # How often the index is refetched. A new chart version is picked up no
+  # sooner than this.
+  interval: 1h
+  # Secret holding the credentials for a private mirror; empty for none.
+  secretRef: ""
 
-chart:
-  name: otterscale-agent
-  # Empty pins the version this chart was released for (its appVersion), so
-  # bumping this chart is what rolls the agent forward. A semver range such as
-  # ">=1.0.0" lets Flux follow the repository instead.
-  version: ""
-
-  repository:
-    name: otterscale
-    # An oci:// URL switches the HelmRepository to type oci.
-    url: https://otterscale.github.io/helm-charts
-    # How often the index is refetched. A new chart version is picked up no
-    # sooner than this.
-    interval: 1h
-    # Secret holding the credentials for a private mirror; empty for none.
-    secretRef: ""
-
-# Runs the release as this ServiceAccount. The flux chart creates it and its
+# Every release runs as this ServiceAccount. The flux chart creates it and its
 # admission policy rejects any other name in this namespace.
 serviceAccountName: platform-deployer
 
@@ -38,48 +26,58 @@ upgrade:
   remediation:
     retries: 3
 
-# Values for the agent chart. The join token and Harbor robot secret are
-# required by that chart; inline values land in this Helm release and in the
-# HelmRelease object, so prefer valuesFrom for them.
-values: {}
-  # agent:
-  #   serverURL: "https://otterscale.example.com/api/"
-  #   tunnelServerURL: "https://192.0.2.1:30300"
-  #   cluster: "devel"
-  #   joinToken: ""
-  # tenantOperator:
-  #   harbor:
-  #     url: https://harbor.example.com
-  #     robot:
-  #       name: "robot$devel"
-  #       secret: ""
+# One block per HelmRelease. name is both the HelmRelease and the Helm release
+# name, and must differ from this chart's own release name: two Helm releases
+# cannot share a name in one namespace. values and valuesFrom are the target
+# chart's own values, passed through untouched; valuesFrom is merged on top of
+# values, in order, same shape as HelmRelease spec.valuesFrom.
 
-# Secrets or ConfigMaps in the release namespace merged into the values, in
-# order, on top of values. Same shape as HelmRelease spec.valuesFrom.
-valuesFrom: []
-  # - kind: Secret
-  #   name: otterscale-agent-values
-  #   valuesKey: values.yaml
+agent:
+  enabled: true
+  # The agent chart names its resources after the release, so keep the chart
+  # name in it.
+  name: otterscale-agent
+  chart: otterscale-agent
+  # Empty pins the version this chart was released for (its appVersion), so
+  # bumping this chart is what rolls the agent forward. A semver range such as
+  # ">=1.0.0" lets Flux follow the repository instead.
+  version: ""
+  # The join token and Harbor robot secret are required by the agent chart;
+  # inline values land in this Helm release and in the HelmRelease object, so
+  # prefer valuesFrom for them.
+  values: {}
+    # agent:
+    #   serverURL: "https://otterscale.example.com/api/"
+    #   tunnelServerURL: "https://192.0.2.1:30300"
+    #   cluster: "devel"
+    #   joinToken: ""
+    # tenantOperator:
+    #   harbor:
+    #     url: https://harbor.example.com
+    #     robot:
+    #       name: "robot$devel"
+    #       secret: ""
+  valuesFrom: []
+    # - kind: Secret
+    #   name: otterscale-agent-values
+    #   valuesKey: values.yaml
 
-# Flux itself, adopted into a HelmRelease so it is upgraded the same way as
-# the agent. The flux chart still has to be installed by hand first: nothing
+# Flux itself. The flux chart still has to be installed by hand first: nothing
 # reconciles a HelmRelease until its controllers and CRDs exist. Once this is
-# on, bump flux.chart.version here instead of running `helm upgrade` on the
-# flux release: helm-controller re-applies its own spec over a manual upgrade.
+# on, bump flux.version here instead of running `helm upgrade` on the flux
+# release: helm-controller re-applies its own spec over a manual upgrade.
 flux:
   enabled: true
   # The Helm release name the flux chart was installed as. helm-controller
   # takes that release over only under its exact name; any other name is a
   # second install of the same resources, which fails.
   name: flux
-
-  chart:
-    name: flux
-    # Pinned, so a bump here is what rolls Flux forward.
-    # renovate: helm=flux registry=https://otterscale.github.io/helm-charts
-    version: 1.0.0
-
-  # Values for the flux chart. Keep them equal to what the release was
-  # installed with, or the first reconcile is an upgrade.
+  chart: flux
+  # Pinned, so a bump here is what rolls Flux forward.
+  # renovate: helm=flux registry=https://otterscale.github.io/helm-charts
+  version: 1.0.0
+  # helm-controller does not inherit the values the release was installed
+  # with; whatever was passed to that install goes here too, or the first
+  # reconcile is an upgrade back to the chart defaults.
   values: {}
   valuesFrom: []

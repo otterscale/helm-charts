@@ -1,54 +1,8 @@
-{{- $repo := .Values.chart.repository }}
+{{- if .Values.agent.enabled }}
 ---
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: {{ $repo.name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "otterscale-agent-flux.labels" . | nindent 4 }}
-spec:
-  {{- if hasPrefix "oci://" $repo.url }}
-  type: oci
-  {{- end }}
-  url: {{ $repo.url | quote }}
-  interval: {{ $repo.interval }}
-  {{- with $repo.secretRef }}
-  secretRef:
-    name: {{ . }}
-  {{- end }}
+{{ include "otterscale-agent-flux.helmrelease" (dict "root" $ "release" .Values.agent) }}
+{{- end }}
+{{- if .Values.flux.enabled }}
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: {{ .Values.name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "otterscale-agent-flux.labels" . | nindent 4 }}
-spec:
-  interval: {{ .Values.interval }}
-  timeout: {{ .Values.timeout }}
-  releaseName: {{ .Values.name }}
-  serviceAccountName: {{ .Values.serviceAccountName }}
-  chart:
-    spec:
-      chart: {{ .Values.chart.name }}
-      version: {{ .Values.chart.version | default .Chart.AppVersion | quote }}
-      sourceRef:
-        kind: HelmRepository
-        name: {{ $repo.name }}
-      interval: {{ $repo.interval }}
-  install:
-    remediation:
-      retries: {{ .Values.install.remediation.retries }}
-  upgrade:
-    remediation:
-      retries: {{ .Values.upgrade.remediation.retries }}
-  {{- with .Values.valuesFrom }}
-  valuesFrom:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-  {{- with .Values.values }}
-  values:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+{{ include "otterscale-agent-flux.helmrelease" (dict "root" $ "release" .Values.flux) }}
+{{- end }}

@@ -1,0 +1,19 @@
+{{- if or .Values.agent.enabled .Values.flux.enabled }}
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: {{ .Values.repository.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "otterscale-agent-flux.labels" . | nindent 4 }}
+spec:
+  {{- if hasPrefix "oci://" .Values.repository.url }}
+  type: oci
+  {{- end }}
+  url: {{ .Values.repository.url | quote }}
+  interval: {{ .Values.repository.interval }}
+  {{- with .Values.repository.secretRef }}
+  secretRef:
+    name: {{ . }}
+  {{- end }}
+{{- end }}
