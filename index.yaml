@@ -72,6 +72,25 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/envoy-gateway-1.0.0/envoy-gateway-1.0.0.tgz
     version: 1.0.0
+  flux:
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 2.19.0
+    created: "2026-09-14T16:53:16.022231561Z"
+    dependencies:
+    - condition: flux2.enabled
+      name: flux2
+      repository: oci://ghcr.io/fluxcd-community/charts
+      version: 2.19.0
+    description: A Helm chart for flux
+    digest: ff57bce677b2d220036d4a9088948c8c9bdf5c00c32eaf59c0d5ace887dae892
+    name: flux
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/flux-1.0.0/flux-1.0.0.tgz
+    version: 1.0.0
   gpu-operator:
   - annotations:
       module.otterscale.io/depends-on: prometheus-stack,node-feature-discovery
@@ -538,6 +557,19 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: v1.5.0-rc.5
+    created: "2026-09-14T16:53:16.193664394Z"
+    description: A Helm chart for otterscale-agent
+    digest: 16c0bed9240543fef34dd13703201b0c269802c22c9b6fd3a32d4e4e6ae39a1d
+    name: otterscale-agent
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-1.1.0/otterscale-agent-1.1.0.tgz
+    version: 1.1.0
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v1.5.0-rc.5
     created: "2026-09-11T04:47:32.169752438Z"
     dependencies:
     - condition: flux2.enabled
@@ -626,6 +658,20 @@ entries:
     type: application
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-1.0.0/otterscale-agent-1.0.0.tgz
+    version: 1.0.0
+  otterscale-agent-flux:
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 1.1.0
+    created: "2026-09-14T16:53:16.387136731Z"
+    description: A Helm chart for otterscale-agent-flux
+    digest: c0d8ac0d723df5f34ffb5e18838f73003af9e569e422530b4b48fd93c93793bb
+    name: otterscale-agent-flux
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-flux-1.0.0/otterscale-agent-flux-1.0.0.tgz
     version: 1.0.0
   prometheus-stack:
   - annotations:
@@ -741,4 +787,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-13T15:52:01.818791349Z"
+generated: "2026-09-14T16:53:16.387190787Z"
