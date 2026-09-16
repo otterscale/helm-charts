@@ -79,13 +79,10 @@ spec:
       annotations:
         checksum/secret: {{ include "otterscale.keycloak.postgresPassword" . | sha256sum }}
     spec:
+      {{- with .Values.keycloakPostgres.podSecurityContext }}
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-        runAsGroup: 999
-        fsGroup: 999
-        seccompProfile:
-          type: RuntimeDefault
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: postgres
           image: "{{ .Values.keycloakPostgres.image.repository }}:{{ .Values.keycloakPostgres.image.tag }}"

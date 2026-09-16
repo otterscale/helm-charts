@@ -115,6 +115,17 @@ keycloakPostgres:
   password: ""
   resources: {}
 
+  # Pod-level securityContext. Overrides merge key by key, so set only what you
+  # need; set it to null to drop the field entirely. 999 is the image's postgres
+  # user, so lowering runAsUser also needs a matching fsGroup for the data PVC.
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+    seccompProfile:
+      type: RuntimeDefault
+
   persistence:
     enabled: true
     storageClassName: ""
