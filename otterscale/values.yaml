@@ -160,10 +160,6 @@ keycloak:
   service:
     httpPort: 80 # SHARED: also the HTTPRoute backendRef port
 
-  # Without it Keycloak crash-loops through its schema migration.
-  dbchecker:
-    enabled: true
-
   # SHARED: the subchart's JDBC URL, and this chart's postgres resource names.
   database:
     vendor: postgres
