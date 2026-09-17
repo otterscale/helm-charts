@@ -731,6 +731,19 @@ entries:
       otterscale.io/type: core
     apiVersion: v2
     appVersion: 1.1.0
+    created: "2026-09-17T14:46:42.566586622Z"
+    description: A Helm chart for otterscale-agent-flux
+    digest: 9de82694723010527a551c6d9be0b8b0f1ee25515b6fbe945a10231bc26f96fe
+    name: otterscale-agent-flux
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-flux-1.0.4/otterscale-agent-flux-1.0.4.tgz
+    version: 1.0.4
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: core
+    apiVersion: v2
+    appVersion: 1.1.0
     created: "2026-09-17T02:17:32.093119409Z"
     description: A Helm chart for otterscale-agent-flux
     digest: b55607f21b37b4ad01bf56bd274de190867d2b3c2fea72710776075c91c76f8a
@@ -892,4 +905,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-17T10:57:03.193672159Z"
+generated: "2026-09-17T14:46:42.566769403Z"
