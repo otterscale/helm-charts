@@ -11,6 +11,9 @@ repository:
   interval: 1h
   # Secret holding the credentials for a private mirror; empty for none.
   secretRef: ""
+  # Extra labels merged onto the HelmRepository, e.g. tenant.otterscale.io/from-harbor:
+  # "true" to mark a repository backed by an OtterScale-managed Harbor.
+  labels: {}
 
 # Every release runs as this ServiceAccount. The flux chart creates it and its
 # admission policy rejects any other name in this namespace.

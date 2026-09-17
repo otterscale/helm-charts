@@ -6,6 +6,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "otterscale-agent-flux.labels" . | nindent 4 }}
+    {{- with .Values.repository.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   {{- if hasPrefix "oci://" .Values.repository.url }}
   type: oci
