@@ -1,8 +1,3 @@
-{{/*
-The placeholder around a custom resource: apiVersion, kind and metadata from
-the caller, spec straight out of values. Takes a dict of apiVersion, kind and
-cr (one of the top-level values blocks).
-*/}}
 {{- define "kubevirt-cr.resource" -}}
 apiVersion: {{ .apiVersion }}
 kind: {{ .kind }}
