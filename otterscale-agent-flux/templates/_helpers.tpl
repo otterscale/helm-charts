@@ -17,8 +17,9 @@ shared settings come from root.Values.
 {{- define "otterscale-agent-flux.helmrelease" -}}
 {{- $root := .root }}
 {{- $rel := .release }}
-{{- $repoName := $rel.repository | default "modules" }}
-{{- $repo := index $root.Values.repositories $repoName }}
+{{- /* Both charts live in the modules repository; nothing here is tenant-specific. */}}
+{{- $modulesRepoName := "modules" }}
+{{- $modulesRepo := index $root.Values.repositories $modulesRepoName }}
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -37,8 +38,8 @@ spec:
       version: {{ $rel.version | default $root.Chart.AppVersion | quote }}
       sourceRef:
         kind: HelmRepository
-        name: {{ $repoName }}
-      interval: {{ $repo.interval }}
+        name: {{ $modulesRepoName }}
+      interval: {{ $modulesRepo.interval }}
   install:
     remediation:
       retries: {{ $root.Values.install.remediation.retries }}

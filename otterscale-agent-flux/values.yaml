@@ -1,10 +1,10 @@
 # The HelmReleases that have Flux install otterscale-agent, and take over Flux
 # itself. Shared settings first, then one block per release.
 
-# The chart repositories the releases below pull from. The map key is the
-# HelmRepository's name; every repository listed here is created, whether a
-# release uses it or not. Releases pull from modules, unless a release block
-# sets repository to another key here.
+# The chart repositories this chart creates, one HelmRepository per entry; the
+# map key is the object's name. The releases below always pull from modules,
+# which is the only entry they need; the rest are sources for the HelmReleases
+# created elsewhere.
 repositories:
   modules:
     # An oci:// URL switches the HelmRepository to type oci.
