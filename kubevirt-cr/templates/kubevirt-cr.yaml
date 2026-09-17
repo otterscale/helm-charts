@@ -1,17 +1,4 @@
+{{- if .Values.kubevirt.enabled }}
 ---
-apiVersion: kubevirt.io/v1
-kind: KubeVirt
-metadata:
-  name: kubevirt
-  namespace: kubevirt
-spec:
-  certificateRotateStrategy: {}
-  configuration:
-    developerConfiguration:
-      featureGates: []
-      disabledFeatureGates:
-        - Template
-    imagePullPolicy: IfNotPresent
-  customizeComponents: {}
-  imagePullPolicy: IfNotPresent
-  workloadUpdateStrategy: {}
+{{ include "kubevirt-cr.resource" (dict "apiVersion" "kubevirt.io/v1" "kind" "KubeVirt" "cr" .Values.kubevirt) }}
+{{- end }}

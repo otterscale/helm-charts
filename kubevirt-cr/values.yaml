@@ -1,0 +1,39 @@
+kubevirt:
+  enabled: true
+  name: kubevirt
+  namespace: kubevirt
+  labels: {}
+  annotations: {}
+
+  # KubeVirt spec, as-is: https://kubevirt.io/api-reference/
+  spec:
+    certificateRotateStrategy: {}
+    configuration:
+      developerConfiguration:
+        featureGates: []
+        disabledFeatureGates:
+          - Template
+      imagePullPolicy: IfNotPresent
+    customizeComponents: {}
+    imagePullPolicy: IfNotPresent
+    workloadUpdateStrategy: {}
+
+cdi:
+  enabled: true
+  name: cdi
+  namespace: cdi
+  labels: {}
+  annotations: {}
+
+  # CDI spec, as-is: https://kubevirt.io/api-reference/
+  spec:
+    config:
+      featureGates:
+        - HonorWaitForFirstConsumer
+    imagePullPolicy: IfNotPresent
+    infra:
+      nodeSelector:
+        kubernetes.io/os: linux
+    workload:
+      nodeSelector:
+        kubernetes.io/os: linux
