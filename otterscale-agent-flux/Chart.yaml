@@ -2,7 +2,7 @@ apiVersion: v2
 name: otterscale-agent-flux
 description: A Helm chart for otterscale-agent-flux
 type: application
-version: 1.0.2
+version: 1.0.3
 # renovate: helm=otterscale-agent registry=https://otterscale.github.io/helm-charts
 appVersion: 1.1.0
 annotations:
