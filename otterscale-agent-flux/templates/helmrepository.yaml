@@ -20,4 +20,8 @@ spec:
   secretRef:
     name: {{ . }}
   {{- end }}
+  {{- with $repo.certSecretRef }}
+  certSecretRef:
+    name: {{ . }}
+  {{- end }}
 {{- end }}

@@ -14,6 +14,9 @@ repositories:
     interval: 1h
     # Secret holding the credentials for a private mirror; empty for none.
     secretRef: ""
+    # Secret holding the CA that signed the repository's certificate, under
+    # ca.crt; needed for a mirror with a private CA. Empty for none.
+    certSecretRef: ""
     # Extra labels merged onto the HelmRepository, e.g. tenant.otterscale.io/from-harbor:
     # "true" to mark a repository backed by an OtterScale-managed Harbor.
     labels: {}
@@ -23,6 +26,7 @@ repositories:
     url: oci://192.0.2.1:8443/operators
     interval: 1h
     secretRef: ""
+    certSecretRef: ""
     labels:
       tenant.otterscale.io/from-harbor: "true"
 
