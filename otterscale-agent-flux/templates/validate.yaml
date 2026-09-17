@@ -1,5 +1,13 @@
-{{- if not .Values.repository.url }}
-  {{- fail "repository.url must be set: it is the repository Flux fetches every chart from" }}
+{{- if not .Values.repositories }}
+  {{- fail "repositories must have at least one entry: it is where Flux fetches every chart from" }}
+{{- end }}
+{{- range $name, $repo := .Values.repositories }}
+  {{- if not $repo.url }}
+    {{- fail (printf "repositories.%s.url must be set: it is the repository Flux fetches from" $name) }}
+  {{- end }}
+  {{- if not $repo.interval }}
+    {{- fail (printf "repositories.%s.interval must be set: it is how often Flux refetches the index" $name) }}
+  {{- end }}
 {{- end }}
 {{- if not .Values.serviceAccountName }}
   {{- fail "serviceAccountName must be set: the flux chart's admission policy rejects a HelmRelease without one" }}
