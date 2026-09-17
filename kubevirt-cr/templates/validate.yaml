@@ -1,0 +1,14 @@
+{{- range $key := list "kubevirt" "cdi" }}
+  {{- $cr := index $.Values $key }}
+  {{- if $cr.enabled }}
+    {{- if not $cr.name }}
+      {{- fail (printf "%s.name must be set: it is the custom resource's name" $key) }}
+    {{- end }}
+    {{- if not $cr.namespace }}
+      {{- fail (printf "%s.namespace must be set: the operator only reconciles the resource in its own namespace" $key) }}
+    {{- end }}
+    {{- if and $cr.spec (not (kindIs "map" $cr.spec)) }}
+      {{- fail (printf "%s.spec must be a mapping, got %s: it is passed to the cluster as the resource's spec" $key (kindOf $cr.spec)) }}
+    {{- end }}
+  {{- end }}
+{{- end }}
