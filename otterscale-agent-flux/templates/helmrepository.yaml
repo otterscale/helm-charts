@@ -1,21 +1,22 @@
-{{- if or .Values.agent.enabled .Values.flux.enabled }}
+{{- range $name, $repo := .Values.repositories }}
+---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: {{ .Values.repository.name }}
-  namespace: {{ .Release.Namespace }}
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "otterscale-agent-flux.labels" . | nindent 4 }}
-    {{- with .Values.repository.labels }}
+    {{- include "otterscale-agent-flux.labels" $ | nindent 4 }}
+    {{- with $repo.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  {{- if hasPrefix "oci://" .Values.repository.url }}
+  {{- if hasPrefix "oci://" $repo.url }}
   type: oci
   {{- end }}
-  url: {{ .Values.repository.url | quote }}
-  interval: {{ .Values.repository.interval }}
-  {{- with .Values.repository.secretRef }}
+  url: {{ $repo.url | quote }}
+  interval: {{ $repo.interval }}
+  {{- with $repo.secretRef }}
   secretRef:
     name: {{ . }}
   {{- end }}

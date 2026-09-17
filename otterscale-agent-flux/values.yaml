@@ -1,19 +1,30 @@
 # The HelmReleases that have Flux install otterscale-agent, and take over Flux
 # itself. Shared settings first, then one block per release.
 
-# The chart repository every release below pulls from.
-repository:
-  name: otterscale
-  # An oci:// URL switches the HelmRepository to type oci.
-  url: https://otterscale.github.io/helm-charts
-  # How often the index is refetched. A new chart version is picked up no
-  # sooner than this.
-  interval: 1h
-  # Secret holding the credentials for a private mirror; empty for none.
-  secretRef: ""
-  # Extra labels merged onto the HelmRepository, e.g. tenant.otterscale.io/from-harbor:
-  # "true" to mark a repository backed by an OtterScale-managed Harbor.
-  labels: {}
+# The chart repositories this chart creates, one HelmRepository per entry; the
+# map key is the object's name. The releases below always pull from modules,
+# which is the only entry they need; the rest are sources for the HelmReleases
+# created elsewhere.
+repositories:
+  modules:
+    # An oci:// URL switches the HelmRepository to type oci.
+    url: https://otterscale.github.io/helm-charts
+    # How often the index is refetched. A new chart version is picked up no
+    # sooner than this.
+    interval: 1h
+    # Secret holding the credentials for a private mirror; empty for none.
+    secretRef: ""
+    # Extra labels merged onto the HelmRepository, e.g. tenant.otterscale.io/from-harbor:
+    # "true" to mark a repository backed by an OtterScale-managed Harbor.
+    labels: {}
+  # The operator charts. Nothing in this chart pulls from this repository; it
+  # is a source for the HelmReleases created elsewhere.
+  operators:
+    url: oci://192.0.2.1:8443/operators
+    interval: 1h
+    secretRef: ""
+    labels:
+      tenant.otterscale.io/from-harbor: "true"
 
 # Every release runs as this ServiceAccount. The flux chart creates it and its
 # admission policy rejects any other name in this namespace.
