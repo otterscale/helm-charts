@@ -2,7 +2,7 @@ apiVersion: v2
 name: flux
 description: A Helm chart for flux
 type: application
-version: 1.0.0
+version: 1.0.1
 # renovate: docker=ghcr.io/fluxcd-community/charts/flux2
 appVersion: 2.19.0
 annotations:
