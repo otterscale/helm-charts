@@ -13,14 +13,17 @@ agent:
   # SHARED: the name the join token is bound to. A token issued for another
   # name is rejected.
   cluster: "devel"
-  # Issued by `otterscale join token --cluster <name>` on the server. Either an
-  # inline token or a Secret you created here; both are mounted as a file, so
-  # neither reaches the agent's environment. Inline lands in the Helm release.
+  # Issued by the control plane, through the dashboard's import flow or
+  # LinkService.IssueAgentValues. Either an inline token or a Secret you created
+  # here; both are mounted as a file, so neither reaches the agent's
+  # environment. Inline lands in the Helm release.
   joinToken: ""
   existingSecret: ""
   existingSecretKey: "join-token"
 
-# The CA behind agent.serverURL's certificate, from `otterscale join ca`.
+# The CA behind agent.serverURL's certificate. Read it from the control
+# plane's own Secret: kubectl -n otterscale-system get secret otterscale-ca
+# -o jsonpath='{.data.ca\.crt}' | base64 -d.
 # Without it a privately signed certificate fails registration with x509.
 # Empty is right for a public CA. Create the Secret here; the chart does not.
 # INTERNAL WIRING: tenant-operator mounts this same Secret by name (optional),

@@ -11,6 +11,10 @@ data:
   OTTERSCALE_SERVER_TUNNEL_ADDRESS: "0.0.0.0:8300"
   OTTERSCALE_SERVER_EXTERNAL_TUNNEL_URL: {{ include "otterscale.tunnel.externalURL" . | quote }}
   OTTERSCALE_SERVER_ALLOWED_ORIGINS: {{ include "otterscale.externalURL" . | quote }}
+  OTTERSCALE_SERVER_EXTERNAL_URL: {{ printf "%s/api/" (include "otterscale.externalURL" .) | quote }}
+  {{- if .Values.harbor.enabled }}
+  OTTERSCALE_SERVER_HARBOR_URL: {{ include "otterscale.harbor.externalURL" . | quote }}
+  {{- end }}
   {{- if .Values.keycloak.enabled }}
   OTTERSCALE_SERVER_KEYCLOAK_REALM_URL: {{ include "otterscale.keycloak.realmURL" . | quote }}
   OTTERSCALE_SERVER_KEYCLOAK_CLIENT_ID: {{ .Values.keycloakRealm.clients.dashboard.id | quote }}

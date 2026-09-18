@@ -52,6 +52,10 @@ spec:
           env:
             - name: OTTERSCALE_SERVER_JOIN_SECRET_FILE
               value: /etc/otterscale/join/secret
+            {{- if .Values.harbor.enabled }}
+            - name: OTTERSCALE_SERVER_HARBOR_ADMIN_PASSWORD_FILE
+              value: /etc/otterscale/harbor/admin-password
+            {{- end }}
             {{- if $trustedCA }}
             - name: SSL_CERT_DIR
               value: {{ include "otterscale.trustedCA.dir" . | quote }}
@@ -91,6 +95,11 @@ spec:
             - name: join
               mountPath: /etc/otterscale/join
               readOnly: true
+            {{- if .Values.harbor.enabled }}
+            - name: harbor-admin
+              mountPath: /etc/otterscale/harbor
+              readOnly: true
+            {{- end }}
             {{- if $trustedCA }}
             - name: trusted-ca
               mountPath: {{ include "otterscale.trustedCA.dir" . | quote }}
@@ -105,6 +114,15 @@ spec:
             items:
               - key: join-secret
                 path: secret
+        {{- if .Values.harbor.enabled }}
+        - name: harbor-admin
+          secret:
+            secretName: {{ include "otterscale.harbor.adminSecretName" . | quote }}
+            optional: true
+            items:
+              - key: {{ include "otterscale.harbor.adminSecretKey" . | quote }}
+                path: admin-password
+        {{- end }}
         {{- if $trustedCA }}
         - name: trusted-ca
           secret:
