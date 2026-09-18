@@ -36,6 +36,3 @@
     {{- fail "agent.values.agent.joinToken or agent.values.agent.existingSecret must be set, or agent.valuesFrom must supply one: the agent chart refuses to install without a join token" }}
   {{- end }}
 {{- end }}
-{{- if and .Values.flux.enabled (not .Values.flux.version) }}
-  {{- fail "flux.version must be set: a pinned version or a semver range. Unlike agent.version it has no default, this chart's appVersion is the agent's" }}
-{{- end }}

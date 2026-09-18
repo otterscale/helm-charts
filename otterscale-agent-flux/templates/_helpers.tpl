@@ -6,7 +6,9 @@
 helm.sh/chart: {{ include "otterscale-agent-flux.chart" . }}
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- with .Chart.AppVersion }}
+app.kubernetes.io/version: {{ . | quote }}
+{{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -35,7 +37,9 @@ spec:
   chart:
     spec:
       chart: {{ $rel.chart }}
-      version: {{ $rel.version | default $root.Chart.AppVersion | quote }}
+      {{- with $rel.version }}
+      version: {{ . | quote }}
+      {{- end }}
       sourceRef:
         kind: HelmRepository
         name: {{ $modulesRepoName }}
