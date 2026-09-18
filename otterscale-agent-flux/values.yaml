@@ -89,7 +89,7 @@ flux:
   chart: flux
   # Pinned, so a bump here is what rolls Flux forward.
   # renovate: helm=flux registry=https://otterscale.github.io/helm-charts
-  version: 1.0.0
+  version: 1.0.1
   # helm-controller does not inherit the values the release was installed
   # with; whatever was passed to that install goes here too, or the first
   # reconcile is an upgrade back to the chart defaults.
