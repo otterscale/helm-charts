@@ -17,7 +17,3 @@ data:
   {{- if .Values.harbor.enabled }}
   PUBLIC_HARBOR_URL: {{ include "otterscale.harbor.externalURL" . | quote }}
   {{- end }}
-  AGENT_TUNNEL_SERVER_URL: {{ include "otterscale.tunnel.externalURL" . | quote }}
-  {{- with include "otterscale.trustedCA.secretName" . }}
-  AGENT_TRUSTED_CA_SECRET_NAME: {{ . | quote }}
-  {{- end }}
