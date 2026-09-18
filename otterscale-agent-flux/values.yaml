@@ -52,9 +52,6 @@ agent:
   # name in it.
   name: otterscale-agent
   chart: otterscale-agent
-  # Empty pins the version this chart was released for (its appVersion), so
-  # bumping this chart is what rolls the agent forward. A semver range such as
-  # ">=1.0.0" lets Flux follow the repository instead.
   version: ""
   # The join token and Harbor robot secret are required by the agent chart;
   # inline values land in this Helm release and in the HelmRelease object, so
@@ -87,9 +84,7 @@ flux:
   # second install of the same resources, which fails.
   name: flux
   chart: flux
-  # Pinned, so a bump here is what rolls Flux forward.
-  # renovate: helm=flux registry=https://otterscale.github.io/helm-charts
-  version: 1.0.0
+  version: ""
   # helm-controller does not inherit the values the release was installed
   # with; whatever was passed to that install goes here too, or the first
   # reconcile is an upgrade back to the chart defaults.
