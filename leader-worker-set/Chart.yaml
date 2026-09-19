@@ -2,14 +2,14 @@ apiVersion: v2
 name: leader-worker-set
 description: A Helm chart for leader-worker-set
 type: application
-version: 1.0.0
+version: 1.1.0
 # renovate: image=registry.k8s.io/lws/charts/lws
-appVersion: 0.8.0
+appVersion: v0.10.0
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: lws-system
 dependencies:
   - name: lws
-    version: 0.8.0
+    version: v0.10.0
     repository: oci://registry.k8s.io/lws/charts
     condition: lws.enabled
