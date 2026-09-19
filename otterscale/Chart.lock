@@ -1,12 +1,12 @@
 dependencies:
 - name: keycloakx
   repository: https://codecentric.github.io/helm-charts
-  version: 7.2.3
+  version: 7.3.2
 - name: valkey
   repository: https://valkey.io/valkey-helm/
-  version: 0.11.0
+  version: 0.12.0
 - name: harbor
   repository: https://helm.goharbor.io
   version: 1.19.2
-digest: sha256:c601d91bb27e78dfda86ae1d6364e1846446653eb884fa9b8f57740e0ac7433b
-generated: "2026-09-02T01:57:08.185592+08:00"
+digest: sha256:964a4c8bb9029fc85288995348d59d92287239ab37b86e20f7d8c2b9fa358225
+generated: "2026-09-19T18:45:35.599014652Z"
