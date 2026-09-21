@@ -469,6 +469,19 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: v1.9.0
+    created: "2026-09-21T15:42:40.552265924Z"
+    description: A Helm chart for kubevirt
+    digest: 56c8c9651aacff34151811bda6fa4814bb668be642997401634595d14d9509ec
+    name: kubevirt
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/kubevirt-1.1.1/kubevirt-1.1.1.tgz
+    version: 1.1.1
+  - annotations:
+      module.otterscale.io/namespace: kubevirt
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v1.9.0
     created: "2026-09-10T08:13:05.150883995Z"
     description: A Helm chart for kubevirt
     digest: f4c7c6190094edf602f6406aea593fc691865c33c969db80bc7bf821e33ba9b8
@@ -1074,4 +1087,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-09-21T15:41:39.641196821Z"
+generated: "2026-09-21T15:42:40.552310898Z"
