@@ -39,7 +39,7 @@ llmisvcConfigs:
       from: docker.io/vllm/vllm-openai-cpu:v0.23.0@sha256:89e1fbe829038b1a560601990c8ec89625c622a969fcbc8f10ce48b6139795be
       repository: docker.io/vllm/vllm-openai-cpu
       # renovate: image=docker.io/vllm/vllm-openai-cpu
-      tag: v0.23.0@sha256:89e1fbe829038b1a560601990c8ec89625c622a969fcbc8f10ce48b6139795be
+      tag: v0.30.0@sha256:85d126740e78e9b7270b6cfc01159776d066c445609b7167faf32efc4a86f19d
 
 pvcEvictor:
   enabled: true
