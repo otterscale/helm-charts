@@ -1,6 +1,9 @@
 {
   "realm": "otterscale",
   "displayName": "OtterScale",
+  {{- with .Values.keycloakRealm.displayNameHtml }}
+  "displayNameHtml": {{ . | toJson }},
+  {{- end }}
   "enabled": true,
   "registrationAllowed": true,
   "rememberMe": true,

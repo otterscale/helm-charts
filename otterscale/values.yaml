@@ -95,6 +95,9 @@ dashboard:
 keycloakRealm:
   name: otterscale
 
+  # Empty = the theme's built-in OtterScale logo.
+  displayNameHtml: ""
+
   auth:
     adminUser: admin # master realm, not a user in the realm above
     adminPassword: ""
