@@ -23,4 +23,7 @@ spec:
       kind: Service
       name: {{ include "otterscale.harbor.serviceName" . }}
       port: {{ include "otterscale.harbor.servicePort" . }}
+    timeouts:
+      backendRequest: 12h
+      request: 12h
 {{- end }}
