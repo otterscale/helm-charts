@@ -1,6 +1,6 @@
 dependencies:
 - name: flux2
   repository: oci://ghcr.io/fluxcd-community/charts
-  version: 2.19.0
-digest: sha256:55373dd42d7b80e704b080482bfdb451fa1a813dc833464de71b97bf1bd6ee93
-generated: "2026-09-14T22:40:18.989779+08:00"
+  version: 2.19.1
+digest: sha256:5d64bbda4f4799f936e0b3d7fb862c34c7f55e116f2ecd97f429dd17eb888b89
+generated: "2026-09-24T23:27:41.588942669Z"
