@@ -1,12 +1,12 @@
 dependencies:
 - name: gateway-helm
   repository: oci://docker.io/envoyproxy
-  version: 1.8.4
+  version: 1.9.2
 - name: ai-gateway-crds-helm
   repository: oci://docker.io/envoyproxy
   version: 1.1.0
 - name: ai-gateway-helm
   repository: oci://docker.io/envoyproxy
   version: 1.1.0
-digest: sha256:4bb03273f9f66aa8b1428c0fa9c2cc328831881306d3aef88cfc56797f099b29
-generated: "2026-09-02T01:56:11.044346+08:00"
+digest: sha256:1b4c5a1542ce26c285495314b4ee95edd76adabba28fe71a0d65399dcf594e09
+generated: "2026-10-01T04:19:31.727340557Z"
