@@ -15,13 +15,13 @@ llmisvcConfigs:
       from: ghcr.io/llm-d/llm-d-router-disagg-sidecar:v0.10.0
       repository: ghcr.io/llm-d/llm-d-router-disagg-sidecar
       # renovate: image=ghcr.io/llm-d/llm-d-router-disagg-sidecar
-      tag: v0.10.0
+      tag: v0.11.0
 
     routerEndpointPicker:
       from: ghcr.io/llm-d/llm-d-router-endpoint-picker:v0.10.0
       repository: ghcr.io/llm-d/llm-d-router-endpoint-picker
       # renovate: image=ghcr.io/llm-d/llm-d-router-endpoint-picker
-      tag: v0.10.0
+      tag: v0.11.0
 
     latencyPredictorTrainingServer:
       from: ghcr.io/llm-d/llm-d-latency-predictor-training-server:0.9.0
@@ -39,7 +39,7 @@ llmisvcConfigs:
       from: docker.io/vllm/vllm-openai-cpu:v0.23.0@sha256:89e1fbe829038b1a560601990c8ec89625c622a969fcbc8f10ce48b6139795be
       repository: docker.io/vllm/vllm-openai-cpu
       # renovate: image=docker.io/vllm/vllm-openai-cpu
-      tag: v0.23.0@sha256:89e1fbe829038b1a560601990c8ec89625c622a969fcbc8f10ce48b6139795be
+      tag: v0.31.0@sha256:495c84fe30f3572b83a78100a1e8ba423dbb77fc532ecefebe114e6b77327bd9
 
 pvcEvictor:
   enabled: true
