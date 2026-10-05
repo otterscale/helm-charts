@@ -74,7 +74,7 @@ dashboard:
   replicas: 1
   image:
     repository: ghcr.io/otterscale/dashboard
-    tag: v1.5.0
+    tag: v1.5.3
     pullPolicy: IfNotPresent
 
   service:
