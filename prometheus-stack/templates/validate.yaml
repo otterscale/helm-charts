@@ -1,0 +1,13 @@
+{{- /*
+The values below name objects by the release's full names
+(prometheus-stack-kube-prom-prometheus, ...-tls) because Helm values cannot
+template them, and the otterscale agent's defaults name them too. Under any
+other release name or namespace every guard would answer 403 or fail TLS, so
+refuse to render instead.
+*/ -}}
+{{- if ne .Release.Name "prometheus-stack" }}
+  {{- fail (printf "release name must be prometheus-stack, got %q: the kube-rbac-proxy values and the otterscale agent name its objects by that release" .Release.Name) }}
+{{- end }}
+{{- if ne .Release.Namespace "monitoring" }}
+  {{- fail (printf "release namespace must be monitoring for prometheus-stack, got %q: the kube-rbac-proxy values and the otterscale agent name objects in it" .Release.Namespace) }}
+{{- end }}
