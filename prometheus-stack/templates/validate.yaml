@@ -1,0 +1,36 @@
+{{- if index .Values "kube-prometheus-stack" "enabled" }}
+{{- /*
+The values below name objects by the release's full names
+(prometheus-stack-kube-prom-prometheus, ...-tls) because Helm values cannot
+template them, and the otterscale agent's defaults name them too. Under any
+other release name or namespace every guard would answer 403 or fail TLS, so
+refuse to render instead.
+*/ -}}
+{{- /*
+The guard wiring in values.yaml names the objects the subchart derives from its
+default names (prometheus-stack-kube-prom-*, prometheus-stack-kube-state-metrics,
+prometheus-stack-prometheus-node-exporter). Anything that renames them breaks it.
+cleanPrometheusOperatorObjectNames drops the -prometheus / -alertmanager suffix
+of the CR names, and namespaceOverride moves the objects out of the release namespace.
+*/ -}}
+{{- $kps := index .Values "kube-prometheus-stack" }}
+{{- range $key, $v := dict
+  "fullnameOverride" $kps.fullnameOverride
+  "nameOverride" $kps.nameOverride
+  "cleanPrometheusOperatorObjectNames" $kps.cleanPrometheusOperatorObjectNames
+  "namespaceOverride" $kps.namespaceOverride
+  "kube-state-metrics.fullnameOverride" (index $kps "kube-state-metrics" "fullnameOverride")
+  "kube-state-metrics.nameOverride" (index $kps "kube-state-metrics" "nameOverride")
+  "prometheus-node-exporter.fullnameOverride" (index $kps "prometheus-node-exporter" "fullnameOverride")
+  "prometheus-node-exporter.nameOverride" (index $kps "prometheus-node-exporter" "nameOverride") }}
+  {{- if $v }}
+    {{- fail (printf "kube-prometheus-stack.%s must stay unset (got %v): the kube-rbac-proxy values and the otterscale agent name objects by the default names" $key $v) }}
+  {{- end }}
+{{- end }}
+{{- if ne .Release.Name "prometheus-stack" }}
+  {{- fail (printf "release name must be prometheus-stack, got %q: the kube-rbac-proxy values and the otterscale agent name its objects by that release" .Release.Name) }}
+{{- end }}
+{{- if ne .Release.Namespace "monitoring" }}
+  {{- fail (printf "release namespace must be monitoring for prometheus-stack, got %q: the kube-rbac-proxy values and the otterscale agent name objects in it" .Release.Namespace) }}
+{{- end }}
+{{- end }}

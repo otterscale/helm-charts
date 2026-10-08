@@ -1,3 +1,6 @@
+# The default image must be the otterscale release that carries the agent's
+# kube-rbac-proxy support; v1.5.0 cannot use the metrics.* settings below. Bump
+# image.tag and Chart.yaml appVersion together once that release exists.
 image:
   repository: ghcr.io/otterscale/otterscale
   tag: v1.5.0
@@ -31,6 +34,21 @@ agent:
 trustedCA:
   secretName: ""
   key: "ca.crt"
+
+# Where the dashboard's charts come from: prometheus-stack's kube-rbac-proxy in
+# front of Prometheus. Over https the agent sends its own ServiceAccount token
+# and verifies the proxy against ca.crt in caSecret; this chart grants exactly
+# those two things (get/create on prometheuses/api for prometheusName, get on
+# caSecret). An http:// URL, for a prometheus-stack older than 1.2.0, gets no
+# token and needs no CA.
+# SHARED: these default to what prometheus-stack 1.2.0 creates as release
+# prometheus-stack in namespace monitoring.
+metrics:
+  prometheusURL: "https://prometheus-stack-kube-prom-prometheus.monitoring.svc:9091"
+  prometheusName: prometheus-stack-kube-prom-prometheus
+  caSecret:
+    namespace: monitoring
+    name: prometheus-stack-kube-prom-prometheus-tls
 
 # Binds cluster-admin to the listed users on THIS cluster. Empty = no binding.
 clusterAdmin:

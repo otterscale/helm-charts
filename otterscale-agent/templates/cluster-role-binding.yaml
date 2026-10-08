@@ -12,6 +12,21 @@ roleRef:
   kind: ClusterRole
   name: {{ include "otterscale-agent.fullname" . }}
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "otterscale-agent.fullname" . }}-metrics
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "otterscale-agent.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "otterscale-agent.fullname" . }}-metrics
+  apiGroup: rbac.authorization.k8s.io
 {{- if and .Values.clusterAdmin.enabled .Values.clusterAdmin.users }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
