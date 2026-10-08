@@ -34,6 +34,11 @@ kube-prometheus-stack:
             name: prometheus-stack-kube-prom-alertmanager-tls
             key: ca.crt
         serverName: prometheus-stack-kube-prom-alertmanager.monitoring.svc
+      # config-reloader is localhost-only under listenLocal; its metrics are given up.
+      relabelings:
+        - action: drop
+          sourceLabels: [__meta_kubernetes_endpoint_port_name]
+          regex: reloader-web
     alertmanagerSpec:
       # The operator sets no probes on a listenLocal Alertmanager; the
       # sidecar's readiness stands in.
@@ -161,6 +166,11 @@ kube-prometheus-stack:
             name: prometheus-stack-kube-prom-prometheus-tls
             key: ca.crt
         serverName: prometheus-stack-kube-prom-prometheus.monitoring.svc
+      # config-reloader is localhost-only under listenLocal; its metrics are given up.
+      relabelings:
+        - action: drop
+          sourceLabels: [__meta_kubernetes_endpoint_port_name]
+          regex: reloader-web
     # Prometheus scrapes itself and Alertmanager, and sends alerts, through
     # their guards.
     additionalRulesForClusterRole:
@@ -184,7 +194,8 @@ kube-prometheus-stack:
             resources:
               requests:
                 storage: "50Gi"
-      # Probes become wget inside the container; the images carry busybox.
+      # With listenLocal the operator turns Prometheus's probes into wget inside
+      # the container, which the busybox-based images support.
       listenLocal: true
       alertingEndpoints:
         - namespace: monitoring
