@@ -19,6 +19,17 @@
 {{- if and .Values.trustedCA.secretName (not .Values.trustedCA.key) }}
   {{- fail "trustedCA.key must be set: it is the key inside the Secret holding the CA certificate" }}
 {{- end }}
+{{- with .Values.metrics.prometheusURL }}
+  {{- if not (or (hasPrefix "http://" .) (hasPrefix "https://" .)) }}
+    {{- fail (printf "metrics.prometheusURL must be an absolute http or https URL, got %q" .) }}
+  {{- end }}
+  {{- if and (hasPrefix "https://" .) (not (and $.Values.metrics.caSecret.namespace $.Values.metrics.caSecret.name)) }}
+    {{- fail "metrics.caSecret.namespace and metrics.caSecret.name must be set for an https metrics.prometheusURL: the agent verifies kube-rbac-proxy against its ca.crt before sending its token" }}
+  {{- end }}
+  {{- if and (hasPrefix "https://" .) (not $.Values.metrics.prometheusName) }}
+    {{- fail "metrics.prometheusName must be set for an https metrics.prometheusURL: it is the Prometheus the agent is granted prometheuses/api on" }}
+  {{- end }}
+{{- end }}
 {{- if .Values.clusterInfo.enabled }}
   {{- $address := .Values.clusterInfo.externalAddress }}
   {{- if not $address }}

@@ -8,3 +8,26 @@ rules:
   - apiGroups: [""]
     resources: ["users", "groups"]
     verbs: ["impersonate"]
+---
+# What the metrics proxy needs. A ClusterRole rather than a Role in the
+# Secret's namespace: that namespace belongs to prometheus-stack and may not
+# exist yet when the agent is installed, and a RoleBinding cannot be created
+# ahead of it. resourceNames keeps it to the one Secret name.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "otterscale-agent.fullname" . }}-metrics
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
+rules:
+  # kube-rbac-proxy maps a GET query to get and a POST one to create.
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheuses/api"]
+    resourceNames: [{{ .Values.metrics.prometheusName | quote }}]
+    verbs: ["get", "create"]
+  {{- if .Values.metrics.caSecret.name }}
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: [{{ .Values.metrics.caSecret.name | quote }}]
+    verbs: ["get"]
+  {{- end }}
