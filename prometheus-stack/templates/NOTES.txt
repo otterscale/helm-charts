@@ -1,0 +1,9 @@
+prometheus-stack {{ .Chart.Version }}: Prometheus, Alertmanager, node-exporter and kube-state-metrics are now fronted by kube-rbac-proxy (or, for kube-state-metrics, its own auth filter). This breaks anything that reads them directly.
+
+- Prometheus is no longer on :9090. It is https :9091 and needs a token authorized for get/create on prometheuses/api for prometheus-stack-kube-prom-prometheus, plus the CA from Secret prometheus-stack-kube-prom-prometheus-tls (key ca.crt).
+- Alertmanager moved from :9093 to https :9095 (alertmanagers/api on prometheus-stack-kube-prom-alertmanager).
+- kube-state-metrics needs a token with get on nonResourceURL /metrics. node-exporter needs get on services/prometheus-stack-prometheus-node-exporter.
+- The release must be named prometheus-stack in namespace monitoring; the chart refuses to render otherwise. Its name overrides must stay unset.
+- If you enable the bundled Grafana, configure its Prometheus datasource with a token and that CA.
+- config-reloader metrics are no longer scraped.
+- The otterscale agent needs the otterscale-agent chart >= 1.2.0, with an agent image from the otterscale release that adds kube-rbac-proxy support.

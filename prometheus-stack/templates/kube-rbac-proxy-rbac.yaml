@@ -1,3 +1,4 @@
+{{- if index .Values "kube-prometheus-stack" "enabled" }}
 {{- /*
 The Prometheus and Alertmanager guards run as their pod's ServiceAccount and
 need TokenReview and SubjectAccessReview for every request. The exporters'
@@ -18,3 +19,4 @@ subjects:
   - kind: ServiceAccount
     name: prometheus-stack-kube-prom-alertmanager
     namespace: {{ .Release.Namespace }}
+{{- end }}

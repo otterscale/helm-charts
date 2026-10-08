@@ -10,6 +10,11 @@ kube-prometheus-stack:
   # them with its own ServiceAccount token, verifying the certificates.
   # Anything that read Prometheus on :9090 directly (a self-hosted Grafana,
   # for one) now needs a token and the CA, on :9091.
+  #
+  # extraArgs, volumes, volumeMounts and containers below are lists: a values
+  # file that sets any of them replaces the whole list and drops the guard or
+  # TLS wiring. An override must restate the full list (phison-ai/release
+  # SXMR0105/0003 does this for the two sidecars).
 
   grafana:
     enabled: false
@@ -41,6 +46,8 @@ kube-prometheus-stack:
           sourceLabels: [__meta_kubernetes_endpoint_port_name]
           regex: reloader-web
     alertmanagerSpec:
+      # Used as is (no route prefix); the default would render http://...:9095.
+      externalUrl: https://prometheus-stack-kube-prom-alertmanager.monitoring.svc:9095
       # The operator sets no probes on a listenLocal Alertmanager; the
       # sidecar's readiness stands in.
       listenLocal: true
@@ -195,6 +202,8 @@ kube-prometheus-stack:
         resourceNames: ["prometheus-stack-kube-prom-prometheus", "prometheus-stack-kube-prom-alertmanager"]
         verbs: ["get", "create"]
     prometheusSpec:
+      # Used as is (no route prefix); the default would render http://...:9091.
+      externalUrl: https://prometheus-stack-kube-prom-prometheus.monitoring.svc:9091
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
       podMonitorSelectorNilUsesHelmValues: false

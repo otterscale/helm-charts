@@ -1,3 +1,4 @@
+{{- if index .Values "kube-prometheus-stack" "enabled" }}
 {{- /*
 kube-state-metrics serves TLS itself (its --tls-config takes this exporter-toolkit
 web config) from the same cert-manager CA as the kube-rbac-proxy guards.
@@ -13,3 +14,4 @@ data:
     tls_server_config:
       cert_file: /etc/tls/private/tls.crt
       key_file: /etc/tls/private/tls.key
+{{- end }}
