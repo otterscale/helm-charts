@@ -2,8 +2,9 @@ kube-prometheus-stack:
   enabled: true
 
   # kube-rbac-proxy (OTTERSCALE-288): Prometheus and Alertmanager listen on
-  # 127.0.0.1 only and each gets a kube-rbac-proxy sidecar; kube-state-metrics
-  # and node-exporter turn on their subchart's. Every guard serves TLS from one
+  # 127.0.0.1 only and each gets a kube-rbac-proxy sidecar; node-exporter turns
+  # on its subchart's. That makes three kube-rbac-proxy guards; kube-state-metrics
+  # uses its own auth filter instead. Every guard serves TLS from one
   # cert-manager CA (templates/kube-rbac-proxy-tls.yaml) and authorizes each
   # request with a SubjectAccessReview. Prometheus scrapes and alerts through
   # them with its own ServiceAccount token, verifying the certificates.
@@ -94,32 +95,41 @@ kube-prometheus-stack:
             secretName: prometheus-stack-kube-prom-alertmanager-tls
 
   kube-state-metrics:
-    kubeRBACProxy:
+    # Not kubeRBACProxy: the subchart (8.4.2, and 8.6.0 too) hardcodes probes on
+    # the named ports http and metrics, but in that mode the main container
+    # declares no ports (the sidecars do), and kubelet resolves a named probe
+    # port only against the probed container, so the pod never gets Ready.
+    # KSM's own --auth-filter does TokenReview plus a SubjectAccessReview on
+    # nonResourceURL /metrics (get), which Prometheus's ClusterRole already
+    # grants and tenants do not; /livez and /readyz stay open. --tls-config
+    # serves it over TLS from the cert-manager CA (templates/
+    # kube-state-metrics-web-config.yaml); the files are re-read on renewal.
+    authFilter:
       enabled: true
-      image:
-        registry: quay.io
-        repository: brancz/kube-rbac-proxy
-        tag: v0.22.1
-      extraArgs:
-        - --tls-cert-file=/etc/tls/private/tls.crt
-        - --tls-private-key-file=/etc/tls/private/tls.key
-      volumeMounts:
-        - name: kube-rbac-proxy-tls
-          mountPath: /etc/tls/private
-          readOnly: true
+    extraArgs:
+      - --tls-config=/etc/kube-state-metrics/web-config.yaml
     volumes:
       - name: kube-rbac-proxy-tls
         secret:
           secretName: prometheus-stack-kube-state-metrics-tls
-    # The chart's readiness probe targets the telemetry port by the name
-    # "metrics", which only the selfMonitor guard (kube-rbac-proxy-telemetry)
-    # declares; it also guards KSM's own telemetry.
-    selfMonitor:
-      enabled: true
+      - name: web-config
+        configMap:
+          name: prometheus-stack-kube-state-metrics-web-config
+    volumeMounts:
+      - name: kube-rbac-proxy-tls
+        mountPath: /etc/tls/private
+        readOnly: true
+      - name: web-config
+        mountPath: /etc/kube-state-metrics
+        readOnly: true
+    livenessProbe:
+      httpGet:
+        scheme: https
+    readinessProbe:
+      httpGet:
+        scheme: https
     prometheus:
       monitor:
-        # Set at monitor level so both the http and the metrics (telemetry)
-        # endpoints scrape through their guards.
         scheme: https
         bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
         tlsConfig:
