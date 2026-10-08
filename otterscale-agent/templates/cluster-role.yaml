@@ -12,7 +12,7 @@ rules:
 # What the metrics proxy needs. A ClusterRole rather than a Role in the
 # Secret's namespace: that namespace belongs to prometheus-stack and may not
 # exist yet when the agent is installed, and a RoleBinding cannot be created
-# ahead of it. resourceNames keeps it to the one Secret name.
+# ahead of it. resourceNames keeps it to that Secret name, in any namespace.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

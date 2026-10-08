@@ -1,3 +1,4 @@
+{{- if index .Values "kube-prometheus-stack" "enabled" }}
 {{- /*
 What the Prometheus and Alertmanager guards ask kube-apiserver for each
 request: may this identity <verb> <resource>/api on this object? kube-rbac-proxy
@@ -20,4 +21,5 @@ data:
         subresource: api
         namespace: {{ $.Release.Namespace }}
         name: {{ $name }}
+{{- end }}
 {{- end }}

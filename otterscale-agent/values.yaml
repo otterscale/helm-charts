@@ -1,3 +1,6 @@
+# The default image must be the otterscale release that carries the agent's
+# kube-rbac-proxy support; v1.5.0 cannot use the metrics.* settings below. Bump
+# image.tag and Chart.yaml appVersion together once that release exists.
 image:
   repository: ghcr.io/otterscale/otterscale
   tag: v1.5.0
