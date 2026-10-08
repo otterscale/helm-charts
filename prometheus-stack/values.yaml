@@ -111,17 +111,23 @@ kube-prometheus-stack:
       - name: kube-rbac-proxy-tls
         secret:
           secretName: prometheus-stack-kube-state-metrics-tls
+    # The chart's readiness probe targets the telemetry port by the name
+    # "metrics", which only the selfMonitor guard (kube-rbac-proxy-telemetry)
+    # declares; it also guards KSM's own telemetry.
+    selfMonitor:
+      enabled: true
     prometheus:
       monitor:
-        http:
-          scheme: https
-          bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-          tlsConfig:
-            ca:
-              secret:
-                name: prometheus-stack-kube-state-metrics-tls
-                key: ca.crt
-            serverName: prometheus-stack-kube-state-metrics.monitoring.svc
+        # Set at monitor level so both the http and the metrics (telemetry)
+        # endpoints scrape through their guards.
+        scheme: https
+        bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tlsConfig:
+          ca:
+            secret:
+              name: prometheus-stack-kube-state-metrics-tls
+              key: ca.crt
+          serverName: prometheus-stack-kube-state-metrics.monitoring.svc
 
   prometheus-node-exporter:
     # The guard takes :9100 on every node; node-exporter moves to
