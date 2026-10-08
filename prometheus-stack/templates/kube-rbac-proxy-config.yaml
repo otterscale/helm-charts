@@ -1,0 +1,23 @@
+{{- /*
+What the Prometheus and Alertmanager guards ask kube-apiserver for each
+request: may this identity <verb> <resource>/api on this object? kube-rbac-proxy
+maps GET to get and POST to create. The two exporters' guards come with their
+subcharts.
+*/ -}}
+{{- range $resource, $name := dict "prometheuses" "prometheus-stack-kube-prom-prometheus" "alertmanagers" "prometheus-stack-kube-prom-alertmanager" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-kube-rbac-proxy
+  namespace: {{ $.Release.Namespace }}
+data:
+  config.yaml: |
+    authorization:
+      resourceAttributes:
+        apiGroup: monitoring.coreos.com
+        resource: {{ $resource }}
+        subresource: api
+        namespace: {{ $.Release.Namespace }}
+        name: {{ $name }}
+{{- end }}

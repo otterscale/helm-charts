@@ -1,6 +1,15 @@
 kube-prometheus-stack:
   enabled: true
 
+  # kube-rbac-proxy (OTTERSCALE-288): Prometheus and Alertmanager listen on
+  # 127.0.0.1 only and each gets a kube-rbac-proxy sidecar; kube-state-metrics
+  # and node-exporter turn on their subchart's. Every guard serves TLS from one
+  # cert-manager CA (templates/kube-rbac-proxy-tls.yaml) and authorizes each
+  # request with a SubjectAccessReview. Prometheus scrapes and alerts through
+  # them with its own ServiceAccount token, verifying the certificates.
+  # Anything that read Prometheus on :9090 directly (a self-hosted Grafana,
+  # for one) now needs a token and the CA, on :9091.
+
   grafana:
     enabled: false
 
@@ -12,7 +21,153 @@ kube-prometheus-stack:
       certManager:
         enabled: true
 
+  alertmanager:
+    service:
+      port: 9095
+      targetPort: 9095
+    serviceMonitor:
+      scheme: https
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        ca:
+          secret:
+            name: prometheus-stack-kube-prom-alertmanager-tls
+            key: ca.crt
+        serverName: prometheus-stack-kube-prom-alertmanager.monitoring.svc
+    alertmanagerSpec:
+      # The operator sets no probes on a listenLocal Alertmanager; the
+      # sidecar's readiness stands in.
+      listenLocal: true
+      containers:
+        - name: kube-rbac-proxy
+          image: quay.io/brancz/kube-rbac-proxy:v0.22.1
+          args:
+            - --secure-listen-address=:9095
+            - --upstream=http://127.0.0.1:9093/
+            - --config-file=/etc/kube-rbac-proxy/config.yaml
+            - --tls-cert-file=/etc/tls/private/tls.crt
+            - --tls-private-key-file=/etc/tls/private/tls.key
+            - --proxy-endpoints-port=9443
+          ports:
+            # The name the Service and alertmanager-operated target.
+            - name: http-web
+              containerPort: 9095
+            - name: krp-healthz
+              containerPort: 9443
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: krp-healthz
+              scheme: HTTPS
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: krp-healthz
+              scheme: HTTPS
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: kube-rbac-proxy-config
+              mountPath: /etc/kube-rbac-proxy
+              readOnly: true
+            - name: kube-rbac-proxy-tls
+              mountPath: /etc/tls/private
+              readOnly: true
+      volumes:
+        - name: kube-rbac-proxy-config
+          configMap:
+            name: prometheus-stack-kube-prom-alertmanager-kube-rbac-proxy
+        - name: kube-rbac-proxy-tls
+          secret:
+            secretName: prometheus-stack-kube-prom-alertmanager-tls
+
+  kube-state-metrics:
+    kubeRBACProxy:
+      enabled: true
+      image:
+        registry: quay.io
+        repository: brancz/kube-rbac-proxy
+        tag: v0.22.1
+      extraArgs:
+        - --tls-cert-file=/etc/tls/private/tls.crt
+        - --tls-private-key-file=/etc/tls/private/tls.key
+      volumeMounts:
+        - name: kube-rbac-proxy-tls
+          mountPath: /etc/tls/private
+          readOnly: true
+    volumes:
+      - name: kube-rbac-proxy-tls
+        secret:
+          secretName: prometheus-stack-kube-state-metrics-tls
+    prometheus:
+      monitor:
+        http:
+          scheme: https
+          bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          tlsConfig:
+            ca:
+              secret:
+                name: prometheus-stack-kube-state-metrics-tls
+                key: ca.crt
+            serverName: prometheus-stack-kube-state-metrics.monitoring.svc
+
+  prometheus-node-exporter:
+    # The guard takes :9100 on every node; node-exporter moves to
+    # 127.0.0.1:8100 and the guard's /healthz to :8888 (host network).
+    kubeRBACProxy:
+      enabled: true
+      image:
+        registry: quay.io
+        repository: brancz/kube-rbac-proxy
+        tag: v0.22.1
+      tls:
+        enabled: true
+    tlsSecret:
+      enabled: true
+      secretName: prometheus-stack-prometheus-node-exporter-tls
+    prometheus:
+      monitor:
+        scheme: https
+        bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tlsConfig:
+          ca:
+            secret:
+              name: prometheus-stack-prometheus-node-exporter-tls
+              key: ca.crt
+          # Scraped by node IP, so name the certificate explicitly.
+          serverName: prometheus-stack-prometheus-node-exporter.monitoring.svc
+
   prometheus:
+    # The Service fronts the guard: 9091 is kube-rbac-proxy. reloader-web goes
+    # too; config-reloader follows listenLocal onto 127.0.0.1, so its metrics
+    # and the ConfigReloaderSidecarErrors alert are lost (accepted in the spec).
+    service:
+      port: 9091
+      targetPort: 9091
+      reloaderWebPort: 0
+    serviceMonitor:
+      scheme: https
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        ca:
+          secret:
+            name: prometheus-stack-kube-prom-prometheus-tls
+            key: ca.crt
+        serverName: prometheus-stack-kube-prom-prometheus.monitoring.svc
+    # Prometheus scrapes itself and Alertmanager, and sends alerts, through
+    # their guards.
+    additionalRulesForClusterRole:
+      - apiGroups: ["monitoring.coreos.com"]
+        resources: ["prometheuses/api", "alertmanagers/api"]
+        resourceNames: ["prometheus-stack-kube-prom-prometheus", "prometheus-stack-kube-prom-alertmanager"]
+        verbs: ["get", "create"]
     prometheusSpec:
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
@@ -29,3 +184,68 @@ kube-prometheus-stack:
             resources:
               requests:
                 storage: "50Gi"
+      # Probes become wget inside the container; the images carry busybox.
+      listenLocal: true
+      alertingEndpoints:
+        - namespace: monitoring
+          name: prometheus-stack-kube-prom-alertmanager
+          port: http-web
+          scheme: https
+          apiVersion: v2
+          bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          tlsConfig:
+            ca:
+              secret:
+                name: prometheus-stack-kube-prom-alertmanager-tls
+                key: ca.crt
+            serverName: prometheus-stack-kube-prom-alertmanager.monitoring.svc
+      containers:
+        - name: kube-rbac-proxy
+          image: quay.io/brancz/kube-rbac-proxy:v0.22.1
+          args:
+            - --secure-listen-address=:9091
+            - --upstream=http://127.0.0.1:9090/
+            - --config-file=/etc/kube-rbac-proxy/config.yaml
+            - --tls-cert-file=/etc/tls/private/tls.crt
+            - --tls-private-key-file=/etc/tls/private/tls.key
+            - --proxy-endpoints-port=9443
+          ports:
+            # The name the Service, prometheus-operated and the
+            # self-monitoring ServiceMonitor target.
+            - name: http-web
+              containerPort: 9091
+            - name: krp-healthz
+              containerPort: 9443
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: krp-healthz
+              scheme: HTTPS
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: krp-healthz
+              scheme: HTTPS
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: kube-rbac-proxy-config
+              mountPath: /etc/kube-rbac-proxy
+              readOnly: true
+            - name: kube-rbac-proxy-tls
+              mountPath: /etc/tls/private
+              readOnly: true
+      volumes:
+        - name: kube-rbac-proxy-config
+          configMap:
+            name: prometheus-stack-kube-prom-prometheus-kube-rbac-proxy
+        - name: kube-rbac-proxy-tls
+          secret:
+            secretName: prometheus-stack-kube-prom-prometheus-tls
