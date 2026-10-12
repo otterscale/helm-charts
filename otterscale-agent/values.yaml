@@ -42,7 +42,12 @@ trustedCA:
 # caSecret). An http:// URL, for a prometheus-stack older than 1.2.0, gets no
 # token and needs no CA.
 # SHARED: these default to what prometheus-stack 1.2.0 creates as release
-# prometheus-stack in namespace monitoring.
+# prometheus-stack in namespace monitoring. prometheusName only moves the
+# agent's own grant: the OtterScale server always checks cluster-scope access
+# against monitoring/prometheus-stack-kube-prom-prometheus
+# (internal/core/access.go, ClusterMetricsAccess), and the
+# otterscale:metrics-cluster-view ClusterRole names that Prometheus whatever
+# this is set to.
 metrics:
   prometheusURL: "https://prometheus-stack-kube-prom-prometheus.monitoring.svc:9091"
   prometheusName: prometheus-stack-kube-prom-prometheus
