@@ -195,11 +195,17 @@ kube-prometheus-stack:
           sourceLabels: [__meta_kubernetes_endpoint_port_name]
           regex: reloader-web
     # Prometheus scrapes itself and Alertmanager, and sends alerts, through
-    # their guards.
+    # their guards. kube-rbac-proxy maps GET to get and POST to create:
+    # scraping is a GET, sending alerts a POST to Alertmanager. Prometheus
+    # gets no create on itself, so its token cannot POST /-/reload or /-/quit.
     additionalRulesForClusterRole:
       - apiGroups: ["monitoring.coreos.com"]
-        resources: ["prometheuses/api", "alertmanagers/api"]
-        resourceNames: ["prometheus-stack-kube-prom-prometheus", "prometheus-stack-kube-prom-alertmanager"]
+        resources: ["prometheuses/api"]
+        resourceNames: ["prometheus-stack-kube-prom-prometheus"]
+        verbs: ["get"]
+      - apiGroups: ["monitoring.coreos.com"]
+        resources: ["alertmanagers/api"]
+        resourceNames: ["prometheus-stack-kube-prom-alertmanager"]
         verbs: ["get", "create"]
     prometheusSpec:
       # Used as is (no route prefix); the default would render http://...:9091.

@@ -178,11 +178,22 @@ def check_tls_server_names():
     find(docs(), "Issuer", CA)
 
 
+def allows(rules, resource, name, verb):
+    return any("monitoring.coreos.com" in r.get("apiGroups", [])
+               and resource in r.get("resources", [])
+               and name in r.get("resourceNames", [name])
+               and (verb in r.get("verbs", []) or "*" in r.get("verbs", []))
+               for r in rules)
+
+
 def check_rbac():
     rules = find(docs(), "ClusterRole", PROM)["rules"]
-    want = {"apiGroups": ["monitoring.coreos.com"], "resources": ["prometheuses/api", "alertmanagers/api"],
-            "resourceNames": [PROM, AM], "verbs": ["get", "create"]}
-    assert want in rules, rules
+    # kube-rbac-proxy asks get for a GET and create for a POST.
+    assert allows(rules, "prometheuses/api", PROM, "get"), f"cannot scrape itself: {rules}"
+    assert allows(rules, "alertmanagers/api", AM, "get"), f"cannot scrape Alertmanager: {rules}"
+    assert allows(rules, "alertmanagers/api", AM, "create"), f"cannot send alerts: {rules}"
+    # A POST through its own guard reaches /-/reload and /-/quit.
+    assert not allows(rules, "prometheuses/api", PROM, "create"), f"may POST to itself: {rules}"
     flat = [r for rule in rules for r in rule.get("resources", [])]
     assert f"services/{NE}" in flat, flat
     assert any("/metrics" in r.get("nonResourceURLs", []) and "get" in r["verbs"] for r in rules), rules
