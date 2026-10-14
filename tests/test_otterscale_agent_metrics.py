@@ -59,6 +59,10 @@ def check_defaults_match_prometheus_stack():
 
 
 def check_validate():
+    # An empty URL would not turn the proxy off: the agent reads an empty
+    # environment variable as unset and falls back to its built-in default.
+    r = helm("--set", "metrics.prometheusURL=")
+    assert r.returncode != 0 and "metrics.prometheusURL" in r.stderr, r.stderr[:200]
     r = helm("--set", "metrics.prometheusURL=prometheus:9090")
     assert r.returncode != 0 and "metrics.prometheusURL" in r.stderr, r.stderr[:200]
     r = helm("--set", "metrics.caSecret.name=")
