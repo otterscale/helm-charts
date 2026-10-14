@@ -1,0 +1,65 @@
+{{- if index .Values "kube-prometheus-stack" "enabled" }}
+{{- /*
+One CA for the three kube-rbac-proxy guards (Prometheus, Alertmanager,
+node-exporter) and for kube-state-metrics, which serves TLS itself, so
+Prometheus and the otterscale agent verify each of them against a single
+ca.crt, present in every leaf Secret. kube-rbac-proxy reloads its serving certificate when cert-manager
+renews it.
+*/ -}}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: prometheus-stack-kube-rbac-proxy-selfsigned
+  namespace: {{ .Release.Namespace }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prometheus-stack-kube-rbac-proxy-ca
+  namespace: {{ .Release.Namespace }}
+spec:
+  isCA: true
+  commonName: prometheus-stack-kube-rbac-proxy-ca
+  secretName: prometheus-stack-kube-rbac-proxy-ca
+  duration: 87600h # 10y; the agent re-reads ca.crt when verification fails
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: prometheus-stack-kube-rbac-proxy-selfsigned
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: prometheus-stack-kube-rbac-proxy-ca
+  namespace: {{ .Release.Namespace }}
+spec:
+  ca:
+    secretName: prometheus-stack-kube-rbac-proxy-ca
+{{- /* The Service each guard sits behind; serverName in the values is <service>.<namespace>.svc. */}}
+{{- range list "prometheus-stack-kube-prom-prometheus" "prometheus-stack-kube-prom-alertmanager" "prometheus-stack-kube-state-metrics" "prometheus-stack-prometheus-node-exporter" }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ . }}-tls
+  namespace: {{ $.Release.Namespace }}
+spec:
+  secretName: {{ . }}-tls
+  dnsNames:
+    - {{ . }}
+    - {{ . }}.{{ $.Release.Namespace }}
+    - {{ . }}.{{ $.Release.Namespace }}.svc
+    - {{ . }}.{{ $.Release.Namespace }}.svc.cluster.local
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  issuerRef:
+    name: prometheus-stack-kube-rbac-proxy-ca
+    kind: Issuer
+{{- end }}
+{{- end }}

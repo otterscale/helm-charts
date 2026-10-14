@@ -9,6 +9,8 @@ data:
   OTTERSCALE_AGENT_SERVER_URL: {{ .Values.agent.serverURL | quote }}
   OTTERSCALE_AGENT_TUNNEL_SERVER_URL: {{ .Values.agent.tunnelServerURL | quote }}
   OTTERSCALE_AGENT_CLUSTER: {{ .Values.agent.cluster | quote }}
+  OTTERSCALE_AGENT_PROXY_PROMETHEUS_URL: {{ .Values.metrics.prometheusURL | quote }}
+  OTTERSCALE_AGENT_PROXY_PROMETHEUS_CA_SECRET: {{ printf "%s/%s" .Values.metrics.caSecret.namespace .Values.metrics.caSecret.name | quote }}
 {{- if .Values.clusterInfo.enabled }}
 ---
 apiVersion: v1
