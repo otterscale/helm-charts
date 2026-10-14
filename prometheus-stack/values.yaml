@@ -1,10 +1,10 @@
 kube-prometheus-stack:
   enabled: true
 
-  # kube-rbac-proxy (OTTERSCALE-288): Prometheus and Alertmanager listen on
-  # 127.0.0.1 only and each gets a kube-rbac-proxy sidecar; node-exporter turns
-  # on its subchart's. That makes three kube-rbac-proxy guards; kube-state-metrics
-  # uses its own auth filter instead. Every guard serves TLS from one
+  # kube-rbac-proxy: Prometheus and Alertmanager listen on 127.0.0.1 only and
+  # each gets a kube-rbac-proxy sidecar; node-exporter turns on its subchart's.
+  # That makes three kube-rbac-proxy guards; kube-state-metrics uses its own
+  # auth filter instead. Every guard serves TLS from one
   # cert-manager CA (templates/kube-rbac-proxy-tls.yaml) and authorizes each
   # request with a SubjectAccessReview. Prometheus scrapes and alerts through
   # them with its own ServiceAccount token, verifying the certificates.
@@ -13,8 +13,8 @@ kube-prometheus-stack:
   #
   # extraArgs, volumes, volumeMounts and containers below are lists: a values
   # file that sets any of them replaces the whole list and drops the guard or
-  # TLS wiring. An override must restate the full list (phison-ai/release
-  # SXMR0105/0003 does this for the two sidecars).
+  # TLS wiring. An override must restate the full list, e.g. to swap the
+  # kube-rbac-proxy image of the Prometheus and Alertmanager sidecars.
 
   grafana:
     enabled: false
@@ -175,7 +175,7 @@ kube-prometheus-stack:
   prometheus:
     # The Service fronts the guard: 9091 is kube-rbac-proxy. reloader-web goes
     # too; config-reloader follows listenLocal onto 127.0.0.1, so its metrics
-    # and the ConfigReloaderSidecarErrors alert are lost (accepted in the spec).
+    # and the ConfigReloaderSidecarErrors alert are lost; a known trade-off.
     service:
       port: 9091
       targetPort: 9091
