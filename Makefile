@@ -32,7 +32,10 @@ clean:
 	@echo "removed vendored charts/ directories"
 
 ## test: render tests (needs helm and python3 with PyYAML)
+# prometheus-stack's subchart is not committed; fetch it once if it is missing
+# (needs the prometheus-community repo added).
 test:
+	@ls $(ROOT)/prometheus-stack/charts/*.tgz >/dev/null 2>&1 || $(HELM) dependency build $(ROOT)/prometheus-stack
 	@for t in tests/test_*.py; do python3 $$t || exit 1; done
 
 ## help: show this message

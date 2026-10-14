@@ -219,8 +219,15 @@ kube-prometheus-stack:
             resources:
               requests:
                 storage: "50Gi"
-      # With listenLocal the operator turns Prometheus's probes into wget inside
-      # the container, which the busybox-based images support.
+      # With listenLocal the operator turns Prometheus's probes into
+      # `sh -c 'curl ... || wget ...'` inside the container. The subchart's
+      # default image is -distroless, which has no shell, so Prometheus would
+      # never get Ready; pin the busybox-based image, which has sh and wget.
+      # Any override must keep a shell (renovate.json keeps -distroless out).
+      image:
+        registry: quay.io
+        repository: prometheus/prometheus
+        tag: v3.14.0
       listenLocal: true
       alertingEndpoints:
         - namespace: monitoring

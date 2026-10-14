@@ -17,4 +17,6 @@ jobs:
         with:
           python-version: "3.13"
       - run: python3 -m pip install pyyaml
+      # make test fetches prometheus-stack's subchart, which is not committed.
+      - run: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
       - run: make test

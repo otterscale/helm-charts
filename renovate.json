@@ -94,6 +94,18 @@
         "ghcr.io/otterscale/tenant-operator"
       ],
       "versioning": "semver"
+    },
+    {
+      "description": [
+        "prometheus-stack runs Prometheus with listenLocal, so the operator's probes exec `sh` in the container. The -distroless image has no shell and never gets Ready; keep the busybox-based tag."
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "quay.io/prometheus/prometheus"
+      ],
+      "allowedVersions": "!/-distroless$/"
     }
   ]
 }
