@@ -231,10 +231,33 @@ def check_validate_release():
 def check_validate_overrides():
     keys = ["fullnameOverride", "nameOverride", "cleanPrometheusOperatorObjectNames", "namespaceOverride"]
     keys += [f"{sub}.{key}" for sub in ("kube-state-metrics", "prometheus-node-exporter")
-             for key in ("fullnameOverride", "nameOverride")]
+             for key in ("fullnameOverride", "nameOverride", "namespaceOverride")]
     for key in keys:
         r = helm(RELEASE, NS, "--set", f"kube-prometheus-stack.{key}=foo")
         assert r.returncode != 0 and key in r.stderr, f"{key} should fail: {r.stderr[:200]}"
+
+
+def check_validate_service_accounts():
+    # The auth-delegator binding names the default ServiceAccounts.
+    def key(component):
+        return f"kube-prometheus-stack.{component}.serviceAccount"
+
+    def default(component):
+        return f"prometheus-stack-kube-prom-{component}"
+
+    fail = [(c, ["--set", f"{key(c)}.name=foo"]) for c in ("prometheus", "alertmanager")]
+    ok = [(c, ["--set", f"{key(c)}.name={default(c)}"]) for c in ("prometheus", "alertmanager")]
+    # create=false falls back to "default". The subchart already refuses it for
+    # Prometheus (its control-plane ServiceMonitors need the token Secret).
+    fail.append(("alertmanager", ["--set", f"{key('alertmanager')}.create=false"]))
+    ok.append(("alertmanager", ["--set", f"{key('alertmanager')}.create=false",
+                                "--set", f"{key('alertmanager')}.name={default('alertmanager')}"]))
+    for component, extra in fail:
+        r = helm(RELEASE, NS, *extra)
+        assert r.returncode != 0 and key(component) in r.stderr, f"{extra} should fail: {r.stderr[:200]}"
+    for component, extra in ok:
+        r = helm(RELEASE, NS, *extra)
+        assert r.returncode == 0, f"{extra} keeps the default name: {r.stderr[:200]}"
 
 
 def check_disabled():
@@ -249,7 +272,8 @@ CHECKS = [
     check_prometheus, check_prometheus_image_has_shell, check_alertmanager, check_services,
     check_exporters, check_guard_images, check_service_monitors, check_probe_ports,
     check_tls_server_names, check_rbac, check_names, check_external_urls,
-    check_validate_release, check_validate_overrides, check_disabled,
+    check_validate_release, check_validate_overrides, check_validate_service_accounts,
+    check_disabled,
 ]
 
 if __name__ == "__main__":
