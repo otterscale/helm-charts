@@ -1,4 +1,8 @@
 {{- $trustedCA := include "otterscale.trustedCA.secretName" . }}
+{{- $dnsConfig := .Values.dashboard.dnsConfig }}
+{{- if kindIs "invalid" $dnsConfig }}
+{{- $dnsConfig = dict "options" (list (dict "name" "ndots" "value" "2")) }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -97,6 +101,10 @@ spec:
             items:
               - key: {{ .Values.trustedCA.key | quote }}
                 path: {{ .Values.trustedCA.key | quote }}
+      {{- end }}
+      {{- with $dnsConfig }}
+      dnsConfig:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.dashboard.nodeSelector }}
       nodeSelector:

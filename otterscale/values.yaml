@@ -87,6 +87,14 @@ dashboard:
   affinity: {}
   terminationGracePeriodSeconds: 30
   env: []
+  # The dashboard reaches the server and valkey by 4-dot FQDNs. Under the
+  # default ndots:5 each lookup first walks the search domains, and the one
+  # inherited from the host goes to the upstream DNS: a slow or unreachable
+  # upstream then outlasts the dashboard's 10s timeout and no resources show.
+  # Unset = ndots "2". Anything else replaces it whole; {} = the cluster's
+  # resolv.conf as is. Not defaulted here: Helm merges a {} override with a
+  # default map, so {} could never turn it off.
+  dnsConfig:
 
 # Seeded into files/keycloak-realm.json. The subchart reads none of this.
 # Seeded ONCE: --import-realm skips a realm that already exists, so nothing here
