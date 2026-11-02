@@ -13,17 +13,29 @@ spec:
     namespace: {{ include "otterscale.gateway.namespace" . }}
   listeners:
   - name: {{ include "otterscale.listenerSet.sectionName" . }}
+    {{- with include "otterscale.listenerHostname" (include "otterscale.host" .) }}
+    hostname: {{ . | quote }}
+    {{- end }}
     protocol: HTTPS
     port: {{ include "otterscale.listenerSet.port" . }}
+    allowedRoutes:
+      namespaces:
+        from: Same
     tls:
       mode: Terminate
       certificateRefs:
       - kind: Secret
         name: {{ include "otterscale.listenerSet.tlsSecretName" . }}
-  {{- if and .Values.harbor.enabled (include "otterscale.harbor.ownListener" .) }}
+  {{- if .Values.harbor.enabled }}
   - name: {{ include "otterscale.harbor.sectionName" . }}
+    {{- with include "otterscale.listenerHostname" (include "otterscale.harbor.host" .) }}
+    hostname: {{ . | quote }}
+    {{- end }}
     protocol: HTTPS
     port: {{ include "otterscale.harbor.port" . }}
+    allowedRoutes:
+      namespaces:
+        from: Same
     tls:
       mode: Terminate
       certificateRefs:

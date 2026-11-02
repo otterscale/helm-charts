@@ -15,7 +15,17 @@ expose:
     name: "otterscale-gateway"
     namespace: "envoy-gateway-system"
 
-  # One HTTPS listener, shared by the dashboard and Harbor.
+  # Two HTTPS listeners on that Gateway, sharing this certificate:
+  # "https-hci" (dashboard, server API, Keycloak) on this port, and
+  # "https-harbor" on harbor.externalURL's port. Both only accept HTTPRoutes
+  # from this release's namespace.
+  # Each listener's hostname is the host of its externalURL. With DNS names it
+  # only takes those names, and other ListenerSets can use the same port for
+  # any other name, with or without a hostname.
+  # With an IP it sets no hostname, since a client that dials an IP sends no
+  # SNI to match one. It then takes every name on its port: another
+  # ListenerSet on that port without a hostname conflicts with it, and the
+  # one created first wins. Theirs must set a hostname or use another port.
   listener:
     port: "" # empty = 443
     tls:
@@ -236,9 +246,10 @@ keycloak:
 
 harbor:
   enabled: true
-  # SHARED: the harbor route's hostname and port, and the OIDC redirect URIs.
-  # https, and must differ from externalURL by host or by port — a port here
-  # gives Harbor its own listener, which is how one bare IP serves both.
+  # SHARED: the harbor route's hostname, the "https-harbor" listener's hostname
+  # and port (see expose.listener), and the OIDC redirect URIs.
+  # https, and must differ from externalURL by host or by port — on one bare
+  # IP, a port here (e.g. https://<IP>:8443) is how both are served.
   # Fixed at install time for the same reason as externalURL.
   externalURL: ""
   # Empty = generated into the Secret below and reused on upgrade. Harbor
