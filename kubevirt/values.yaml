@@ -1,7 +1,7 @@
 kubevirt:
   # KUBEVIRT_VERSION, and the fallback tag for the images below.
   # renovate: image=quay.io/kubevirt/virt-operator
-  version: v1.9.0
+  version: v1.9.1
 
   images:
     operator:
