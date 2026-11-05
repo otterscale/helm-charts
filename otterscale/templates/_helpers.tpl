@@ -107,17 +107,18 @@ app.kubernetes.io/component: frontend
 {{- end -}}
 {{- end -}}
 
-{{- define "otterscale.harbor.ownListener" -}}
-{{- if ne (include "otterscale.harbor.port" .) (include "otterscale.listenerSet.port" . | toString) -}}
-  {{- true -}}
-{{- end -}}
+{{- define "otterscale.harbor.sectionName" -}}
+https-harbor
 {{- end -}}
 
-{{- define "otterscale.harbor.sectionName" -}}
-{{- if include "otterscale.harbor.ownListener" . -}}
-  {{- printf "%s-harbor" (include "otterscale.listenerSet.sectionName" .) -}}
-{{- else -}}
-  {{- include "otterscale.listenerSet.sectionName" . -}}
+{{- /*
+The listener hostname for a host (the argument), or empty when the host is an
+IP: Gateway API does not allow an IP as a listener hostname, and a client that
+dials an IP sends no SNI for Envoy to match one against.
+*/ -}}
+{{- define "otterscale.listenerHostname" -}}
+{{- if not (regexMatch `^([0-9.]+|\[.*\])$` .) -}}
+  {{- . -}}
 {{- end -}}
 {{- end -}}
 
@@ -143,7 +144,7 @@ app.kubernetes.io/component: frontend
 {{- end -}}
 
 {{- define "otterscale.listenerSet.sectionName" -}}
-https
+https-hci
 {{- end -}}
 
 {{- define "otterscale.listenerSet.port" -}}
