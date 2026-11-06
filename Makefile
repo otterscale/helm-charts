@@ -6,7 +6,7 @@ CHARTS := $(patsubst $(ROOT)/%/Chart.yaml,%,$(wildcard $(ROOT)/*/Chart.yaml))
 # helm shares a repository cache, so keep chart updates serialized.
 .NOTPARALLEL:
 
-.PHONY: all deps repo-update list clean help $(CHARTS)
+.PHONY: all deps repo-update list clean test help $(CHARTS)
 
 all: deps
 
@@ -31,7 +31,14 @@ clean:
 	@rm -rf $(addprefix $(ROOT)/,$(addsuffix /charts,$(CHARTS)))
 	@echo "removed vendored charts/ directories"
 
+## test: render tests (needs helm and python3 with PyYAML)
+# prometheus-stack's subchart is not committed; fetch it once if it is missing
+# (needs the prometheus-community repo added).
+test:
+	@ls $(ROOT)/prometheus-stack/charts/*.tgz >/dev/null 2>&1 || $(HELM) dependency build $(ROOT)/prometheus-stack
+	@for t in tests/test_*.py; do python3 $$t || exit 1; done
+
 ## help: show this message
 help:
-	@echo "targets: all deps list clean help"
+	@echo "targets: all deps list clean test help"
 	@echo "charts:  $(CHARTS)"

@@ -8,7 +8,11 @@ spec:
     matchNames:
       - kubevirt
   podMetricsEndpoints:
-    - honorLabels: false
+    # Keep the VMI's own namespace label rather than renaming it to
+    # exported_namespace: namespace-scoped metrics are enforced on `namespace`.
+    # Safe because only pods in the kubevirt namespace are scraped, and
+    # tenants cannot create pods there.
+    - honorLabels: true
       honorTimestamps: false
       interval: 15s
       path: /metrics

@@ -1,0 +1,25 @@
+# For operators who should see cluster-wide metrics in the OtterScale dashboard
+# without being cluster-admin. The OtterScale server asks this cluster, as the
+# signed-in user, whether they may get prometheuses/api on this Prometheus —
+# the attribute kube-rbac-proxy checks for the agent. Bound to nobody here:
+#   kubectl create clusterrolebinding metrics-view-<name> \
+#     --clusterrole=otterscale:metrics-cluster-view --user=<OIDC subject>
+# Do not bind it to system:authenticated: that group includes every
+# ServiceAccount, so any Pod could query Prometheus directly through
+# kube-rbac-proxy. To open it to all users, bind an oidc:-prefixed group
+# (--group=oidc:<group>) instead.
+# A fixed name, so the same command works on every cluster. The rule is fixed
+# too: the server always asks about monitoring/prometheus-stack-kube-prom-prometheus
+# (internal/core/access.go, ClusterMetricsAccess), so it does not follow
+# metrics.prometheusName, which is the agent's own grant.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: otterscale:metrics-cluster-view
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheuses/api"]
+    resourceNames: ["prometheus-stack-kube-prom-prometheus"]
+    verbs: ["get"]
