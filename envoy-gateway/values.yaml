@@ -11,6 +11,9 @@ gateway-helm:
           default: info
       provider:
         type: Kubernetes
+        kubernetes:
+          deploy:
+            type: GatewayNamespace
       extensionApis:
         # Not strictly required, but recommended for backward/future compatibility.
         enableEnvoyPatchPolicy: true
