@@ -1,2 +1,3 @@
 lws:
   enabled: true
+  enableDisaggregatedSet: true
