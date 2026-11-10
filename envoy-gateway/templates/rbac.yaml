@@ -2,6 +2,7 @@
   (dict "group" "gateway.networking.k8s.io" "singular" "httproute" "plural" "httproutes")
   (dict "group" "gateway.envoyproxy.io" "singular" "envoyextensionpolicy" "plural" "envoyextensionpolicies")
   (dict "group" "gateway.networking.k8s.io" "singular" "gateway" "plural" "gateways")
+  (dict "group" "gateway.networking.k8s.io" "singular" "listenerset" "plural" "listenersets")
   (dict "group" "gateway.envoyproxy.io" "singular" "backendtrafficpolicy" "plural" "backendtrafficpolicies")
   (dict "group" "gateway.envoyproxy.io" "singular" "securitypolicy" "plural" "securitypolicies")
   (dict "group" "gateway.envoyproxy.io" "singular" "clienttrafficpolicy" "plural" "clienttrafficpolicies")
