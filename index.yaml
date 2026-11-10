@@ -1088,6 +1088,19 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: v1.6.0
+    created: "2026-11-10T12:40:16.17090401Z"
+    description: A Helm chart for otterscale-agent
+    digest: 1142b8a8e03d712abfbe54b978dd8dc811823120716da69ebb659182e4f6df63
+    name: otterscale-agent
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-1.2.1/otterscale-agent-1.2.1.tgz
+    version: 1.2.1
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v1.6.0
     created: "2026-11-10T08:16:28.569274896Z"
     description: A Helm chart for otterscale-agent
     digest: c5bcb0dca5175fcab83f6c834e22657154c530cf53dba615e89066db23349032
@@ -1326,6 +1339,24 @@ entries:
       otterscale.io/type: module
     apiVersion: v2
     appVersion: 93.1.1
+    created: "2026-11-10T12:40:16.387938178Z"
+    dependencies:
+    - condition: kube-prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 93.1.1
+    description: A Helm chart for prometheus-stack
+    digest: d9601dc3088218fd0ad7925e4346eafc7b6eae359ec1ec999fcdda66495122b0
+    name: prometheus-stack
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/prometheus-stack-1.2.1/prometheus-stack-1.2.1.tgz
+    version: 1.2.1
+  - annotations:
+      module.otterscale.io/namespace: monitoring
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: 93.1.1
     created: "2026-11-10T08:16:28.781100468Z"
     dependencies:
     - condition: kube-prometheus-stack.enabled
@@ -1452,4 +1483,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-11-10T08:16:28.781241718Z"
+generated: "2026-11-10T12:40:16.388035774Z"
