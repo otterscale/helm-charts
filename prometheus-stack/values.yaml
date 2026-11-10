@@ -92,10 +92,9 @@ kube-prometheus-stack:
             secretName: prometheus-stack-kube-prom-alertmanager-tls
 
   kube-state-metrics:
-    # Not kubeRBACProxy: in that mode the subchart's probes use named ports the main
-    # container no longer declares, so the pod never gets Ready. --auth-filter checks
-    # get on nonResourceURL /metrics instead (Prometheus has it, tenants don't);
-    # /livez and /readyz stay open.
+    # --auth-filter rather than kubeRBACProxy: no sidecar, and it checks get on
+    # nonResourceURL /metrics (Prometheus has it, tenants don't); /livez and
+    # /readyz stay open.
     authFilter:
       enabled: true
     extraArgs:
