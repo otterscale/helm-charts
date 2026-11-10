@@ -53,3 +53,6 @@ ai-gateway-crds-helm:
 
 ai-gateway-helm:
   enabled: true
+
+  controller:
+    metricsRequestHeaderAttributes: x-tenant-id:tenant.id
