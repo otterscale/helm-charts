@@ -43,7 +43,7 @@ kube-prometheus-stack:
       listenLocal: true
       containers:
         - name: kube-rbac-proxy
-          image: quay.io/brancz/kube-rbac-proxy:v0.22.1
+          image: quay.io/brancz/kube-rbac-proxy:v0.23.1
           args:
             - --secure-listen-address=:9095
             - --upstream=http://127.0.0.1:9093/
@@ -139,7 +139,7 @@ kube-prometheus-stack:
       image:
         registry: quay.io
         repository: brancz/kube-rbac-proxy
-        tag: v0.22.1
+        tag: v0.23.1
       tls:
         enabled: true
     tlsSecret:
@@ -212,7 +212,7 @@ kube-prometheus-stack:
       image:
         registry: quay.io
         repository: prometheus/prometheus
-        tag: v3.14.0
+        tag: v3.16.0
       listenLocal: true
       alertingEndpoints:
         - namespace: monitoring
@@ -229,7 +229,7 @@ kube-prometheus-stack:
             serverName: prometheus-stack-kube-prom-alertmanager.monitoring.svc
       containers:
         - name: kube-rbac-proxy
-          image: quay.io/brancz/kube-rbac-proxy:v0.22.1
+          image: quay.io/brancz/kube-rbac-proxy:v0.23.1
           args:
             - --secure-listen-address=:9091
             - --upstream=http://127.0.0.1:9090/
