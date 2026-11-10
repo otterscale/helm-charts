@@ -2,7 +2,7 @@ apiVersion: v2
 name: envoy-gateway
 description: A Helm chart for envoy-gateway
 type: application
-version: 1.1.0
+version: 1.1.1
 # renovate: image=docker.io/envoyproxy/gateway-helm
 appVersion: 1.9.3
 annotations:
