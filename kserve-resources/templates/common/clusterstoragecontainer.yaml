@@ -1,0 +1,7 @@
+{{- if (ternary .Values.kserve.storagecontainer.enabled .Values.kserve.createSharedResources (kindIs "bool" .Values.kserve.storagecontainer.enabled)) }}
+{{- include "kserve-common.renderPatchedResource" (dict
+  "baseFile" "files/common/storagecontainer.yaml"
+  "patchFile" "files/common/storagecontainer-patch.yaml"
+  "replaceNamespace" false
+  "context" .) -}}
+{{- end }}

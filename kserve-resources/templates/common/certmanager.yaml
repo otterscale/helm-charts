@@ -1,0 +1,6 @@
+{{- if (ternary .Values.kserve.certManager.enabled .Values.kserve.createSharedResources (kindIs "bool" .Values.kserve.certManager.enabled)) }}
+{{- include "kserve-common.renderSimpleResource" (dict
+  "baseFile" "files/common/certmanager.yaml"
+  "replaceNamespace" true
+  "context" .) -}}
+{{- end }}

@@ -7,33 +7,21 @@ llmisvcConfigs:
   images:
     llmdCuda:
       from: ghcr.io/llm-d/llm-d-cuda:v0.9.0
-      repository: ghcr.io/llm-d/llm-d-cuda
-      # renovate: image=ghcr.io/llm-d/llm-d-cuda
-      tag: v0.9.0
+      repository: docker.io/vllm/vllm-openai
+      # renovate: image=docker.io/vllm/vllm-openai
+      tag: v0.31.0
 
-    routerDisaggSidecar:
-      from: ghcr.io/llm-d/llm-d-router-disagg-sidecar:v0.10.0
-      repository: ghcr.io/llm-d/llm-d-router-disagg-sidecar
-      # renovate: image=ghcr.io/llm-d/llm-d-router-disagg-sidecar
-      tag: v0.10.0
+    vllmOpenai:
+      from: docker.io/vllm/vllm-openai:v0.31.0
+      repository: docker.io/vllm/vllm-openai
+      # renovate: image=docker.io/vllm/vllm-openai
+      tag: v0.31.0
 
-    routerEndpointPicker:
-      from: ghcr.io/llm-d/llm-d-router-endpoint-picker:v0.10.0
-      repository: ghcr.io/llm-d/llm-d-router-endpoint-picker
-      # renovate: image=ghcr.io/llm-d/llm-d-router-endpoint-picker
-      tag: v0.10.0
-
-    latencyPredictorTrainingServer:
-      from: ghcr.io/llm-d/llm-d-latency-predictor-training-server:0.9.0
-      repository: ghcr.io/llm-d/llm-d-latency-predictor-training-server
-      # renovate: image=ghcr.io/llm-d/llm-d-latency-predictor-training-server
-      tag: "0.9.0"
-
-    latencyPredictorPredictionServer:
-      from: ghcr.io/llm-d/llm-d-latency-predictor-prediction-server:0.9.0
-      repository: ghcr.io/llm-d/llm-d-latency-predictor-prediction-server
-      # renovate: image=ghcr.io/llm-d/llm-d-latency-predictor-prediction-server
-      tag: "0.9.0"
+    vllmOmni:
+      from: docker.io/vllm/vllm-omni:v0.30.0
+      repository: docker.io/vllm/vllm-omni
+      # renovate: image=docker.io/vllm/vllm-omni
+      tag: v0.30.0
 
     vllmOpenaiCpu:
       from: docker.io/vllm/vllm-openai-cpu:v0.23.0@sha256:89e1fbe829038b1a560601990c8ec89625c622a969fcbc8f10ce48b6139795be
@@ -41,57 +29,20 @@ llmisvcConfigs:
       # renovate: image=docker.io/vllm/vllm-openai-cpu
       tag: v0.23.0@sha256:89e1fbe829038b1a560601990c8ec89625c622a969fcbc8f10ce48b6139795be
 
-pvcEvictor:
-  enabled: true
-  name: pvc-evictor
-  labels: {}
-  annotations: {}
+    routerDisaggSidecar:
+      from: ghcr.io/llm-d/llm-d-router-disagg-sidecar:v1.0.0
+      repository: ghcr.io/llm-d/llm-d-router-disagg-sidecar
+      # renovate: image=ghcr.io/llm-d/llm-d-router-disagg-sidecar
+      tag: v1.0.0
 
-  model:
-    uri: ""
+    routerEndpointPicker:
+      from: ghcr.io/llm-d/llm-d-router-endpoint-picker:v1.0.0
+      repository: ghcr.io/llm-d/llm-d-router-endpoint-picker
+      # renovate: image=ghcr.io/llm-d/llm-d-router-endpoint-picker
+      tag: v1.0.0
 
-  container:
-    name: evictor
-    image:
-      repository: quay.io/pvc-evictor/pvc-evictor
-      tag: llm-d-v0.8
-      pullPolicy: IfNotPresent
-
-    env:
-      pvcMountPath: /mnt/kv-cache-0
-      cacheDirectory: ""
-      numCrawlerProcesses: "2"
-      cleanupThreshold: "85.0"
-      targetThreshold: "70.0"
-      fileAccessTimeThresholdMinutes: "60"
-      enableDirCleanup: "true"
-      dryRun: "false"
-      logLevel: INFO
-
-    # Additional env entries appended as-is, e.g.
-    # - name: FOO
-    #   value: bar
-    extraEnv: []
-
-    resources:
-      limits:
-        cpu: "2"
-        memory: 1Gi
-      requests:
-        cpu: 500m
-        memory: 512Mi
-
-    securityContext:
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      runAsGroup: 0
-      runAsNonRoot: true
-      runAsUser: 2000
-      seccompProfile:
-        type: RuntimeDefault
-
-    volumeMounts:
-      - mountPath: /mnt/kv-cache-0
-        name: kv-cache-secondary-0
+    kvCacheEvictor:
+      from: ghcr.io/llm-d-incubation/kv-cache-evictor@sha256:3a3d2458d89fc40392b47b6e209c60932311c92933d8682505073dcd29b4e499
+      repository: ghcr.io/llm-d-incubation/kv-cache-evictor
+      # renovate: image=ghcr.io/llm-d-incubation/kv-cache-evictor
+      tag: "v0.1.0@sha256:3a3d2458d89fc40392b47b6e209c60932311c92933d8682505073dcd29b4e499"

@@ -1,4 +1,0 @@
-{{- if .Values.kubevirt.enabled }}
----
-{{ include "kubevirt-cr.resource" (dict "apiVersion" "kubevirt.io/v1" "kind" "KubeVirt" "cr" .Values.kubevirt) }}
-{{- end }}
