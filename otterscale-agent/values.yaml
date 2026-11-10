@@ -39,9 +39,9 @@ trustedCA:
 # front of Prometheus. Over https the agent sends its own ServiceAccount token
 # and verifies the proxy against ca.crt in caSecret; this chart grants exactly
 # those two things (get/create on prometheuses/api for prometheusName, get on
-# caSecret). An http:// URL, for a prometheus-stack older than 1.2.0, gets no
+# caSecret). An http:// URL, for a prometheus-stack older than 1.3.0, gets no
 # token and needs no CA.
-# SHARED: these default to what prometheus-stack 1.2.0 creates as release
+# SHARED: these default to what prometheus-stack 1.3.0 creates as release
 # prometheus-stack in namespace monitoring. prometheusName only moves the
 # agent's own grant: the OtterScale server always checks cluster-scope access
 # against monitoring/prometheus-stack-kube-prom-prometheus

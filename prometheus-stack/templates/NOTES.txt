@@ -6,4 +6,4 @@ prometheus-stack {{ .Chart.Version }}: Prometheus, Alertmanager, node-exporter a
 - The release must be named prometheus-stack in namespace monitoring; the chart refuses to render otherwise. Its name and namespace overrides must stay unset, and Prometheus and Alertmanager keep their default ServiceAccounts.
 - If you enable the bundled Grafana, configure its Prometheus datasource with a token and that CA.
 - config-reloader metrics are no longer scraped.
-- The otterscale agent needs the otterscale-agent chart >= 1.2.0, with an agent image from the otterscale release that adds kube-rbac-proxy support.
+- The otterscale agent needs the otterscale-agent chart >= 1.3.0, with an agent image from the otterscale release that adds kube-rbac-proxy support.
