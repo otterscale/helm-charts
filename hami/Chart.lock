@@ -1,6 +1,6 @@
 dependencies:
 - name: hami
   repository: https://project-hami.github.io/HAMi
-  version: 2.10.0
-digest: sha256:e19f35cfc15685b6341dcc1cd51b0cf0f2b5ba7c09be1c77f08f96427f1dad7f
-generated: "2026-09-02T01:56:18.597641+08:00"
+  version: 2.11.0
+digest: sha256:bbc3db44693abf7f3a2af9d4d7b898b98731ffe7b9383b05d22fa7ca115ef5af
+generated: "2026-11-10T10:51:12.730937556+08:00"

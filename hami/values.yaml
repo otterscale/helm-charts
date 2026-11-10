@@ -8,9 +8,6 @@ hami:
     patch:
       enabled: false
 
-    service:
-      type: ClusterIP
-
   devicePlugin:
     enabled: true
 
@@ -18,7 +15,6 @@ hami:
       enabled: true
       hostPath: /run/nvidia/validations
 
-    runtimeClassName: nvidia
     deviceListStrategy: cdi-annotations
     nvidiaHookPath: /usr/local/nvidia/toolkit/nvidia-ctk
     nvidiaDriverRoot: /run/nvidia/driver
@@ -35,6 +31,21 @@ hami:
       otterscale.io/gpu: "true"
 
   devices:
+    metax:
+      enabled: false
+
+    hygon:
+      enabled: false
+
+    cambricon:
+      enabled: false
+
+    amd:
+      enabled: false
+
+    awsneuron:
+      enabled: false
+
     kunlun:
       enabled: false
 
@@ -48,6 +59,12 @@ hami:
       enabled: false
 
     biren:
+      enabled: false
+
+    nvidia:
+      runtimeClassName: nvidia
+
+    remotegpu:
       enabled: false
 
     ascend:
