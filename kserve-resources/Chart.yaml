@@ -2,7 +2,7 @@ apiVersion: v2
 name: kserve-resources
 description: A Helm chart for kserve-resources
 type: application
-version: 1.2.0
+version: 1.2.1
 # renovate: image=ghcr.io/kserve/charts/kserve-llmisvc-resources
 appVersion: v0.21.0-rc0-211-g87f69bc09
 annotations:
