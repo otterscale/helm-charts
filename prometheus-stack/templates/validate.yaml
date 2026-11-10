@@ -1,0 +1,44 @@
+{{- if index .Values "kube-prometheus-stack" "enabled" }}
+{{- /*
+values.yaml and the otterscale agent name objects by the default release name,
+namespace and object names. Anything that changes them breaks every guard, so
+refuse to render.
+*/ -}}
+{{- $kps := index .Values "kube-prometheus-stack" }}
+{{- range $key, $v := dict
+  "fullnameOverride" $kps.fullnameOverride
+  "nameOverride" $kps.nameOverride
+  "cleanPrometheusOperatorObjectNames" $kps.cleanPrometheusOperatorObjectNames
+  "namespaceOverride" $kps.namespaceOverride
+  "kube-state-metrics.fullnameOverride" (index $kps "kube-state-metrics" "fullnameOverride")
+  "kube-state-metrics.nameOverride" (index $kps "kube-state-metrics" "nameOverride")
+  "prometheus-node-exporter.fullnameOverride" (index $kps "prometheus-node-exporter" "fullnameOverride")
+  "prometheus-node-exporter.nameOverride" (index $kps "prometheus-node-exporter" "nameOverride")
+  "kube-state-metrics.namespaceOverride" (index $kps "kube-state-metrics" "namespaceOverride")
+  "prometheus-node-exporter.namespaceOverride" (index $kps "prometheus-node-exporter" "namespaceOverride") }}
+  {{- if $v }}
+    {{- fail (printf "kube-prometheus-stack.%s must stay unset (got %v): the kube-rbac-proxy values and the otterscale agent name objects by the default names" $key $v) }}
+  {{- end }}
+{{- end }}
+{{- /*
+The auth-delegator binding names the default ServiceAccounts; this mirrors the
+subchart's serviceAccountName helpers.
+*/ -}}
+{{- range $component := list "prometheus" "alertmanager" }}
+  {{- $sa := dig $component "serviceAccount" dict $kps }}
+  {{- $want := printf "prometheus-stack-kube-prom-%s" $component }}
+  {{- $got := default $want $sa.name }}
+  {{- if not (dig "create" true $sa) }}
+    {{- $got = default "default" $sa.name }}
+  {{- end }}
+  {{- if ne $got $want }}
+    {{- fail (printf "kube-prometheus-stack.%s.serviceAccount must keep the ServiceAccount %s (got %q): the kube-rbac-proxy auth-delegator binding names it" $component $want $got) }}
+  {{- end }}
+{{- end }}
+{{- if ne .Release.Name "prometheus-stack" }}
+  {{- fail (printf "release name must be prometheus-stack, got %q: the kube-rbac-proxy values and the otterscale agent name its objects by that release" .Release.Name) }}
+{{- end }}
+{{- if ne .Release.Namespace "monitoring" }}
+  {{- fail (printf "release namespace must be monitoring for prometheus-stack, got %q: the kube-rbac-proxy values and the otterscale agent name objects in it" .Release.Namespace) }}
+{{- end }}
+{{- end }}

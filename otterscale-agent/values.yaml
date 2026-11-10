@@ -32,6 +32,18 @@ trustedCA:
   secretName: ""
   key: "ca.crt"
 
+# Where the dashboard's charts come from: prometheus-stack's kube-rbac-proxy.
+# Over https the agent sends its ServiceAccount token and verifies the proxy
+# with ca.crt from caSecret; an http:// URL (prometheus-stack < 1.2.1) needs neither.
+# Defaults match prometheus-stack 1.2.1 installed as release prometheus-stack
+# in namespace monitoring. prometheusName only changes the agent's own grant.
+metrics:
+  prometheusURL: "https://prometheus-stack-kube-prom-prometheus.monitoring.svc:9091"
+  prometheusName: prometheus-stack-kube-prom-prometheus
+  caSecret:
+    namespace: monitoring
+    name: prometheus-stack-kube-prom-prometheus-tls
+
 # Binds cluster-admin to the listed users on THIS cluster. Empty = no binding.
 clusterAdmin:
   enabled: true

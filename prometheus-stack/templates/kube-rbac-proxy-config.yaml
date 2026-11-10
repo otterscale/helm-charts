@@ -1,0 +1,23 @@
+{{- if index .Values "kube-prometheus-stack" "enabled" }}
+{{- /*
+What the Prometheus and Alertmanager guards authorize each request against.
+The exporters' guards come with their subcharts.
+*/ -}}
+{{- range $resource, $name := dict "prometheuses" "prometheus-stack-kube-prom-prometheus" "alertmanagers" "prometheus-stack-kube-prom-alertmanager" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-kube-rbac-proxy
+  namespace: {{ $.Release.Namespace }}
+data:
+  config.yaml: |
+    authorization:
+      resourceAttributes:
+        apiGroup: monitoring.coreos.com
+        resource: {{ $resource }}
+        subresource: api
+        namespace: {{ $.Release.Namespace }}
+        name: {{ $name }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,17 @@
+# Lets a non-admin see cluster-wide metrics in the OtterScale dashboard.
+# Bound to nobody; bind it per user or OIDC group (--group=oidc:<group>):
+#   kubectl create clusterrolebinding metrics-view-<name> \
+#     --clusterrole=otterscale:metrics-cluster-view --user=<OIDC subject>
+# Never bind system:authenticated: it includes every ServiceAccount.
+# Name and rule are fixed: the OtterScale server checks this exact Prometheus.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: otterscale:metrics-cluster-view
+  labels:
+    {{- include "otterscale-agent.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheuses/api"]
+    resourceNames: ["prometheus-stack-kube-prom-prometheus"]
+    verbs: ["get"]
