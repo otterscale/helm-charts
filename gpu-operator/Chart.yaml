@@ -2,7 +2,7 @@ apiVersion: v2
 name: gpu-operator
 description: A Helm chart for gpu-operator
 type: application
-version: 1.0.1
+version: 1.0.2
 # renovate: helm=gpu-operator registry=https://nvidia.github.io/gpu-operator
 appVersion: v26.7.2
 annotations:
