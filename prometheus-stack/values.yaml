@@ -1,20 +1,11 @@
 kube-prometheus-stack:
   enabled: true
 
-  # kube-rbac-proxy: Prometheus and Alertmanager listen on 127.0.0.1 only and
-  # each gets a kube-rbac-proxy sidecar; node-exporter turns on its subchart's.
-  # That makes three kube-rbac-proxy guards; kube-state-metrics uses its own
-  # auth filter instead. Every guard serves TLS from one
-  # cert-manager CA (templates/kube-rbac-proxy-tls.yaml) and authorizes each
-  # request with a SubjectAccessReview. Prometheus scrapes and alerts through
-  # them with its own ServiceAccount token, verifying the certificates.
-  # Anything that read Prometheus on :9090 directly (a self-hosted Grafana,
-  # for one) now needs a token and the CA, on :9091.
-  #
-  # extraArgs, volumes, volumeMounts and containers below are lists: a values
-  # file that sets any of them replaces the whole list and drops the guard or
-  # TLS wiring. An override must restate the full list, e.g. to swap the
-  # kube-rbac-proxy image of the Prometheus and Alertmanager sidecars.
+  # Prometheus and Alertmanager listen on 127.0.0.1 behind a kube-rbac-proxy sidecar;
+  # node-exporter uses its subchart's, kube-state-metrics its own auth filter.
+  # All serve TLS from one cert-manager CA. Readers of :9090 now need a token, the CA and :9091.
+  # extraArgs, volumes, volumeMounts and containers are lists: overriding one
+  # replaces it whole, so restate the guard entries.
 
   grafana:
     enabled: false
@@ -48,8 +39,7 @@ kube-prometheus-stack:
     alertmanagerSpec:
       # Used as is (no route prefix); the default would render http://...:9095.
       externalUrl: https://prometheus-stack-kube-prom-alertmanager.monitoring.svc:9095
-      # The operator sets no probes on a listenLocal Alertmanager; the
-      # sidecar's readiness stands in.
+      # No operator probes under listenLocal; the sidecar's readiness stands in.
       listenLocal: true
       containers:
         - name: kube-rbac-proxy
@@ -102,15 +92,10 @@ kube-prometheus-stack:
             secretName: prometheus-stack-kube-prom-alertmanager-tls
 
   kube-state-metrics:
-    # Not kubeRBACProxy: the subchart (8.4.2, and 8.6.0 too) hardcodes probes on
-    # the named ports http and metrics, but in that mode the main container
-    # declares no ports (the sidecars do), and kubelet resolves a named probe
-    # port only against the probed container, so the pod never gets Ready.
-    # KSM's own --auth-filter does TokenReview plus a SubjectAccessReview on
-    # nonResourceURL /metrics (get), which Prometheus's ClusterRole already
-    # grants and tenants do not; /livez and /readyz stay open. --tls-config
-    # serves it over TLS from the cert-manager CA (templates/
-    # kube-state-metrics-web-config.yaml); the files are re-read on renewal.
+    # Not kubeRBACProxy: in that mode the subchart's probes use named ports the main
+    # container no longer declares, so the pod never gets Ready. --auth-filter checks
+    # get on nonResourceURL /metrics instead (Prometheus has it, tenants don't);
+    # /livez and /readyz stay open.
     authFilter:
       enabled: true
     extraArgs:
@@ -173,9 +158,8 @@ kube-prometheus-stack:
           serverName: prometheus-stack-prometheus-node-exporter.monitoring.svc
 
   prometheus:
-    # The Service fronts the guard: 9091 is kube-rbac-proxy. reloader-web goes
-    # too; config-reloader follows listenLocal onto 127.0.0.1, so its metrics
-    # and the ConfigReloaderSidecarErrors alert are lost; a known trade-off.
+    # 9091 is the guard. config-reloader moves to 127.0.0.1, so its metrics and
+    # the ConfigReloaderSidecarErrors alert are lost.
     service:
       port: 9091
       targetPort: 9091
@@ -194,10 +178,8 @@ kube-prometheus-stack:
         - action: drop
           sourceLabels: [__meta_kubernetes_endpoint_port_name]
           regex: reloader-web
-    # Prometheus scrapes itself and Alertmanager, and sends alerts, through
-    # their guards. kube-rbac-proxy maps GET to get and POST to create:
-    # scraping is a GET, sending alerts a POST to Alertmanager. Prometheus
-    # gets no create on itself, so its token cannot POST /-/reload or /-/quit.
+    # GET is get, POST is create. No create on itself, so its token cannot
+    # POST /-/reload or /-/quit.
     additionalRulesForClusterRole:
       - apiGroups: ["monitoring.coreos.com"]
         resources: ["prometheuses/api"]
@@ -225,11 +207,8 @@ kube-prometheus-stack:
             resources:
               requests:
                 storage: "50Gi"
-      # With listenLocal the operator turns Prometheus's probes into
-      # `sh -c 'curl ... || wget ...'` inside the container. The subchart's
-      # default image is -distroless, which has no shell, so Prometheus would
-      # never get Ready; pin the busybox-based image, which has sh and wget.
-      # Any override must keep a shell (renovate.json keeps -distroless out).
+      # listenLocal probes run sh in the container and -distroless has none; keep an
+      # image with a shell (renovate.json excludes -distroless).
       image:
         registry: quay.io
         repository: prometheus/prometheus
@@ -259,8 +238,7 @@ kube-prometheus-stack:
             - --tls-private-key-file=/etc/tls/private/tls.key
             - --proxy-endpoints-port=9443
           ports:
-            # The name the Service, prometheus-operated and the
-            # self-monitoring ServiceMonitor target.
+            # The name the Service, prometheus-operated and the self-ServiceMonitor target.
             - name: http-web
               containerPort: 9091
             - name: krp-healthz

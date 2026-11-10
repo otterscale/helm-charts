@@ -1,9 +1,7 @@
 {{- if index .Values "kube-prometheus-stack" "enabled" }}
 {{- /*
-What the Prometheus and Alertmanager guards ask kube-apiserver for each
-request: may this identity <verb> <resource>/api on this object? kube-rbac-proxy
-maps GET to get and POST to create. The two exporters' guards come with their
-subcharts.
+What the Prometheus and Alertmanager guards authorize each request against.
+The exporters' guards come with their subcharts.
 */ -}}
 {{- range $resource, $name := dict "prometheuses" "prometheus-stack-kube-prom-prometheus" "alertmanagers" "prometheus-stack-kube-prom-alertmanager" }}
 ---

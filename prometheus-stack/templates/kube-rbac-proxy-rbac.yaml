@@ -1,9 +1,5 @@
 {{- if index .Values "kube-prometheus-stack" "enabled" }}
-{{- /*
-The Prometheus and Alertmanager guards run as their pod's ServiceAccount and
-need TokenReview and SubjectAccessReview for every request. The exporters'
-subcharts grant theirs.
-*/ -}}
+{{- /* Lets the Prometheus and Alertmanager guards make TokenReviews and SubjectAccessReviews. */ -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:

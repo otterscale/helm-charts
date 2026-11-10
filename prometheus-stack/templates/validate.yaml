@@ -1,19 +1,8 @@
 {{- if index .Values "kube-prometheus-stack" "enabled" }}
 {{- /*
-The values below name objects by the release's full names
-(prometheus-stack-kube-prom-prometheus, ...-tls) because Helm values cannot
-template them, and the otterscale agent's defaults name them too. Under any
-other release name or namespace every guard would answer 403 or fail TLS, so
-refuse to render instead.
-*/ -}}
-{{- /*
-The guard wiring in values.yaml names the objects the subchart derives from its
-default names (prometheus-stack-kube-prom-*, prometheus-stack-kube-state-metrics,
-prometheus-stack-prometheus-node-exporter). Anything that renames them breaks it.
-cleanPrometheusOperatorObjectNames drops the -prometheus / -alertmanager suffix
-of the CR names, and namespaceOverride moves the objects out of the release
-namespace; the exporters' namespaceOverride moves them away from their -tls
-Certificate and web-config, which stay in it.
+values.yaml and the otterscale agent name objects by the default release name,
+namespace and object names. Anything that changes them breaks every guard, so
+refuse to render.
 */ -}}
 {{- $kps := index .Values "kube-prometheus-stack" }}
 {{- range $key, $v := dict
@@ -32,11 +21,8 @@ Certificate and web-config, which stay in it.
   {{- end }}
 {{- end }}
 {{- /*
-The auth-delegator binding (templates/kube-rbac-proxy-rbac.yaml) names the
-default ServiceAccounts. Another one, by name or by serviceAccount.create=false
-falling back to "default", leaves the guards unable to make TokenReviews.
-This mirrors the subchart's serviceAccountName helpers, so naming the default
-explicitly is still fine.
+The auth-delegator binding names the default ServiceAccounts; this mirrors the
+subchart's serviceAccountName helpers.
 */ -}}
 {{- range $component := list "prometheus" "alertmanager" }}
   {{- $sa := dig $component "serviceAccount" dict $kps }}

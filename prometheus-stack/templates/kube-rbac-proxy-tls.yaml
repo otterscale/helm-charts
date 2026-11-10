@@ -1,11 +1,5 @@
 {{- if index .Values "kube-prometheus-stack" "enabled" }}
-{{- /*
-One CA for the three kube-rbac-proxy guards (Prometheus, Alertmanager,
-node-exporter) and for kube-state-metrics, which serves TLS itself, so
-Prometheus and the otterscale agent verify each of them against a single
-ca.crt, present in every leaf Secret. kube-rbac-proxy reloads its serving certificate when cert-manager
-renews it.
-*/ -}}
+{{- /* One CA for every guard, so Prometheus and the otterscale agent verify them all with one ca.crt. */ -}}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:

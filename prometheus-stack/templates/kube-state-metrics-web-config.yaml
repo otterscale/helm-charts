@@ -1,9 +1,5 @@
 {{- if index .Values "kube-prometheus-stack" "enabled" }}
-{{- /*
-kube-state-metrics serves TLS itself (its --tls-config takes this exporter-toolkit
-web config) from the same cert-manager CA as the kube-rbac-proxy guards.
-exporter-toolkit re-reads the files, so renewals are picked up.
-*/ -}}
+{{- /* TLS config for kube-state-metrics' --tls-config, from the same CA as the guards. */ -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
