@@ -154,45 +154,82 @@ kserve:
   autoscaler:
     scaleUpStabilizationWindowSeconds: '0'
     scaleDownStabilizationWindowSeconds: '300'
-  controller:
-    deploymentMode: Knative
-    rbacProxyImage: quay.io/brancz/kube-rbac-proxy:v0.23.0
-    rbacProxy:
+  llmisvc:
+    createGIECRDs: true
+    controller:
+      image: kserve/llmisvc-controller
+      tag: ''
+      imagePullPolicy: Always
+      imagePullSecrets: []
+      labels: {}
+      podLabels: {}
+      annotations: {}
+      podAnnotations: {}
+      serviceAnnotations: {}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      metricsBindPort: '8443'
+      nodeSelector: {}
+      tolerations: []
+      topologySpreadConstraints: []
+      affinity: {}
       resources:
         limits:
-          cpu: 100m
+          cpu: 500m
           memory: 300Mi
         requests:
           cpu: 100m
           memory: 300Mi
-      securityContext:
-        allowPrivilegeEscalation: false
-        privileged: false
-        capabilities:
-          drop:
-            - ALL
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
-    labels: {}
-    podLabels: {}
-    annotations: {}
-    podAnnotations: {}
-    serviceAnnotations: {}
-    webhookServiceAnnotations: {}
-    securityContext:
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    containerSecurityContext:
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      privileged: false
-      readOnlyRootFilesystem: true
-      runAsNonRoot: true
-    metricsBindAddress: 127.0.0.1
-    metricsBindPort: '8080'
+      replicas: 1
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+      livenessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 5
+        httpGet:
+          path: /healthz
+          port: 8081
+      readinessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 5
+        timeoutSeconds: 5
+        failureThreshold: 5
+        httpGet:
+          path: /readyz
+          port: 8081
+      service:
+        type: ClusterIP
+        port: 8443
+        targetPort: metrics
+      serviceAccount:
+        name: ''
+      env: []
+      extraVolumes: []
+      extraVolumeMounts: []
+      extraArgs: []
+      terminationGracePeriodSeconds: 10
+  controller:
+    deploymentMode: Knative
     gateway:
       domain: example.com
       additionalIngressDomains: []
@@ -214,20 +251,5 @@ kserve:
         createGateway: false
         gateway: knative-serving/knative-ingress-gateway
         className: istio
-    nodeSelector: {}
-    tolerations: []
-    topologySpreadConstraints: []
-    affinity: {}
-    image: kserve/kserve-controller
-    tag: ''
-    imagePullPolicy: Always
-    imagePullSecrets: []
-    resources:
-      limits:
-        cpu: 100m
-        memory: 300Mi
-      requests:
-        cpu: 100m
-        memory: 300Mi
-    knativeAddressableResolver:
-      enabled: false
+commonLabels: {}
+commonAnnotations: {}
