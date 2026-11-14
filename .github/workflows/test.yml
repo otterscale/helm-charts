@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: azure/setup-helm@v5.0.1
+      - uses: azure/setup-helm@v5.1.0
       # A Python of its own: the runner's system one is externally managed
       # (PEP 668) and refuses pip install.
       - uses: actions/setup-python@v7.0.0
