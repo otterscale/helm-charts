@@ -15,7 +15,7 @@ jobs:
       # (PEP 668) and refuses pip install.
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.13"
+          python-version: "3.15"
       - run: python3 -m pip install pyyaml
       # make test fetches prometheus-stack's subchart, which is not committed.
       - run: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
