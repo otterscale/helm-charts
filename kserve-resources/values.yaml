@@ -155,7 +155,8 @@ kserve:
     scaleUpStabilizationWindowSeconds: '0'
     scaleDownStabilizationWindowSeconds: '300'
   llmisvc:
-    createGIECRDs: true
+    createGIECRDs: false # Created by 'envoy-gateway' Helm chart
+    createLLMDCRDs: true
     controller:
       image: kserve/llmisvc-controller
       tag: ''
