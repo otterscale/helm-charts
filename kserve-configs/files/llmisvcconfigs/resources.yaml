@@ -1371,7 +1371,7 @@ spec:
         value: /var/cache/vllm/vllm
       - name: FLASHINFER_WORKSPACE_BASE
         value: /var/cache/vllm/flashinfer
-      image: docker.io/vllm/vllm-openai:v0.31.0
+      image: docker.io/vllm/vllm-openai:v0.33.0
       imagePullPolicy: IfNotPresent
       lifecycle:
         preStop:
@@ -1820,7 +1820,7 @@ spec:
         value: /var/cache/vllm/vllm
       - name: FLASHINFER_WORKSPACE_BASE
         value: /var/cache/vllm/flashinfer
-      image: docker.io/vllm/vllm-openai:v0.31.0
+      image: docker.io/vllm/vllm-openai:v0.33.0
       imagePullPolicy: IfNotPresent
       lifecycle:
         preStop:
@@ -2030,7 +2030,7 @@ metadata:
 spec:
   template:
     containers:
-    - image: docker.io/vllm/vllm-omni:v0.30.0
+    - image: docker.io/vllm/vllm-omni:v0.32.0
       name: main
       securityContext:
         allowPrivilegeEscalation: false
@@ -3242,7 +3242,7 @@ spec:
           value: /var/cache/vllm/vllm
         - name: FLASHINFER_WORKSPACE_BASE
           value: /var/cache/vllm/flashinfer
-        image: docker.io/vllm/vllm-openai:v0.31.0
+        image: docker.io/vllm/vllm-openai:v0.33.0
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
@@ -3602,7 +3602,7 @@ spec:
           value: /var/cache/vllm/vllm
         - name: FLASHINFER_WORKSPACE_BASE
           value: /var/cache/vllm/flashinfer
-        image: docker.io/vllm/vllm-openai:v0.31.0
+        image: docker.io/vllm/vllm-openai:v0.33.0
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
@@ -4706,7 +4706,7 @@ spec:
               value: /tmp/hf
             - name: DO_NOT_TRACK
               value: "1"
-            image: docker.io/vllm/vllm-openai-cpu:v0.23.0@sha256:89e1fbe829038b1a560601990c8ec89625c622a969fcbc8f10ce48b6139795be
+            image: docker.io/vllm/vllm-openai-cpu:v0.33.0@sha256:87167cf0ec6e1e9607bb1cf9bf618a67d04963236a34bd955ac75b7d31a6edf5
             imagePullPolicy: IfNotPresent
             name: main
             ports:
