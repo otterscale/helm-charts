@@ -2,9 +2,9 @@ apiVersion: v2
 name: otterscale
 description: A Helm chart for otterscale
 type: application
-version: 1.1.0
+version: 1.1.1
 # renovate: image=ghcr.io/otterscale/otterscale
-appVersion: v1.6.0
+appVersion: v1.6.1
 annotations:
   otterscale.io/type: core
   module.otterscale.io/namespace: otterscale-system

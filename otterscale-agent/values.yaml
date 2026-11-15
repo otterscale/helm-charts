@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/otterscale/otterscale
-  tag: v1.6.0
+  tag: v1.6.1
   pullPolicy: IfNotPresent
 
 agent:
