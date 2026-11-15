@@ -868,6 +868,33 @@ entries:
       module.otterscale.io/namespace: otterscale-system
       otterscale.io/type: core
     apiVersion: v2
+    appVersion: v1.6.1
+    created: "2026-11-15T10:34:11.120006336Z"
+    dependencies:
+    - alias: keycloak
+      condition: keycloak.enabled
+      name: keycloakx
+      repository: https://codecentric.github.io/helm-charts
+      version: 7.4.0
+    - condition: valkey.enabled
+      name: valkey
+      repository: https://valkey.io/valkey-helm/
+      version: 0.12.1
+    - condition: harbor.enabled
+      name: harbor
+      repository: https://helm.goharbor.io
+      version: 1.19.4
+    description: A Helm chart for otterscale
+    digest: 7a89a253a2c88636383afc822b628cb108892e4c7bf40c464c988c3d516ff008
+    name: otterscale
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-1.1.1/otterscale-1.1.1.tgz
+    version: 1.1.1
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: core
+    apiVersion: v2
     appVersion: v1.6.0
     created: "2026-11-10T08:16:28.414714457Z"
     dependencies:
@@ -1189,6 +1216,19 @@ entries:
     - https://github.com/otterscale/helm-charts/releases/download/otterscale-1.0.0/otterscale-1.0.0.tgz
     version: 1.0.0
   otterscale-agent:
+  - annotations:
+      module.otterscale.io/namespace: otterscale-system
+      otterscale.io/type: module
+    apiVersion: v2
+    appVersion: v1.6.1
+    created: "2026-11-15T10:34:11.29373262Z"
+    description: A Helm chart for otterscale-agent
+    digest: 08ce385b4f9db6c3e41299cc8eb14f58bc0007d659853327999d04f9000ee664
+    name: otterscale-agent
+    type: application
+    urls:
+    - https://github.com/otterscale/helm-charts/releases/download/otterscale-agent-1.2.3/otterscale-agent-1.2.3.tgz
+    version: 1.2.3
   - annotations:
       module.otterscale.io/namespace: otterscale-system
       otterscale.io/type: module
@@ -1602,4 +1642,4 @@ entries:
     urls:
     - https://github.com/otterscale/helm-charts/releases/download/rook-ceph-csi-drivers-1.0.0/rook-ceph-csi-drivers-1.0.0.tgz
     version: 1.0.0
-generated: "2026-11-14T07:47:44.877854487Z"
+generated: "2026-11-15T10:34:11.293904078Z"
