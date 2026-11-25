@@ -8,6 +8,7 @@ appVersion: 1.9.3
 annotations:
   otterscale.io/type: module
   module.otterscale.io/namespace: envoy-gateway-system
+  module.otterscale.io/depends-on: prometheus-stack
 dependencies:
   - name: gateway-helm
     version: 1.9.3
