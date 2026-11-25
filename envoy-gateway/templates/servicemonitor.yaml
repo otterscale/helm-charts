@@ -1,0 +1,46 @@
+{{- if index .Values "gateway-helm" "enabled" }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: envoy-gateway
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - honorLabels: false
+      honorTimestamps: false
+      interval: 15s
+      path: /metrics
+      # deployment.ports in the gateway-helm subchart; 19001 on the control plane.
+      port: metrics
+      scrapeTimeout: 15s
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      control-plane: envoy-gateway
+{{- end }}
+{{- if index .Values "ai-gateway-helm" "enabled" }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ai-gateway-controller
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - honorLabels: false
+      honorTimestamps: false
+      interval: 15s
+      path: /metrics
+      # controller.service.ports in the ai-gateway-helm subchart; 8080.
+      port: http-metrics
+      scrapeTimeout: 15s
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-gateway-helm
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
