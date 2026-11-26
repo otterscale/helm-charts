@@ -592,17 +592,8 @@ rules:
   - watch
 - apiGroups:
   - rbac.authorization.k8s.io
-  resourceNames:
-  - admin
-  - edit
-  - view
   resources:
-  - clusterroles
-  verbs:
-  - bind
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
+  - clusterrolebindings
   - rolebindings
   verbs:
   - create
@@ -612,6 +603,17 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resourceNames:
+  - admin
+  - edit
+  - tenant-workspace-token-reviewer
+  - view
+  resources:
+  - clusterroles
+  verbs:
+  - bind
 - apiGroups:
   - source.toolkit.fluxcd.io
   resources:
@@ -720,6 +722,21 @@ rules:
   - workspaces/status
   verbs:
   - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: tenant-operator
+  name: tenant-workspace-token-reviewer
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -876,7 +893,7 @@ spec:
         env:
         - name: SSL_CERT_DIR
           value: /etc/tenant-operator/ca
-        image: ghcr.io/otterscale/tenant-operator:v1.6.0
+        image: ghcr.io/otterscale/tenant-operator:v1.6.1
         livenessProbe:
           httpGet:
             path: /healthz
