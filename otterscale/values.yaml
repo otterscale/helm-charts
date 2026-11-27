@@ -131,7 +131,7 @@ keycloakRealm:
 keycloakPostgres:
   image:
     repository: postgres
-    tag: 18-trixie
+    tag: 19-trixie
     pullPolicy: IfNotPresent
   password: ""
   resources: {}
