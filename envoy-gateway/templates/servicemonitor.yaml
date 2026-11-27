@@ -1,0 +1,84 @@
+{{- /*
+Gated on the CRDs rather than a module dependency: envoy-gateway is the
+platform's entry point and must not wait on prometheus-stack. The
+prometheus-operator CRDs are installed at the start of the release.
+*/}}
+{{- $sm := .Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor" }}
+{{- $pm := .Capabilities.APIVersions.Has "monitoring.coreos.com/v1/PodMonitor" }}
+{{- if and $sm (index .Values "gateway-helm" "enabled") }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: envoy-gateway
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - honorLabels: false
+      honorTimestamps: false
+      interval: 15s
+      path: /metrics
+      # deployment.ports in the gateway-helm subchart; 19001 on the control plane.
+      port: metrics
+      scrapeTimeout: 15s
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      control-plane: envoy-gateway
+{{- end }}
+{{- if and $sm (index .Values "ai-gateway-helm" "enabled") }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ai-gateway-controller
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - honorLabels: false
+      honorTimestamps: false
+      interval: 15s
+      path: /metrics
+      # controller.service.ports in the ai-gateway-helm subchart; 8080.
+      port: http-metrics
+      scrapeTimeout: 15s
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-gateway-helm
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- if and $pm (index .Values "ai-gateway-helm" "enabled") }}
+---
+# Data plane: gen_ai_* usage metrics from the ext_proc sidecar that the
+# ai-gateway controller injects into the Envoy proxy pods of the kserve/external
+# Gateway. No Service fronts these pods, hence a PodMonitor.
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: ai-gateway-extproc
+  namespace: {{ .Release.Namespace }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      gateway.envoyproxy.io/owning-gateway-name: external
+      gateway.envoyproxy.io/owning-gateway-namespace: kserve
+  podMetricsEndpoints:
+    - port: aigw-admin
+      path: /metrics
+      interval: 15s
+      metricRelabelings:
+        # Rewrite namespace to the leading part of tenant_id (<ns>.<ApiKey>) so
+        # prometheus-tenancy can scope each workspace's usage.
+        - sourceLabels: [tenant_id]
+          regex: '([^.]+)\..*'
+          targetLabel: namespace
+          replacement: '$1'
+{{- end }}
